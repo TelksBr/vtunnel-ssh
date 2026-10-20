@@ -336,6 +336,18 @@ public abstract class Channel {
       BUFFER_SIZE = size;
     }
 
+    @Override
+    public synchronized int read() throws IOException {
+      int value = super.read();
+      if (value >= 0) {
+        // Bulk reads on the JDK and Android also delegate here for their first byte. Their
+        // monitor stays held until the bulk copy finishes, so one notification wakes the producer
+        // after space is freed, without duplicate notifications on the hot bulk-read path.
+        notifyAll();
+      }
+      return value;
+    }
+
     /*
      * TODO: We should have our own Piped[I/O]Stream implementation. Before accepting data, JDK's
      * PipedInputStream will check the existence of reader thread, and if it is not alive, the

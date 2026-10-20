@@ -13,6 +13,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ready-file", type=Path, required=True)
     parser.add_argument("--stop-file", type=Path, required=True)
+    parser.add_argument("--small-window", action="store_true",
+                        help="32 KiB peer window with irregular consumption for partial-credit tests")
     args = parser.parse_args()
     password = secrets.token_hex(24)
     host_key = paramiko.RSAKey.generate(2048)
@@ -35,14 +37,14 @@ def main():
 
     def echo(channel):
         try:
-            while data := channel.recv(16384):
+            while data := channel.recv(4093 if args.small_window else 16384):
                 channel.sendall(data)
             channel.shutdown_write()
         finally:
             channel.close()
 
     def serve(client):
-        transport = paramiko.Transport(client)
+        transport = paramiko.Transport(client, default_window_size=32768) if args.small_window else paramiko.Transport(client)
         transports.append(transport)
         try:
             transport.add_server_key(host_key)

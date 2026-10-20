@@ -379,3 +379,4 @@ $RECYCLE.BIN/
 
 # Local baseline artifacts and measurements
 /local-validation/
+/tools/network/__pycache__/

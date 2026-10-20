@@ -1762,15 +1762,21 @@ public class Session {
         try {
           Thread.sleep(10);
         } catch (InterruptedException e) {
-        } ;
+          Thread.currentThread().interrupt();
+          throw new InterruptedIOException("interrupted while waiting for rekeying");
+        }
         continue;
       }
       synchronized (c) {
-        if (c.rwsize < length) {
+        // Send available credit immediately, even if it only covers part of the packet.
+        // Waiting here with a positive window adds polling latency on small WINDOW_ADJUSTs.
+        if (c.rwsize == 0) {
           try {
             c.notifyme++;
             c.wait(100);
           } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("interrupted while waiting for channel credit");
           } finally {
             c.notifyme--;
           }

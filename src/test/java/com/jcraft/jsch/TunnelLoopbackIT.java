@@ -30,6 +30,9 @@ class TunnelLoopbackIT {
         Integer.parseInt(System.getenv("VTUNNEL_SSH_TEST_PORT")));
     session.setConfig("StrictHostKeyChecking", "no");
     session.setConfig("PreferredAuthentications", publicKey ? "publickey" : "password");
+    // Match the VPN's receive-buffer budget. This fixture writes its entire 256 KiB
+    // request before reading the echo, unlike the app's simultaneous stream pumps.
+    session.setConfig("max_input_buffer_size", "1048576");
     session.setPassword(System.getenv("VTUNNEL_SSH_TEST_PASSWORD")
         .getBytes(java.nio.charset.StandardCharsets.UTF_8));
     session.setTimeout(5000);
