@@ -90,7 +90,7 @@ public class SessionReconnectIT {
     JSch ssh = createRSAIdentity();
     Session session = createSession(ssh);
     try {
-      doSftp(session, false);
+      doTunnel(session, false);
       fail("exception expected");
     } catch (JSchAlgoNegoFailException e) {
       // Dropbear does not support rsa-sha2-512/rsa-sha2-256, so add ssh-rsa
@@ -98,7 +98,7 @@ public class SessionReconnectIT {
       String pubkeyAcceptedAlgorithms = session.getConfig("PubkeyAcceptedAlgorithms") + ",ssh-rsa";
       session.setConfig("server_host_key", serverHostKey);
       session.setConfig("PubkeyAcceptedAlgorithms", pubkeyAcceptedAlgorithms);
-      doSftp(session, true);
+      doTunnel(session, true);
     }
   }
 
@@ -125,15 +125,11 @@ public class SessionReconnectIT {
     return session;
   }
 
-  private void doSftp(Session session, boolean debugException) throws Exception {
+  private void doTunnel(Session session, boolean debugException) throws Exception {
     try {
       session.setTimeout(timeout);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(timeout);
-      sftp.put(in.toString(), "/root/test");
-      sftp.get("/root/test", out.toString());
-      sftp.disconnect();
+      TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
       session.disconnect();
     } catch (Exception e) {
       if (debugException) {

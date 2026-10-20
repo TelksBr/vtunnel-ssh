@@ -110,7 +110,7 @@ public class Algorithms4IT {
     session.setConfig("mlkem768", "com.jcraft.jsch.bc.MLKEM768");
     session.setConfig("xdh", "com.jcraft.jsch.jce.XDH");
     session.setConfig("kex", kex);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     checkLogs(expected);
@@ -125,7 +125,7 @@ public class Algorithms4IT {
     session.setConfig("mlkem768", "com.jcraft.jsch.jce.MLKEM768");
     session.setConfig("xdh", "com.jcraft.jsch.jce.XDH");
     session.setConfig("kex", kex);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     checkLogs(expected);
@@ -140,7 +140,7 @@ public class Algorithms4IT {
     session.setConfig("mlkem768", "com.jcraft.jsch.bc.MLKEM768");
     session.setConfig("xdh", "com.jcraft.jsch.bc.XDH");
     session.setConfig("kex", kex);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     checkLogs(expected);
@@ -155,7 +155,7 @@ public class Algorithms4IT {
     session.setConfig("mlkem768", "com.jcraft.jsch.jce.MLKEM768");
     session.setConfig("xdh", "com.jcraft.jsch.bc.XDH");
     session.setConfig("kex", kex);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     checkLogs(expected);
@@ -184,15 +184,11 @@ public class Algorithms4IT {
     return session;
   }
 
-  private void doSftp(Session session, boolean debugException) throws Exception {
+  private void doTunnel(Session session, boolean debugException) throws Exception {
     try {
       session.setTimeout(timeout);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(timeout);
-      sftp.put(in.toString(), "/root/test");
-      sftp.get("/root/test", out.toString());
-      sftp.disconnect();
+      TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
       session.disconnect();
     } catch (Exception e) {
       if (debugException) {

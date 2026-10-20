@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.mwiede</groupId>
-    <artifactId>jsch</artifactId>
+    <groupId>com.github.TelksBr</groupId>
+    <artifactId>vtunnel-ssh</artifactId>
     <packaging>jar</packaging>
-    <version>2.28.7</version>
-    <name>JSch</name>
-    <url>https://github.com/mwiede/jsch</url>
-    <description>JSch is a pure Java implementation of SSH2</description>
+    <version>2.28.7-vpn.1-SNAPSHOT</version>
+    <name>VTunnel SSH</name>
+    <url>https://github.com/TelksBr/vtunnel-ssh</url>
+    <description>SSH transport and forwarding for VTunnel VPN</description>
     <scm>
-        <connection>scm:git:https://github.com/mwiede/jsch.git</connection>
-        <developerConnection>scm:git:https://github.com/mwiede/jsch.git</developerConnection>
-        <url>https://github.com/mwiede/jsch</url>
-        <tag>jsch-2.28.7</tag>
+        <connection>scm:git:https://github.com/TelksBr/vtunnel-ssh.git</connection>
+        <developerConnection>scm:git:https://github.com/TelksBr/vtunnel-ssh.git</developerConnection>
+        <url>https://github.com/TelksBr/vtunnel-ssh</url>
+        <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/mwiede/jsch/issues</url>
+        <url>https://github.com/TelksBr/vtunnel-ssh/issues</url>
     </issueManagement>
     <ciManagement>
         <system>GitHub</system>
-        <url>https://github.com/mwiede/jsch/actions</url>
+        <url>https://github.com/TelksBr/vtunnel-ssh/actions</url>
     </ciManagement>
     <developers>
         <developer>
@@ -70,8 +70,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <skipITs>true</skipITs>
         <releaseParallelPut>false</releaseParallelPut>
-        <junixsocket.version>2.11.0</junixsocket.version>
-        <jna.version>5.19.1</jna.version>
         <log4j.version>2.26.1</log4j.version>
         <errorprone.version>2.50.0</errorprone.version>
         <surefire.version>3.5.6</surefire.version>
@@ -85,28 +83,10 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.kohlschutter.junixsocket</groupId>
-            <artifactId>junixsocket-common</artifactId>
-            <version>${junixsocket.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna-jpms</artifactId>
-            <version>${jna.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna-platform-jpms</artifactId>
-            <version>${jna.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
-            <optional>true</optional>
+            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -118,7 +98,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.18</version>
-            <optional>true</optional>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -131,17 +111,6 @@
             <artifactId>testcontainers-junit-jupiter</artifactId>
             <version>2.0.5</version>
             <scope>test</scope>
-            <!-- Rely upon jna-jpms brought in above -->
-            <exclusions>
-                <exclusion>
-                    <groupId>net.java.dev.jna</groupId>
-                    <artifactId>jna</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -153,12 +122,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.22.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.kohlschutter.junixsocket</groupId>
-            <artifactId>junixsocket-native-common</artifactId>
-            <version>${junixsocket.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -270,52 +233,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>net.codecrete.windows-api</groupId>
-                <artifactId>windowsapi-maven-plugin</artifactId>
-                <version>0.8.6</version>
-                <configuration>
-                    <sourceDirectory>.</sourceDirectory>
-                    <basePackage>com.jcraft.jsch.windowsapi</basePackage>
-                    <addAsSourceRoot>false</addAsSourceRoot>
-                    <functions>
-                        <function>CloseHandle</function>
-                        <function>CopySid</function>
-                        <function>CreateFileMappingA</function>
-                        <function>FindWindowA</function>
-                        <function>GetCurrentProcessId</function>
-                        <function>GetLengthSid</function>
-                        <function>GetTokenInformation</function>
-                        <function>InitializeSecurityDescriptor</function>
-                        <function>IsValidSid</function>
-                        <function>MapViewOfFile</function>
-                        <function>OpenProcess</function>
-                        <function>OpenProcessToken</function>
-                        <function>SendMessageA</function>
-                        <function>SetSecurityDescriptorOwner</function>
-                        <function>UnmapViewOfFile</function>
-                    </functions>
-                    <structs>
-                        <struct>COPYDATASTRUCT</struct>
-                        <struct>SECURITY_ATTRIBUTES</struct>
-                        <struct>SECURITY_DESCRIPTOR</struct>
-                        <struct>SID_AND_ATTRIBUTES</struct>
-                        <struct>TOKEN_USER</struct>
-                    </structs>
-                    <enumerations>
-                        <enumeration>FILE_MAP</enumeration>
-                        <enumeration>PAGE_PROTECTION_FLAGS</enumeration>
-                        <enumeration>TOKEN_ACCESS_MASK</enumeration>
-                        <enumeration>TOKEN_INFORMATION_CLASS</enumeration>
-                    </enumerations>
-                    <constants>
-                        <constant>INVALID_HANDLE_VALUE</constant>
-                        <constant>MAXIMUM_ALLOWED</constant>
-                        <constant>SECURITY_DESCRIPTOR_REVISION</constant>
-                        <constant>WM_COPYDATA</constant>
-                    </constants>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -452,49 +369,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>default-compile-16</id>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <compileSourceRoots>
-                                <compileSourceRoot>${project.basedir}/src/main/java16</compileSourceRoot>
-                            </compileSourceRoots>
-                            <multiReleaseOutput>true</multiReleaseOutput>
-                            <release>16</release>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-compile-19</id>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <compileSourceRoots>
-                                <compileSourceRoot>${project.basedir}/src/main/java19</compileSourceRoot>
-                            </compileSourceRoots>
-                            <multiReleaseOutput>true</multiReleaseOutput>
-                            <release>19</release>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-compile-23</id>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <compileSourceRoots>
-                                <compileSourceRoot>${project.basedir}/src/main/java23</compileSourceRoot>
-                                <compileSourceRoot>${project.build.directory}/generated-sources/windows-api</compileSourceRoot>
-                            </compileSourceRoots>
-                            <multiReleaseOutput>true</multiReleaseOutput>
-                            <release>23</release>
-                            <compilerArgs>
-                                <arg>-Xlint:all,-processing,-classfile,-options,-restricted</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>default-compile-24</id>
                         <goals>
                             <goal>compile</goal>
@@ -527,12 +401,7 @@
                         Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
                         Export-Package: com.jcraft.jsch;-noimport:=true
                         Import-Package: \
-                            com.sun.jna*;version="${range;[=0,+)}";resolution:=optional,\
-                            org.apache.logging.log4j*;version="${range;[=0,4)}";resolution:=optional,\
                             org.bouncycastle*;version="[1.84,${versionmask;+})";resolution:=optional,\
-                            org.slf4j*;version="[1.7,${versionmask;+})";resolution:=optional,\
-                            org.newsclub.net.unix;resolution:=optional,\
-                            org.ietf.jgss;resolution:=optional,\
                             !java.*,\
                             *
                         ]]></bnd>
@@ -635,7 +504,7 @@
                     <quiet>true</quiet>
                     <doclint>none</doclint>
                     <subpackages>com.jcraft.jsch</subpackages>
-                    <excludePackageNames>com.jcraft.jsch.*,com.jcraft.jsch.windowsapi.windows.win32.*,com.jcraft.jsch.windowsapi.windows.win32.system.*,com.jcraft.jsch.windowsapi.windows.win32.ui.*</excludePackageNames>
+                    <excludePackageNames>com.jcraft.jsch.*</excludePackageNames>
                     <sourcepath>${project.build.sourceDirectory}:${project.build.directory}/generated-sources/java-templates:${project.basedir}/src/main/java9:${project.basedir}/src/main/java10:${project.basedir}/src/main/java11:${project.basedir}/src/main/java15:${project.basedir}/src/main/java16:${project.basedir}/src/main/java19:${project.basedir}/src/main/java23:${project.build.directory}/generated-sources/windows-api:${project.basedir}/src/main/java24</sourcepath>
                 </configuration>
                 <executions>
@@ -733,9 +602,6 @@
                         <sourceDirectory>${project.basedir}/src/main/java10</sourceDirectory>
                         <sourceDirectory>${project.basedir}/src/main/java11</sourceDirectory>
                         <sourceDirectory>${project.basedir}/src/main/java15</sourceDirectory>
-                        <sourceDirectory>${project.basedir}/src/main/java16</sourceDirectory>
-                        <sourceDirectory>${project.basedir}/src/main/java19</sourceDirectory>
-                        <sourceDirectory>${project.basedir}/src/main/java23</sourceDirectory>
                         <sourceDirectory>${project.basedir}/src/main/java24</sourceDirectory>
                         <sourceDirectory>${project.basedir}/src/main/java-templates</sourceDirectory>
                     </sourceDirectories>
@@ -756,9 +622,6 @@
                         <directory>${project.basedir}/src/main/java10</directory>
                         <directory>${project.basedir}/src/main/java11</directory>
                         <directory>${project.basedir}/src/main/java15</directory>
-                        <directory>${project.basedir}/src/main/java16</directory>
-                        <directory>${project.basedir}/src/main/java19</directory>
-                        <directory>${project.basedir}/src/main/java23</directory>
                         <directory>${project.basedir}/src/main/java24</directory>
                         <directory>${project.basedir}/src/main/java-templates</directory>
                     </directories>
@@ -778,9 +641,6 @@
                         <directory>${project.basedir}/src/main/java10</directory>
                         <directory>${project.basedir}/src/main/java11</directory>
                         <directory>${project.basedir}/src/main/java15</directory>
-                        <directory>${project.basedir}/src/main/java16</directory>
-                        <directory>${project.basedir}/src/main/java19</directory>
-                        <directory>${project.basedir}/src/main/java23</directory>
                         <directory>${project.basedir}/src/main/java24</directory>
                         <directory>${project.basedir}/src/main/java-templates</directory>
                     </directories>
@@ -795,7 +655,6 @@
                         <exclude>com/jcraft/jsch/JavaThreadId.class</exclude>
                         <exclude>com/jcraft/jsch/JavaVersion.class</exclude>
                         <exclude>com/jcraft/jsch/JplLogger.class</exclude>
-                        <exclude>com/jcraft/jsch/PageantFFMConnector.class</exclude>
                         <exclude>com/jcraft/jsch/UnixDomainSocketFactory.class</exclude>
                         <exclude>com/jcraft/jsch/jce/KeyPairGenEdDSA.class</exclude>
                         <exclude>com/jcraft/jsch/jce/MLKEM.class</exclude>
@@ -1109,31 +968,6 @@
                                 <phase>package</phase>
                                 <goals>
                                     <goal>createSPDX</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>windowsapi</id>
-            <activation>
-                <jdk>[21,)</jdk>
-                <property>
-                    <name>windowsapi.skip</name>
-                    <value>!true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>net.codecrete.windows-api</groupId>
-                        <artifactId>windowsapi-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>windows-api</goal>
                                 </goals>
                             </execution>
                         </executions>

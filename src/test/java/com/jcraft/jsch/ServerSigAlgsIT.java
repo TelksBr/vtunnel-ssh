@@ -107,7 +107,7 @@ public class ServerSigAlgsIT {
     Session session = createSession(ssh);
     session.setConfig("PubkeyAcceptedAlgorithms", algos);
     session.setConfig("server_host_key", algos);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expectedKex = "kex: host key algorithm: rsa-sha2-512";
     String expectedExtInfo = "SSH_MSG_EXT_INFO received";
@@ -137,7 +137,7 @@ public class ServerSigAlgsIT {
     session.setConfig("enable_server_sig_algs", "no");
     session.setConfig("PubkeyAcceptedAlgorithms", algos);
     session.setConfig("server_host_key", algos);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expectedKex = "kex: host key algorithm: rsa-sha2-512";
     // String expectedPubkeysNoServerSigs = String.format(Locale.ROOT,
@@ -180,15 +180,11 @@ public class ServerSigAlgsIT {
     return session;
   }
 
-  private void doSftp(Session session, boolean debugException) throws Exception {
+  private void doTunnel(Session session, boolean debugException) throws Exception {
     try {
       session.setTimeout(timeout);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(timeout);
-      sftp.put(in.toString(), "/root/test");
-      sftp.get("/root/test", out.toString());
-      sftp.disconnect();
+      TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
       session.disconnect();
     } catch (Exception e) {
       if (debugException) {

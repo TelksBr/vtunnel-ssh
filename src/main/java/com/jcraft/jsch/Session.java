@@ -135,8 +135,6 @@ public class Session {
   private Thread connectThread = null;
   private Object lock = new Object();
 
-  boolean x11_forwarding = false;
-  boolean agent_forwarding = false;
 
   InputStream in = null;
   OutputStream out = null;
@@ -1145,13 +1143,13 @@ public class Session {
     if (!isConnected) {
       throw new JSchException("session is down");
     }
+    if (!supportsTunnelChannel(type)) {
+      throw new JSchException("Unsupported channel in VTunnel SSH: " + type);
+    }
     try {
       Channel channel = createChannel(type);
       if (channel != null) {
         channel.init();
-        if (channel instanceof ChannelSession) {
-          applyConfigChannel((ChannelSession) channel);
-        }
         return channel;
       } else {
         if (getLogger().isEnabled(Logger.DEBUG)) {
@@ -2123,8 +2121,7 @@ public class Session {
             buf.getShort();
             foo = buf.getString();
             String ctyp = Util.byte2str(foo);
-            if (!"forwarded-tcpip".equals(ctyp) && !("x11".equals(ctyp) && x11_forwarding)
-                && !("auth-agent@openssh.com".equals(ctyp) && agent_forwarding)) {
+            if (!"forwarded-tcpip".equals(ctyp)) {
               if (getLogger().isEnabled(Logger.DEBUG)) {
                 getLogger().log(Logger.DEBUG, "Failed to add channel of type " + ctyp
                     + " - type either unsupported or prohibited");
@@ -2280,7 +2277,6 @@ public class Session {
 
     PortWatcher.delPort(this);
     ChannelForwardedTCPIP.delPort(this);
-    ChannelX11.removeFakedCookie(this);
 
     synchronized (lock) {
       if (connectThread != null) {
@@ -2900,35 +2896,11 @@ public class Session {
 
   private Channel createChannel(String type) {
     Channel channel = null;
-    if (type.equals("session")) {
-      channel = new ChannelSession();
-    }
-    if (type.equals("shell")) {
-      channel = new ChannelShell();
-    }
-    if (type.equals("exec")) {
-      channel = new ChannelExec();
-    }
-    if (type.equals("x11")) {
-      channel = new ChannelX11();
-    }
-    if (type.equals("auth-agent@openssh.com")) {
-      channel = new ChannelAgentForwarding();
-    }
     if (type.equals("direct-tcpip")) {
       channel = new ChannelDirectTCPIP();
     }
     if (type.equals("forwarded-tcpip")) {
       channel = new ChannelForwardedTCPIP();
-    }
-    if (type.equals("sftp")) {
-      ChannelSftp sftp = new ChannelSftp();
-      boolean useWriteFlushWorkaround = getConfig("use_sftp_write_flush_workaround").equals("yes");
-      sftp.setUseWriteFlushWorkaround(useWriteFlushWorkaround);
-      channel = sftp;
-    }
-    if (type.equals("subsystem")) {
-      channel = new ChannelSubsystem();
     }
     if (type.equals("direct-streamlocal@openssh.com")) {
       channel = new ChannelDirectStreamLocal();
@@ -2937,6 +2909,11 @@ public class Session {
       return null;
     }
     return addChannel(channel);
+  }
+
+  static boolean supportsTunnelChannel(String type) {
+    return "direct-tcpip".equals(type) || "forwarded-tcpip".equals(type)
+        || "direct-streamlocal@openssh.com".equals(type);
   }
 
   private Channel addChannel(Channel channel) {
@@ -2989,18 +2966,6 @@ public class Session {
 
   public void setOutputStream(OutputStream out) {
     this.out = out;
-  }
-
-  public void setX11Host(String host) {
-    ChannelX11.setHost(host);
-  }
-
-  public void setX11Port(int port) {
-    ChannelX11.setPort(port);
-  }
-
-  public void setX11Cookie(String cookie) {
-    ChannelX11.setCookie(cookie);
   }
 
   /**
@@ -3758,27 +3723,6 @@ public class Session {
     value = config.getValue("ClearAllForwardings");
     if (value != null) {
       setConfig("ClearAllForwardings", value);
-    }
-  }
-
-  private void applyConfigChannel(ChannelSession channel) throws JSchException {
-    ConfigRepository configRepository = jsch.getConfigRepository();
-    if (configRepository == null) {
-      return;
-    }
-
-    ConfigRepository.Config config = configRepository.getConfig(org_host);
-
-    String value = null;
-
-    value = config.getValue("ForwardAgent");
-    if (value != null) {
-      channel.setAgentForwarding(value.equals("yes"));
-    }
-
-    value = config.getValue("RequestTTY");
-    if (value != null) {
-      channel.setPty(value.equals("yes"));
     }
   }
 

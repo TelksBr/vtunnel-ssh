@@ -104,7 +104,7 @@ public class UserAuthIT {
     Session session = createSession(ssh);
     session.setConfig("enable_auth_none", "yes");
     session.setConfig("enable_pubkey_auth_query", "yes");
-    doSftp(session, true);
+    doTunnel(session, true);
   }
 
   @Test
@@ -113,7 +113,7 @@ public class UserAuthIT {
     Session session = createSession(ssh);
     session.setConfig("enable_auth_none", "yes");
     session.setConfig("enable_pubkey_auth_query", "no");
-    doSftp(session, true);
+    doTunnel(session, true);
   }
 
   @Test
@@ -122,7 +122,7 @@ public class UserAuthIT {
     Session session = createSession(ssh);
     session.setConfig("enable_auth_none", "no");
     session.setConfig("enable_pubkey_auth_query", "yes");
-    doSftp(session, true);
+    doTunnel(session, true);
   }
 
   @Test
@@ -131,7 +131,7 @@ public class UserAuthIT {
     Session session = createSession(ssh);
     session.setConfig("enable_auth_none", "no");
     session.setConfig("enable_pubkey_auth_query", "no");
-    doSftp(session, true);
+    doTunnel(session, true);
   }
 
   private JSch createRSAIdentity() throws Exception {
@@ -157,16 +157,12 @@ public class UserAuthIT {
     return session;
   }
 
-  private void doSftp(Session session, boolean debugException) throws Exception {
+  private void doTunnel(Session session, boolean debugException) throws Exception {
     assertDoesNotThrow(() -> {
       try {
         session.setTimeout(timeout);
         session.connect();
-        ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-        sftp.connect(timeout);
-        sftp.put(in.toString(), "/root/test");
-        sftp.get("/root/test", out.toString());
-        sftp.disconnect();
+        TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
         session.disconnect();
       } catch (Exception e) {
         if (debugException) {

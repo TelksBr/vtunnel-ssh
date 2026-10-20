@@ -6,11 +6,11 @@ name: Java CI with Maven
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ codex/vpn-foundation ]
     paths-ignore: 
       - '**.md'
   pull_request:
-    branches: [ master ]
+    branches: [ codex/vpn-foundation ]
 
 jobs:
   build:

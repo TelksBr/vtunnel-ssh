@@ -1,12 +1,15 @@
 package com.jcraft.jsch;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -303,7 +306,8 @@ class OpenSshCertificateUtil {
     if (timestamp < 0) {
       return "infinity";
     }
-    return SftpATTRS.toDateString(timestamp);
+    return DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ROOT)
+        .format(Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault()));
   }
 
   /**

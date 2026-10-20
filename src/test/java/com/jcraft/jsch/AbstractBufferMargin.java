@@ -7,7 +7,6 @@ import com.github.valfirst.slf4jtest.LoggingEvent;
 import com.github.valfirst.slf4jtest.TestLogger;
 import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.input.BoundedInputStream;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,7 +104,7 @@ public abstract class AbstractBufferMargin {
     sshdLogger.clearAll();
   }
 
-  protected void doTestSftp(String cipher, String mac, String compression) throws Exception {
+  protected void doTestTunnel(String cipher, String mac, String compression) throws Exception {
     JSch ssh = createRSAIdentity();
     Session session = createSession(ssh);
     session.setConfig("cipher.s2c", cipher);
@@ -115,19 +113,7 @@ public abstract class AbstractBufferMargin {
     session.setConfig("mac.c2s", mac);
     session.setConfig("compression.s2c", compression);
     session.setConfig("compression.c2s", compression);
-    doSftp(session, true);
-  }
-
-  protected void doTestScp(String cipher, String mac, String compression) throws Exception {
-    JSch ssh = createRSAIdentity();
-    Session session = createSession(ssh);
-    session.setConfig("cipher.s2c", cipher);
-    session.setConfig("cipher.c2s", cipher);
-    session.setConfig("mac.s2c", mac);
-    session.setConfig("mac.c2s", mac);
-    session.setConfig("compression.s2c", compression);
-    session.setConfig("compression.c2s", compression);
-    doScp(session, true);
+    doTunnel(session, true);
   }
 
   private JSch createRSAIdentity() throws Exception {
@@ -153,15 +139,11 @@ public abstract class AbstractBufferMargin {
     return session;
   }
 
-  private void doSftp(Session session, boolean debugException) throws Exception {
+  private void doTunnel(Session session, boolean debugException) throws Exception {
     try {
       session.setTimeout(timeout);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(timeout);
-      sftp.put(in.toString(), "/root/test");
-      sftp.get("/root/test", out.toString());
-      sftp.disconnect();
+      TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
       session.disconnect();
     } catch (Exception e) {
       if (debugException) {
@@ -172,101 +154,6 @@ public abstract class AbstractBufferMargin {
 
     assertEquals(1024L * 100L, Files.size(out));
     assertEquals(hash, sha256sum.digestAsHex(out));
-  }
-
-  private void doScp(Session session, boolean debugException) throws Exception {
-    try {
-      session.setTimeout(timeout);
-      session.connect();
-      ChannelExec scp;
-
-      scp = (ChannelExec) session.openChannel("exec");
-      try (InputStream is = scp.getInputStream()) {
-        try (OutputStream os = scp.getOutputStream()) {
-          scp.setCommand("scp -t /root/test");
-          scp.connect(timeout);
-          checkAck(is);
-          String cmd = "C0644 102400 test\n";
-          os.write(cmd.getBytes(UTF_8));
-          os.flush();
-          checkAck(is);
-          Files.copy(in, os);
-          os.flush();
-          sendAck(os);
-          checkAck(is);
-        }
-      }
-      while (scp.isConnected()) {
-        Thread.sleep(100L);
-      }
-
-      scp = (ChannelExec) session.openChannel("exec");
-      try (OutputStream os = scp.getOutputStream()) {
-        try (InputStream is = scp.getInputStream()) {
-          scp.setCommand("scp -f /root/test");
-          scp.connect(timeout);
-          sendAck(os);
-          int c = checkAck(is);
-          if (c == 'C') {
-            byte[] buf = new byte[17];
-            is.read(buf, 0, 17);
-            sendAck(os);
-            Files.copy(
-                BoundedInputStream.builder().setMaxCount(100L * 1024L).setInputStream(is).get(),
-                out);
-            checkAck(is);
-            sendAck(os);
-          }
-        }
-      }
-      while (scp.isConnected()) {
-        Thread.sleep(100L);
-      }
-
-      session.disconnect();
-    } catch (Exception e) {
-      if (debugException) {
-        printInfo();
-      }
-      throw e;
-    }
-
-    assertEquals(1024L * 100L, Files.size(out));
-    assertEquals(hash, sha256sum.digestAsHex(out));
-  }
-
-  private static int checkAck(InputStream is) throws IOException {
-    int b = is.read();
-    if (b == 0) {
-      return b;
-    } else if (b == -1) {
-      throw new IOException("no response");
-    }
-
-    StringBuilder sb = new StringBuilder();
-    if (b == 1 || b == 2) {
-      int c = is.read();
-      while (c > 0 && c != '\n') {
-        sb.append((char) c);
-        c = is.read();
-      }
-    }
-
-    switch (b) {
-      case 1:
-        throw new IOException("error: " + sb);
-      case 2:
-        throw new IOException("fatal error: " + sb);
-      default:
-        return b;
-    }
-  }
-
-  private static void sendAck(OutputStream os) throws IOException {
-    byte[] ack = new byte[1];
-    ack[0] = 0;
-    os.write(ack);
-    os.flush();
   }
 
   private void printInfo() {

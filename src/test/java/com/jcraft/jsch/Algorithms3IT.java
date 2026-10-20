@@ -95,7 +95,7 @@ public class Algorithms3IT {
     session.setConfig("cipher.c2s", cipher);
     session.setConfig("compression.s2c", compression);
     session.setConfig("compression.c2s", compression);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expectedS2C = String.format(Locale.ROOT, "kex: server->client cipher: %s.*", cipher);
     String expectedC2S = String.format(Locale.ROOT, "kex: client->server cipher: %s.*", cipher);
@@ -131,15 +131,11 @@ public class Algorithms3IT {
     return session;
   }
 
-  private void doSftp(Session session, boolean debugException) throws Exception {
+  private void doTunnel(Session session, boolean debugException) throws Exception {
     try {
       session.setTimeout(timeout);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(timeout);
-      sftp.put(in.toString(), "/root/test");
-      sftp.get("/root/test", out.toString());
-      sftp.disconnect();
+      TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
       session.disconnect();
     } catch (Exception e) {
       if (debugException) {

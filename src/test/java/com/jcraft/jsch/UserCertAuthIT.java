@@ -128,7 +128,7 @@ public class UserCertAuthIT {
         "ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256");
     session.setConfig("server_host_key",
         "ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256");
-    doSftp(session);
+    doTunnel(session);
   }
 
   /**
@@ -140,7 +140,7 @@ public class UserCertAuthIT {
   @Test
   public void opensshCertificateEd25519CertTest() throws Exception {
     Session session = createEd25519CertSession();
-    doSftp(session);
+    doTunnel(session);
   }
 
   /**
@@ -154,7 +154,7 @@ public class UserCertAuthIT {
     Session session = createEd25519CertSession();
     session.setConfig("keypairgen.eddsa", "com.jcraft.jsch.bc.KeyPairGenEdDSA");
     session.setConfig("ssh-ed25519", "com.jcraft.jsch.bc.SignatureEd25519");
-    doSftp(session);
+    doTunnel(session);
   }
 
   /**
@@ -169,7 +169,7 @@ public class UserCertAuthIT {
     Session session = createEd25519CertSession();
     session.setConfig("keypairgen.eddsa", "com.jcraft.jsch.jce.KeyPairGenEdDSA");
     session.setConfig("ssh-ed25519", "com.jcraft.jsch.jce.SignatureEd25519");
-    doSftp(session);
+    doTunnel(session);
   }
 
   /**
@@ -197,7 +197,7 @@ public class UserCertAuthIT {
     session.setConfig("PreferredAuthentications", "publickey");
     session.setConfig("server_host_key",
         "ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256");
-    doSftp(session);
+    doTunnel(session);
   }
 
   private Session createEd25519CertSession() throws Exception {
@@ -248,15 +248,12 @@ public class UserCertAuthIT {
    * @param session The configured JSch session to connect.
    * @throws Exception if connection or SFTP channel setup fails.
    */
-  private void doSftp(Session session) throws Exception {
+  private void doTunnel(Session session) throws Exception {
     Assertions.assertDoesNotThrow(() -> {
       try {
         session.setTimeout(timeout);
         session.connect();
-        ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-        sftp.connect(timeout);
-        Assertions.assertTrue(sftp.isConnected());
-        sftp.disconnect();
+        TunnelTestSupport.checkSshBanner(session, timeout);
         session.disconnect();
       } catch (Exception e) {
         printInfo();

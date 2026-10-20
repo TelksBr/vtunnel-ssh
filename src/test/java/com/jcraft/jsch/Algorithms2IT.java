@@ -116,7 +116,7 @@ public class Algorithms2IT {
     Session session = createSession(ssh);
     session.setConfig("xdh", "com.jcraft.jsch.jce.XDH");
     session.setConfig("kex", kex);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     checkLogs(expected);
@@ -131,7 +131,7 @@ public class Algorithms2IT {
     session.setConfig("mlkem768", "com.jcraft.jsch.jce.MLKEM768");
     session.setConfig("mlkem1024", "com.jcraft.jsch.jce.MLKEM1024");
     session.setConfig("kex", kex);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     checkLogs(expected);
@@ -146,7 +146,7 @@ public class Algorithms2IT {
     session.setConfig("mlkem1024", "com.jcraft.jsch.bc.MLKEM1024");
     session.setConfig("xdh", "com.jcraft.jsch.bc.XDH");
     session.setConfig("kex", kex);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     checkLogs(expected);
@@ -165,7 +165,7 @@ public class Algorithms2IT {
     JSch ssh = createRSAIdentity();
     Session session = createSession(ssh);
     session.setConfig("kex", kex);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     checkLogs(expected);
@@ -196,7 +196,7 @@ public class Algorithms2IT {
     session.setConfig("dhgex_min", size);
     session.setConfig("dhgex_max", size);
     session.setConfig("dhgex_preferred", size);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expectedKex = String.format(Locale.ROOT, "kex: algorithm: %s.*", kex);
     String expectedSizes = String.format(Locale.ROOT,
@@ -214,7 +214,7 @@ public class Algorithms2IT {
     session.setConfig("ssh-ed448", "com.jcraft.jsch.jce.SignatureEd448");
     session.setConfig("PubkeyAcceptedAlgorithms", "ssh-ed448");
     session.setConfig("server_host_key", "ssh-ed448");
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = "kex: host key algorithm: ssh-ed448.*";
     checkLogs(expected);
@@ -228,7 +228,7 @@ public class Algorithms2IT {
     session.setConfig("ssh-ed448", "com.jcraft.jsch.bc.SignatureEd448");
     session.setConfig("PubkeyAcceptedAlgorithms", "ssh-ed448");
     session.setConfig("server_host_key", "ssh-ed448");
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = "kex: host key algorithm: ssh-ed448.*";
     checkLogs(expected);
@@ -240,7 +240,7 @@ public class Algorithms2IT {
     Session session = createSession(ssh);
     session.setConfig("PubkeyAcceptedAlgorithms", "ssh-ed448");
     session.setConfig("server_host_key", "ssh-ed448");
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = "kex: host key algorithm: ssh-ed448.*";
     checkLogs(expected);
@@ -254,7 +254,7 @@ public class Algorithms2IT {
     Session session = createSession(ssh);
     session.setConfig("PubkeyAcceptedAlgorithms", keyType);
     session.setConfig("server_host_key", keyType);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expected = String.format(Locale.ROOT, "kex: host key algorithm: %s.*", keyType);
     checkLogs(expected);
@@ -269,7 +269,7 @@ public class Algorithms2IT {
     session.setConfig("cipher.c2s", cipher);
     session.setConfig("compression.s2c", compression);
     session.setConfig("compression.c2s", compression);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expectedS2C = String.format(Locale.ROOT, "kex: server->client cipher: %s.*", cipher);
     String expectedC2S = String.format(Locale.ROOT, "kex: client->server cipher: %s.*", cipher);
@@ -293,7 +293,7 @@ public class Algorithms2IT {
     // Make sure a non-AEAD cipher is used
     session.setConfig("cipher.s2c", "aes128-ctr");
     session.setConfig("cipher.c2s", "aes128-ctr");
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expectedS2C = String.format(Locale.ROOT, "kex: server->client .* MAC: %s.*", mac);
     String expectedC2S = String.format(Locale.ROOT, "kex: client->server .* MAC: %s.*", mac);
@@ -307,7 +307,7 @@ public class Algorithms2IT {
     Session session = createSession(ssh);
     session.setConfig("compression.s2c", "zlib");
     session.setConfig("compression.c2s", "zlib");
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expectedS2C = "kex: server->client .* compression: zlib.*";
     String expectedC2S = "kex: client->server .* compression: zlib.*";
@@ -323,7 +323,7 @@ public class Algorithms2IT {
     session.setConfig("compression.s2c", "zlib");
     session.setConfig("compression.c2s", "zlib");
     session.setConfig("zlib", impl);
-    doSftp(session, true);
+    doTunnel(session, true);
 
     String expectedImpl = String.format(Locale.ROOT, "zlib using %s", impl);
     String expectedS2C = "kex: server->client .* compression: zlib.*";
@@ -365,15 +365,11 @@ public class Algorithms2IT {
     return session;
   }
 
-  private void doSftp(Session session, boolean debugException) throws Exception {
+  private void doTunnel(Session session, boolean debugException) throws Exception {
     try {
       session.setTimeout(timeout);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(timeout);
-      sftp.put(in.toString(), "/root/test");
-      sftp.get("/root/test", out.toString());
-      sftp.disconnect();
+      TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
       session.disconnect();
     } catch (Exception e) {
       if (debugException) {

@@ -1,0 +1,77 @@
+"""Local-only SSH echo fixture. Requires Paramiko; never connects to a real VPS."""
+import argparse
+import json
+import secrets
+import socket
+import threading
+from pathlib import Path
+
+import paramiko
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ready-file", type=Path, required=True)
+    parser.add_argument("--stop-file", type=Path, required=True)
+    args = parser.parse_args()
+    password = secrets.token_hex(24)
+    host_key = paramiko.RSAKey.generate(2048)
+    public_key_file = Path(__file__).resolve().parents[1] / "src/test/resources/docker/id_rsa.pub"
+    authorized = public_key_file.read_text().split()[1]
+    transports = []
+
+    class Server(paramiko.ServerInterface):
+        def get_allowed_auths(self, username):
+            return "publickey,password,keyboard-interactive"
+
+        def check_auth_password(self, username, supplied):
+            return paramiko.AUTH_SUCCESSFUL if username == "vtunnel-test" and supplied == password else paramiko.AUTH_FAILED
+
+        def check_auth_publickey(self, username, key):
+            return paramiko.AUTH_SUCCESSFUL if username == "vtunnel-test" and key.get_base64() == authorized else paramiko.AUTH_FAILED
+
+        def check_channel_direct_tcpip_request(self, chanid, origin, destination):
+            return paramiko.OPEN_SUCCEEDED if destination == ("echo.vtunnel.test", 7) else paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
+
+    def echo(channel):
+        try:
+            while data := channel.recv(16384):
+                channel.sendall(data)
+            channel.shutdown_write()
+        finally:
+            channel.close()
+
+    def serve(client):
+        transport = paramiko.Transport(client)
+        transports.append(transport)
+        try:
+            transport.add_server_key(host_key)
+            transport.start_server(server=Server())
+            while transport.is_active() and not args.stop_file.exists():
+                channel = transport.accept(0.2)
+                if channel is not None:
+                    threading.Thread(target=echo, args=(channel,), daemon=True).start()
+        finally:
+            transport.close()
+
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        listener.listen()
+        listener.settimeout(0.2)
+        args.ready_file.write_text(json.dumps({"port": listener.getsockname()[1], "password": password}))
+        print("Local SSH echo fixture ready", flush=True)
+        try:
+            while not args.stop_file.exists():
+                try:
+                    client, _ = listener.accept()
+                except socket.timeout:
+                    continue
+                threading.Thread(target=serve, args=(client,), daemon=True).start()
+        finally:
+            for transport in transports:
+                transport.close()
+            args.ready_file.unlink(missing_ok=True)
+
+
+if __name__ == "__main__":
+    main()

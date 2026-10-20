@@ -3,7 +3,6 @@ package com.jcraft.jsch;
 import static com.jcraft.jsch.ResourceUtil.getResourceFile;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.valfirst.slf4jtest.LoggingEvent;
 import com.github.valfirst.slf4jtest.TestLogger;
@@ -81,7 +80,7 @@ public class HostCertificateDssIT {
     session.setConfig("PreferredAuthentications", "publickey");
     session.setConfig("server_host_key", "ssh-dss-cert-v01@openssh.com");
 
-    assertDoesNotThrow(() -> connectSftp(session));
+    assertDoesNotThrow(() -> connectTunnel(session));
   }
 
   /**
@@ -102,17 +101,14 @@ public class HostCertificateDssIT {
     session.setConfig("PreferredAuthentications", "publickey");
     session.setConfig("server_host_key", "ssh-dss-cert-v01@openssh.com");
 
-    assertThrows(JSchHostKeyException.class, () -> connectSftp(session));
+    assertThrows(JSchHostKeyException.class, () -> connectTunnel(session));
   }
 
-  private void connectSftp(Session session) throws JSchException {
+  private void connectTunnel(Session session) throws Exception {
     try {
       session.setTimeout(TIMEOUT);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(TIMEOUT);
-      assertTrue(sftp.isConnected());
-      sftp.disconnect();
+      TunnelTestSupport.checkSshBanner(session, TIMEOUT);
       session.disconnect();
     } catch (Exception e) {
       printInfo();

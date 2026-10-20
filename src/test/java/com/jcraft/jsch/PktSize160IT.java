@@ -13,15 +13,8 @@ public class PktSize160IT extends AbstractBufferMargin {
   @CsvSource(value = {
       // 32 byte MAC
       "aes128-ctr,hmac-sha2-256,none", "aes128-ctr,hmac-sha2-256,zlib@openssh.com"})
-  public void testSftp(String cipher, String mac, String compression) throws Exception {
-    doTestSftp(cipher, mac, compression);
+  public void testTunnel(String cipher, String mac, String compression) throws Exception {
+    doTestTunnel(cipher, mac, compression);
   }
 
-  @ParameterizedTest
-  @CsvSource(value = {
-      // 64 byte MAC
-      "aes128-ctr,hmac-sha2-512,none", "aes128-ctr,hmac-sha2-512,zlib@openssh.com"})
-  public void testScp(String cipher, String mac, String compression) throws Exception {
-    doTestScp(cipher, mac, compression);
-  }
 }

@@ -2,7 +2,6 @@ package com.jcraft.jsch;
 
 import static com.jcraft.jsch.ResourceUtil.getResourceFile;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.valfirst.slf4jtest.LoggingEvent;
 import com.github.valfirst.slf4jtest.TestLogger;
@@ -74,17 +73,14 @@ public class UserCertAuthDssIT {
         "ssh-dss-cert-v01@openssh.com,ssh-dss,ssh-ed25519,ecdsa-sha2-nistp256,"
             + "ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256");
 
-    assertDoesNotThrow(() -> connectSftp(session));
+    assertDoesNotThrow(() -> connectTunnel(session));
   }
 
-  private void connectSftp(Session session) throws JSchException {
+  private void connectTunnel(Session session) throws Exception {
     try {
       session.setTimeout(TIMEOUT);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(TIMEOUT);
-      assertTrue(sftp.isConnected());
-      sftp.disconnect();
+      TunnelTestSupport.checkSshBanner(session, TIMEOUT);
       session.disconnect();
     } catch (Exception e) {
       printInfo();

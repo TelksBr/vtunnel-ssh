@@ -376,3 +376,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,netbeans,eclipse,visualstudiocode,vim,emacs,macos,windows,linux,java,maven
+
+# Local baseline artifacts and measurements
+/local-validation/

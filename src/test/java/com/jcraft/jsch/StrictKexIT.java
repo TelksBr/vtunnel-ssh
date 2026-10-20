@@ -104,7 +104,7 @@ public class StrictKexIT {
     Session session = createSession(ssh);
     session.setConfig("enable_strict_kex", "yes");
     session.setConfig("require_strict_kex", "no");
-    doSftp(session, true, true);
+    doTunnel(session, true, true);
 
     String expectedServerKex = "server proposal: KEX algorithms: .*,kex-strict-s-v00@openssh.com";
     String expectedClientKex = "client proposal: KEX algorithms: .*,kex-strict-c-v00@openssh.com";
@@ -126,7 +126,7 @@ public class StrictKexIT {
     Session session = createSession(ssh);
     session.setConfig("enable_strict_kex", "yes");
     session.setConfig("require_strict_kex", "yes");
-    doSftp(session, true, true);
+    doTunnel(session, true, true);
 
     String expectedServerKex = "server proposal: KEX algorithms: .*,kex-strict-s-v00@openssh.com";
     String expectedClientKex = "client proposal: KEX algorithms: .*,kex-strict-c-v00@openssh.com";
@@ -148,7 +148,7 @@ public class StrictKexIT {
     Session session = createSession(ssh);
     session.setConfig("enable_strict_kex", "no");
     session.setConfig("require_strict_kex", "yes");
-    doSftp(session, true, true);
+    doTunnel(session, true, true);
 
     String expectedServerKex = "server proposal: KEX algorithms: .*,kex-strict-s-v00@openssh.com";
     String expectedClientKex = "client proposal: KEX algorithms: .*,kex-strict-c-v00@openssh.com";
@@ -170,7 +170,7 @@ public class StrictKexIT {
     Session session = createSession(ssh);
     session.setConfig("enable_strict_kex", "no");
     session.setConfig("require_strict_kex", "no");
-    doSftp(session, true, false);
+    doTunnel(session, true, false);
 
     String expectedServerKex = "server proposal: KEX algorithms: .*,kex-strict-s-v00@openssh.com";
     String expectedClientKex = "client proposal: KEX algorithms: .*,kex-strict-c-v00@openssh.com";
@@ -209,17 +209,13 @@ public class StrictKexIT {
     return session;
   }
 
-  private void doSftp(Session session, boolean debugException, boolean expectStrictKex)
+  private void doTunnel(Session session, boolean debugException, boolean expectStrictKex)
       throws Exception {
     try {
       session.setTimeout(timeout);
       session.connect();
       assertEquals(expectStrictKex, session.isStrictKex());
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(timeout);
-      sftp.put(in.toString(), "/root/test");
-      sftp.get("/root/test", out.toString());
-      sftp.disconnect();
+      TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
       session.disconnect();
       assertFalse(session.isStrictKex());
     } catch (Exception e) {

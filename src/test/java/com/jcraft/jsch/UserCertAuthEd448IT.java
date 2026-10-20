@@ -2,7 +2,6 @@ package com.jcraft.jsch;
 
 import static com.jcraft.jsch.ResourceUtil.getResourceFile;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.JRE.JAVA_15;
 
 import com.github.valfirst.slf4jtest.LoggingEvent;
@@ -70,7 +69,7 @@ public class UserCertAuthEd448IT {
     Session session = createSession();
     session.setConfig("keypairgen.eddsa", "com.jcraft.jsch.jce.KeyPairGenEdDSA");
     session.setConfig("ssh-ed448", "com.jcraft.jsch.jce.SignatureEd448");
-    assertDoesNotThrow(() -> connectSftp(session));
+    assertDoesNotThrow(() -> connectTunnel(session));
   }
 
   /**
@@ -81,7 +80,7 @@ public class UserCertAuthEd448IT {
     Session session = createSession();
     session.setConfig("keypairgen.eddsa", "com.jcraft.jsch.bc.KeyPairGenEdDSA");
     session.setConfig("ssh-ed448", "com.jcraft.jsch.bc.SignatureEd448");
-    assertDoesNotThrow(() -> connectSftp(session));
+    assertDoesNotThrow(() -> connectTunnel(session));
   }
 
   /**
@@ -90,7 +89,7 @@ public class UserCertAuthEd448IT {
   @Test
   public void testEd448UserCertAuth() throws Exception {
     Session session = createSession();
-    assertDoesNotThrow(() -> connectSftp(session));
+    assertDoesNotThrow(() -> connectTunnel(session));
   }
 
   private Session createSession() throws Exception {
@@ -106,14 +105,11 @@ public class UserCertAuthEd448IT {
     return session;
   }
 
-  private void connectSftp(Session session) throws JSchException {
+  private void connectTunnel(Session session) throws Exception {
     try {
       session.setTimeout(TIMEOUT);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(TIMEOUT);
-      assertTrue(sftp.isConnected());
-      sftp.disconnect();
+      TunnelTestSupport.checkSshBanner(session, TIMEOUT);
       session.disconnect();
     } catch (Exception e) {
       printInfo();

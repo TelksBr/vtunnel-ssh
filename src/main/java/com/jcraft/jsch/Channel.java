@@ -587,12 +587,6 @@ public abstract class Channel {
     return false;
   }
 
-  public void sendSignal(String signal) throws Exception {
-    RequestSignal request = new RequestSignal();
-    request.setSignal(signal);
-    request.request(getSession(), this);
-  }
-
   // public String toString(){
   // return "Channel: type="+new
   // String(type)+",id="+id+",recipient="+recipient+",window_size="+window_size+",packet_size="+packet_size;

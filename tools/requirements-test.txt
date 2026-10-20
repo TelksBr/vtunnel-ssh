@@ -1,0 +1,2 @@
+# Local-only SSH echo test fixture; not a runtime library dependency.
+paramiko>=3.5,<5

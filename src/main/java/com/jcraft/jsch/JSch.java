@@ -211,8 +211,6 @@ public class JSch {
     config.put("userauth.password", "com.jcraft.jsch.UserAuthPassword");
     config.put("userauth.keyboard-interactive", "com.jcraft.jsch.UserAuthKeyboardInteractive");
     config.put("userauth.publickey", "com.jcraft.jsch.UserAuthPublicKey");
-    config.put("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMIC");
-    config.put("gssapi-with-mic.krb5", "com.jcraft.jsch.jgss.GSSContextKrb5");
 
     config.put("zlib", "com.jcraft.jsch.jzlib.Compression");
     config.put("zlib@openssh.com", "com.jcraft.jsch.jzlib.Compression");
@@ -245,7 +243,7 @@ public class JSch {
     config.put("HashKnownHosts", "no");
 
     config.put("PreferredAuthentications", Util.getSystemProperty("jsch.preferred_authentications",
-        "gssapi-with-mic,publickey,keyboard-interactive,password"));
+        "publickey,keyboard-interactive,password"));
     config.put("PubkeyAcceptedAlgorithms", Util.getSystemProperty("jsch.client_pubkey",
         "ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256"));
     config.put("enable_pubkey_auth_query",
@@ -253,8 +251,6 @@ public class JSch {
     config.put("try_additional_pubkey_algorithms",
         Util.getSystemProperty("jsch.try_additional_pubkey_algorithms", "yes"));
     config.put("enable_auth_none", Util.getSystemProperty("jsch.enable_auth_none", "yes"));
-    config.put("use_sftp_write_flush_workaround",
-        Util.getSystemProperty("jsch.use_sftp_write_flush_workaround", "yes"));
 
     config.put("CheckCiphers",
         Util.getSystemProperty("jsch.check_ciphers", "chacha20-poly1305@openssh.com"));

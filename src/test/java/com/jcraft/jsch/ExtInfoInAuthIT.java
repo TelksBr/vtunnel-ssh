@@ -107,7 +107,7 @@ public class ExtInfoInAuthIT {
     Session session = createSession(ssh, "rsa");
     session.setConfig("enable_ext_info_in_auth", "yes");
     session.setConfig("PubkeyAcceptedAlgorithms", "ssh-rsa");
-    doSftp(session, "rsa", true);
+    doTunnel(session, "rsa", true);
 
     String expectedServerKex = "server proposal: KEX algorithms: .*,ext-info-s,.*";
     String expectedClientKex = "client proposal: KEX algorithms: .*,ext-info-c,.*";
@@ -174,16 +174,12 @@ public class ExtInfoInAuthIT {
     return session;
   }
 
-  private void doSftp(Session session, String username, boolean debugException) throws Exception {
+  private void doTunnel(Session session, String username, boolean debugException) throws Exception {
     String testFile = String.format(Locale.ROOT, "/%s/test", username);
     try {
       session.setTimeout(timeout);
       session.connect();
-      ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-      sftp.connect(timeout);
-      sftp.put(in.toString(), testFile);
-      sftp.get(testFile, out.toString());
-      sftp.disconnect();
+      TunnelTestSupport.roundTrip(session, sshd, in, out, timeout);
       session.disconnect();
     } catch (Exception e) {
       if (debugException) {
