@@ -8,9 +8,9 @@ Fork de [mwiede/jsch](https://github.com/mwiede/jsch) para desenvolver uma varia
 - A primeira limpeza remove os canais SFTP, shell/exec, subsystem, PTY, X11 e encaminhamento de agente. Canais `direct-tcpip`, `forwarded-tcpip` e `direct-streamlocal@openssh.com` permanecem disponiveis. Tipos removidos falham com `JSchException`.
 - Foram removidos conectores desktop (Pageant/Windows/Unix SSH agent), GSSAPI/Kerberos e dependencias nativas JNA/junixsocket. Adaptadores Log4j/SLF4J ficam apenas na suite de testes; a interface `Logger` usada pelo Android permanece.
 - Senha, chave publica, keyboard-interactive, verificacao de host keys, certificados, proxies, compressao e algoritmos criptograficos foram preservados. A janela e o caminho de dados do app nao foram alterados.
-- Coordenadas locais: `com.github.TelksBr:vtunnel-ssh:2.28.7-vpn.1-SNAPSHOT`. Nenhum artefato foi publicado. O JAR de build local caiu de 609.520 para 509.527 bytes (16,4% menor).
+- Primeira release: [`2.28.7-vpn.1`](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.1). O JAR de build local caiu de 609.520 para 509.527 bytes (16,4% menor).
 - Esta variante nao e substituta da API JSch completa: aplicativos que usam recursos removidos precisam continuar na biblioteca upstream.
-- O VTunnel ainda utiliza o artefato upstream; este fork nao esta integrado nem publicado como biblioteca propria.
+- O VTunnel ainda utiliza o artefato upstream; este fork ainda nao esta integrado ao app.
 - Historico, creditos e licencas upstream foram preservados. Consulte [a documentacao original](README.upstream.md).
 
 ## Escopo de desenvolvimento
@@ -27,6 +27,26 @@ Primeiras investigacoes, ainda nao implementadas neste fork:
 Cada mudanca funcional deve comecar por um teste que falha na base e passar por comparacoes repetidas contra a mesma base, com os mesmos perfis e sementes. Simulacao nao substitui validacao no Android real.
 
 ## Build e validacao
+
+### Integracao Android via JitPack
+
+Adicione o repositorio no `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        maven("https://jitpack.io")
+    }
+}
+```
+
+E a dependencia no modulo Android:
+
+```kotlin
+implementation("com.github.TelksBr:vtunnel-ssh:2.28.7-vpn.1")
+```
+
+O artefato e compilado a partir da tag de release. Consulte tambem as notas e os arquivos da [release no GitHub](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.1).
 
 O projeto preserva o Maven Wrapper e o build upstream. O `pom.xml` desta base exige uma toolchain JDK 25 ou superior. Com ela instalada:
 
