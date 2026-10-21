@@ -225,6 +225,8 @@ ate 24 frames de threads SSH, somente classes/metodos e estado.
 mesma JVM; `compare_linux_library.py` compara duas bibliotecas pelo acesso
 direto. Use Linux/JRE 21, o lab privado iniciado e caminhos Linux para JARs.
 Consulte `--help`; ambos exigem pasta de saida nova e registram a ordem AB/BA.
+`compare_linux_library.py --seed-start N` permite ampliar a coleta com novas
+sementes, preservando as rodadas anteriores; o padrao continua 1100.
 O destino direto e 10.205.33.2:22022 e o controle e 127.0.0.1:19084; nao passa
 pelo relay TCP. O argumento `-Dvtunnel.probe.controlHost=127.0.0.1` seleciona
 o controle local. Em PowerShell, coloque argumentos -D com pontos entre aspas
@@ -241,3 +243,42 @@ Resuma com queue_summary.py e preserve tambem as fases inconclusivas.
 O fix separa o monitor de envio/lifecycle do monitor do credito remoto; a
 janela continua 4 MiB e a criptografia continua serializada pela sessao.
 Nao elimina as filas TCP nem garante RTT baixo quando o enlace esta saturado.
+
+## Ciclo bidirecional de credito (desenvolvimento vpn.4)
+
+`DuplexWindowProbe.java` e `compare_duplex_window.py` exercitam uma dependencia
+controlada no servidor local: ele envia 3 MiB antes de consumir o upload de
+128 KiB, cuja janela remota e de 32 KiB. Depois de enviar os 3 MiB, espera a
+reposicao da janela de recepcao do cliente (4 MiB) antes de consumir o upload.
+O cliente drena o download concorrentemente. O teste deve renovar a janela
+mesmo com o escritor esperando credito remoto. O digest SHA-256 do upload,
+todos os bytes do download e EOF sao verificados quando a fase termina.
+
+O script inicia `tools/loopback_ssh.py --duplex-window` em 127.0.0.1, usa senha
+aleatoria passada somente pelo ambiente e encerra a fixture ao terminar.
+Exige Python/Paramiko e JDK 25 no PATH. Nao execute durante outro benchmark.
+
+```powershell
+python tools/network/compare_duplex_window.py --baseline local-validation/vtunnel-ssh-2.28.7-vpn.3.jar --candidate target/vtunnel-ssh-2.28.7-vpn.4-SNAPSHOT.jar --output local-validation/vpn4-duplex-ab
+```
+
+Sao tres pares em ordem AB/BA, deadline de 5 s para concluir o recebimento,
+AES-256-CTR/HMAC-SHA2-512 e metricas de fluxo desligadas. O tempo medido inclui
+a preparacao da espera de credito apos abrir o canal. Um timeout e um resultado
+censurado, nao um tempo de conclusao. Nao calcule uma melhora percentual de
+latencia a partir dele. Nao ha netem, TUN ou radio celular nesse ensaio.
+O campo out_window_size do Paramiko serve exclusivamente como instrumento da
+fixture; nao introduz dependencia Paramiko no app ou na biblioteca Java.
+
+`--cipher aes128-gcm@openssh.com` exercita AEAD. `--metrics` ativa os contadores
+nos dois lados e `--read-delay-ms 2` pausa a leitura a cada bloco de 16 KiB para
+forcar contrapressao. Erros de transferencia ficam no JSONL/resumo e fazem o
+script terminar com falha depois de preservar os resultados; nao sao descartados.
+Os limites de conclusao, timeout e erro no grafico devem considerar todas as fases.
+
+Para a integracao JUnit, inicie a fixture com `--duplex-window`, carregue port e
+password nas variaveis de ambiente do teste e defina
+`VTUNNEL_SSH_TEST_DUPLEX=true`. Execute `verify` com `-DskipITs=false` e
+`'-Dit.test=TunnelLoopbackIT'`. Sem essa variavel, somente o caso novo e ignorado;
+os cinco casos anteriores continuam disponiveis. O controle normal da fixture
+continua restrito a echo.vtunnel.test; duplex.vtunnel.test so e aceito com a flag.

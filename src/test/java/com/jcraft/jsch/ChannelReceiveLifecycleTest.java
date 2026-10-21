@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,10 +19,88 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @Timeout(15)
 class ChannelReceiveLifecycleTest {
+  @ParameterizedTest
+  @CsvSource({"false,0", "false,1", "false,16384", "false,32767", "true,0", "true,1", "true,16384",
+      "true,32767"})
+  void growingWrappedFullPipePreservesUnreadPrefix(boolean extended, int consumed)
+      throws Exception {
+    ChannelDirectTCPIP channel = channel(1024 * 1024);
+    channel.connected = true;
+    byte[] expected = new byte[49152 + consumed];
+    new Random(804).nextBytes(expected);
+    try (InputStream input = extended ? channel.getExtInputStream() : channel.getInputStream()) {
+      write(channel, extended, expected, 0, 32768);
+      byte[] prefix = new byte[consumed];
+      assertEquals(prefix.length, input.read(prefix));
+      assertArrayEquals(Arrays.copyOfRange(expected, 0, prefix.length), prefix);
+      write(channel, extended, expected, 32768, consumed);
+      assertEquals(32768, input.available(), "The original ring must be full after wrapping");
+      write(channel, extended, expected, 32768 + consumed, 16384);
+      assertEquals(49152, input.available(),
+          "Growing a full ring must preserve its wrapped prefix");
+      channel.eof_remote();
+      channel.disconnect();
+      byte[] remaining = new byte[49152];
+      int offset = 0;
+      while (offset < remaining.length) {
+        int count = input.read(remaining, offset, remaining.length - offset);
+        assertTrue(count > 0, "Resize truncated unread data");
+        offset += count;
+      }
+      assertArrayEquals(Arrays.copyOfRange(expected, consumed, expected.length), remaining);
+      assertEquals(-1, input.read());
+    } finally {
+      channel.disconnect();
+    }
+  }
+
+  private static void write(Channel channel, boolean extended, byte[] bytes, int offset, int length)
+      throws IOException {
+    if (extended)
+      channel.write_ext(bytes, offset, length);
+    else
+      channel.write(bytes, offset, length);
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {32768, 1048576})
+  void remoteEofAndClosePreserveQueuedDataForSlowConsumer(int capacity) throws Exception {
+    ChannelDirectTCPIP channel = channel(capacity);
+    channel.connected = true;
+    byte[] expected = new byte[3 * 1024 * 1024];
+    new Random(804).nextBytes(expected);
+    ExecutorService worker = Executors.newSingleThreadExecutor();
+    try (InputStream input = channel.getInputStream()) {
+      Future<?> produced = worker.submit(() -> {
+        for (int offset = 0; offset < expected.length; offset += 16384)
+          channel.write(expected, offset, 16384);
+        channel.eof_remote();
+        channel.disconnect();
+        return null;
+      });
+      byte[] actual = new byte[expected.length];
+      int offset = 0;
+      while (offset < actual.length) {
+        int count = input.read(actual, offset, Math.min(16384, actual.length - offset));
+        assertTrue(count > 0, "Remote close truncated the pipe at " + offset);
+        offset += count;
+        Thread.sleep(2);
+      }
+      produced.get(2, TimeUnit.SECONDS);
+      assertArrayEquals(expected, actual);
+      assertEquals(-1, input.read());
+    } finally {
+      worker.shutdownNow();
+      assertTrue(worker.awaitTermination(2, TimeUnit.SECONDS));
+      channel.disconnect();
+    }
+  }
+
   @ParameterizedTest
   @ValueSource(ints = {32768, 1048576})
   void variableBurstsAndSlowConsumerPreserveBytesAndEof(int capacity) throws Exception {

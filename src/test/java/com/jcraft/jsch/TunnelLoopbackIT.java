@@ -5,8 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.DataInputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +19,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -23,6 +29,90 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 @EnabledIfEnvironmentVariable(named = "VTUNNEL_SSH_TEST_PORT", matches = "[0-9]+")
 @Timeout(30)
 class TunnelLoopbackIT {
+  @Test
+  @EnabledIfEnvironmentVariable(named = "VTUNNEL_SSH_TEST_DUPLEX", matches = "true")
+  void duplexDownloadReplenishesReceiveWindowWhileUploadWaitsForPeerCredit() throws Exception {
+    Session session = connect(false);
+    SessionFlowMetrics metrics = new SessionFlowMetrics();
+    session.setFlowMetrics(metrics);
+    ExecutorService workers = Executors.newFixedThreadPool(2);
+    ChannelDirectTCPIP channel = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+    channel.setHost("duplex.vtunnel.test");
+    channel.setPort(7);
+    channel.setLocalWindowSizeMax(4 * 1024 * 1024);
+    channel.setLocalWindowSize(4 * 1024 * 1024);
+    byte[] upload = new byte[128 * 1024];
+    new Random(804).nextBytes(upload);
+    InputStream input = channel.getInputStream();
+    OutputStream output = channel.getOutputStream();
+    AtomicLong delivered = new AtomicLong();
+    AtomicReference<IOException> deliveryFailure = new AtomicReference<>();
+    channel.setOutputStream(new FilterOutputStream(channel.io.out) {
+      @Override
+      public void write(byte[] bytes, int offset, int length) throws IOException {
+        try {
+          out.write(bytes, offset, length);
+          delivered.addAndGet(length);
+        } catch (IOException error) {
+          deliveryFailure.set(error);
+          throw error;
+        }
+      }
+    });
+    try {
+      channel.connect(5000);
+      Future<?> sending = workers.submit(() -> {
+        output.write(upload);
+        output.flush();
+        return null;
+      });
+      long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
+      while (metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT)
+          .getCount() == 0
+          && metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT)
+              .getInFlight() == 0
+          && System.nanoTime() < deadline)
+        Thread.sleep(1);
+      assertTrue(
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT).getCount() > 0
+              || metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT)
+                  .getInFlight() > 0,
+          "The upload must encounter the peer's exhausted window");
+      Future<?> receiving = workers.submit(() -> {
+        DataInputStream data = new DataInputStream(input);
+        byte[] block = new byte[16384];
+        for (int n = 0; n < 192; n++) {
+          try {
+            data.readFully(block);
+          } catch (java.io.EOFException truncated) {
+            AssertionError failure = new AssertionError("Download truncated after " + n
+                + " complete 16 KiB blocks; delivered to pipe=" + delivered.get(), truncated);
+            if (deliveryFailure.get() != null)
+              failure.addSuppressed(deliveryFailure.get());
+            throw failure;
+          }
+          for (int i = 0; i < block.length; i++)
+            assertEquals((byte) (i * 31 + 7), block[i]);
+        }
+        byte[] digest = new byte[32];
+        data.readFully(digest);
+        assertArrayEquals(MessageDigest.getInstance("SHA-256").digest(upload), digest);
+        assertEquals(-1, input.read());
+        return null;
+      });
+      receiving.get(5, TimeUnit.SECONDS);
+      sending.get(1, TimeUnit.SECONDS);
+      assertEquals(4 * 1024 * 1024, channel.lwsize_max);
+      session.sendKeepAliveMsg();
+      echo(session, 805);
+    } finally {
+      channel.disconnect();
+      session.disconnect();
+      workers.shutdownNow();
+      assertTrue(workers.awaitTermination(2, TimeUnit.SECONDS));
+    }
+  }
+
   private Session connect(boolean publicKey) throws Exception {
     JSch jsch = new JSch();
     if (publicKey) {

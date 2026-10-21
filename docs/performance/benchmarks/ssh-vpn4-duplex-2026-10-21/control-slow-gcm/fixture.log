@@ -1,0 +1,25 @@
+Local SSH echo fixture ready
+Exception in thread Thread-4 (duplex):
+Traceback (most recent call last):
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\loopback_ssh.py", line 56, in duplex
+    channel.sendall(block)
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\channel.py", line 844, in sendall
+    sent = self.send(s)
+           ^^^^^^^^^^^^
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\channel.py", line 799, in send
+    return self._send(s, m)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\channel.py", line 1196, in _send
+    raise socket.error("Socket is closed")
+OSError: Socket is closed
+Socket exception: Foi forçado o cancelamento de uma conexão existente pelo host remoto (10054)
+Exception in thread Thread-16 (duplex):
+Traceback (most recent call last):
+Exception in thread Thread-20 (duplex):
+Traceback (most recent call last):
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner

@@ -1,0 +1,22 @@
+[
+  {
+    "label": "before",
+    "executions": 3,
+    "completed": 0,
+    "timeouts": 3,
+    "errors": 0,
+    "completed_elapsed_ms": null
+  },
+  {
+    "label": "after",
+    "executions": 3,
+    "completed": 3,
+    "timeouts": 0,
+    "errors": 0,
+    "completed_elapsed_ms": {
+      "median": 597.4096,
+      "min": 590.5961,
+      "max": 613.5925
+    }
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "label": "before",
+    "executions": 3,
+    "completed": 0,
+    "timeouts": 3,
+    "errors": 0,
+    "completed_elapsed_ms": null
+  },
+  {
+    "label": "after",
+    "executions": 3,
+    "completed": 0,
+    "timeouts": 0,
+    "errors": 3,
+    "completed_elapsed_ms": null
+  }
+]

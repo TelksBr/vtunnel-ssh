@@ -1,0 +1,22 @@
+Local SSH echo fixture ready
+Exception in thread Thread-20 (duplex):
+Traceback (most recent call last):
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\loopback_ssh.py", line 56, in duplex
+    channel.sendall(block)
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\channel.py", line 844, in sendall
+    sent = self.send(s)
+           ^^^^^^^^^^^^
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\channel.py", line 799, in send
+Exception in thread Thread-4 (duplex):
+Exception in thread Thread-16 (duplex):
+Fatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedWriter name='<stderr>'> at interpreter shutdown, possibly due to daemon threads
+Python runtime state: finalizing (tstate=0x00007ffa52a16960)
+
+Current thread 0x0000449c (most recent call first):
+  <no Python frame>
+
+Extension modules: _cffi_backend, yaml._yaml (total: 2)

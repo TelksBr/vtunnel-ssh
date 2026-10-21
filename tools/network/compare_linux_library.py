@@ -15,13 +15,16 @@ if __name__ == "__main__":
     parser.add_argument("--profile",choices=["mobile-jitter","unshaped"],default="mobile-jitter")
     parser.add_argument("--key",default="/tmp/vtunnel-ssh-network/client_key")
     parser.add_argument("--repetitions",type=int,default=3,choices=range(1,7))
+    parser.add_argument("--seed-start",type=int,default=1100)
     args=parser.parse_args()
+    if not 0 <= args.seed_start <= 2147483640:
+        parser.error("seed-start must leave room for every repetition")
     args.output.mkdir(parents=True,exist_ok=True)
     raw=args.output/"library.jsonl"
     if raw.exists(): raise SystemExit("Use a fresh output directory")
     with (args.output/"phases.log").open("w") as log:
         for repetition in range(args.repetitions):
-            seed=1100+repetition
+            seed=args.seed_start+repetition
             order=["before","after"]
             if repetition%2: order.reverse()
             for label in order:

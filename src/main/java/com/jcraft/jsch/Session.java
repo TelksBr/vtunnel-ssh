@@ -1868,6 +1868,12 @@ public class Session {
   }
 
   void write(Packet packet) throws Exception {
+    write(packet, null);
+  }
+
+  // Receive-window updates must not wait behind a data writer waiting for peer credit.
+  // The transport lock below orders the update against CLOSE without taking sendLock.
+  private void write(Packet packet, Channel windowChannel) throws Exception {
     SessionFlowMetrics metrics = flowMetrics;
     // System.err.println("in_kex="+in_kex+" "+(packet.buffer.getCommand()));
     long t = getTimeout();
@@ -1892,10 +1898,14 @@ public class Session {
           metrics.end(SessionFlowMetrics.Phase.REKEY_WAIT, waiting);
       }
     }
-    _write(packet);
+    _write(packet, windowChannel);
   }
 
   private void _write(Packet packet) throws Exception {
+    _write(packet, null);
+  }
+
+  private void _write(Packet packet, Channel windowChannel) throws Exception {
     SessionFlowMetrics metrics = flowMetrics;
     boolean initialKex = this.initialKex;
     boolean doStrictKex = this.doStrictKex;
@@ -1907,6 +1917,8 @@ public class Session {
     synchronized (lock) {
       if (metrics != null)
         metrics.end(SessionFlowMetrics.Phase.WRITE_LOCK_WAIT, waiting);
+      if (windowChannel != null && windowChannel.close)
+        return;
       long encoding = metrics != null ? metrics.begin(SessionFlowMetrics.Phase.ENCODE) : 0;
       try {
         encode(packet);
@@ -2041,10 +2053,7 @@ public class Session {
               buf.putByte((byte) SSH_MSG_CHANNEL_WINDOW_ADJUST);
               buf.putInt(channel.getRecipient());
               buf.putInt(channel.lwsize_max - channel.lwsize);
-              synchronized (channel.sendLock) {
-                if (!channel.close)
-                  write(packet);
-              }
+              write(packet, channel);
               channel.setLocalWindowSize(channel.lwsize_max);
             }
             break;
@@ -2074,10 +2083,7 @@ public class Session {
               buf.putByte((byte) SSH_MSG_CHANNEL_WINDOW_ADJUST);
               buf.putInt(channel.getRecipient());
               buf.putInt(channel.lwsize_max - channel.lwsize);
-              synchronized (channel.sendLock) {
-                if (!channel.close)
-                  write(packet);
-              }
+              write(packet, channel);
               channel.setLocalWindowSize(channel.lwsize_max);
             }
             break;

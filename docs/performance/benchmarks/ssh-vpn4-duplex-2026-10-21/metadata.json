@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-21",
+  "version": "2.28.7-vpn.4-SNAPSHOT",
+  "base_version": "2.28.7-vpn.3",
+  "base_commit": "3ea9b4965a3288ff21a2f7557b97d0a516635d75",
+  "stable_release_published": false,
+  "app_default_dependency": "2.28.7-vpn.3",
+  "phase_counts": {
+    "control-fast-ctr": 6,
+    "control-fast-gcm": 6,
+    "control-slow-gcm": 6,
+    "final-slow-gcm": 6,
+    "final-slow-ctr": 6,
+    "mobile-first": 6,
+    "mobile-confirm": 6
+  },
+  "total_phases": 42,
+  "library_binaries_not_committed": {
+    "vtunnel-ssh-2.28.7-vpn.3.jar": {
+      "sha256": "a5ada67524097dabf2d9e806254d3374115cd5ee9f967b42321be0fb682a1fcb",
+      "bytes": 515680
+    },
+    "vpn4-candidate-control-only.jar": {
+      "sha256": "09965a391806a00aa167d5b96c572b0d11c612776bab5648e2b27d80ad33d85b",
+      "bytes": 515766
+    },
+    "vpn4-candidate-final.jar": {
+      "sha256": "d5ed0073926899476448654bfc987f59bb90c5b7c37c241cd6c8af147fd08566",
+      "bytes": 515787
+    }
+  },
+  "sources_sha256": {
+    "pom.xml": "a47c5753b287593a2a9cbd153494bc1e54ef8a3c2d68ac90422e83a51252e6ec",
+    "src/main/java/com/jcraft/jsch/Channel.java": "d533a8116043d552d369453b45be174d47d65937a615b49a87d0a28093be3b50",
+    "src/main/java/com/jcraft/jsch/Session.java": "7afdd0169ed7e90fe51bc24863b87bc54cdaca03d8cf4187eb691b22c13f16f7",
+    "src/test/java/com/jcraft/jsch/ChannelReceiveLifecycleTest.java": "1e10db744cbc3c26122ace79284619be87d7a776111c8481a48fbfdef1cd3e53",
+    "src/test/java/com/jcraft/jsch/ChannelWindowAdjustIsolationTest.java": "a07a1e81666c7b00bb5bb36b49c2c067b5d492476ca9195c949cdf51042ede71",
+    "src/test/java/com/jcraft/jsch/TunnelLoopbackIT.java": "e004ebbb50ab45a63dab27e4b5ddf1012e546f0b21d534996dcdf2e9e18602c5",
+    "tools/loopback_ssh.py": "e4d4a2c3b6bd204b610c7199d21562584a851e2d19af594c6e73cdf357ce9735",
+    "tools/network/DuplexWindowProbe.java": "e034706e6d5027e4ff56ac813c6e646e8564e2f1cb157b6a87123c9f38eb3fd7",
+    "tools/network/compare_duplex_window.py": "5ccaf684afdd318f27b7079543417100f76a6d1131d374380f00d5ac21297af9",
+    "tools/network/plot_duplex_window.py": "6ad9e22f7fe8d9fa2ee1c7dde938a7084bb6c8f3c489aa7006dd939f9f969f66",
+    "tools/network/compare_linux_library.py": "a9bab0718ec548f74c86eff3a11ad5ffc3a05d0e265d90f37c1a2fcec522b277",
+    "tools/network/TunnelNetworkProbe.java": "b03331830a5e337a703416cf92c423e4226f053e830a0354778d382e7d4b24fd",
+    "tools/network/lab.py": "1899082e03c5e370a5cb24972d63dccafeaaafc53f859a7a1741bf7694d6bd49"
+  },
+  "validation": {
+    "unit": {
+      "tests": 528,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "integration": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "python": 29
+  },
+  "window_bytes": 4194304,
+  "pipe_limit_bytes": 1048576,
+  "scope": "Loopback SSH/JVM and direct Linux private netem profile; no TUN, Android network or mobile radio measurements",
+  "mobile_probe_sha256": "7faa2a5cdb23dd09692df83125710cf312cfba0d385d1ea48a33834e079bdd09",
+  "mobile_java_version": "openjdk version \"21.0.12.1\" 2026-08-18\nOpenJDK Runtime Environment (build 21.0.12.1+1-1-deb13u1-Debian)\nOpenJDK 64-Bit Server VM (build 21.0.12.1+1-1-deb13u1-Debian, mixed mode, sharing)\n",
+  "mobile_combined_summary_sources": [
+    "mobile-first/library.jsonl",
+    "mobile-confirm/library.jsonl"
+  ],
+  "mobile_limitations": "Six paired executions per version, seeds do not guarantee identical dropped segments; CPU not measured",
+  "temporary_fixture_credentials_removed": true,
+  "historical_probe_variants": "Per-series binary/source hashes retained; final source matches final A/Bs",
+  "app": {
+    "unit_tests": {
+      "tests": 373,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 4
+    },
+    "candidate_jar_sha256": "d5ed0073926899476448654bfc987f59bb90c5b7c37c241cd6c8af147fd08566",
+    "apk_sha256": "d094d0da89378f565d62425d7bf2023eabe3a7e3bfac06c54d9b73cb2820b275",
+    "dex_verified": "Session.write(Packet,Channel)",
+    "build_override": "vtunnelSshJar",
+    "installed": false,
+    "app_default_dependency": "2.28.7-vpn.3",
+    "source_context": "Existing local development changes included"
+  }
+}

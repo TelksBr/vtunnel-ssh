@@ -1,0 +1,40 @@
+{
+  "phases": [
+    {
+      "repetition": 0,
+      "label": "before"
+    },
+    {
+      "repetition": 0,
+      "label": "after"
+    },
+    {
+      "repetition": 1,
+      "label": "after"
+    },
+    {
+      "repetition": 1,
+      "label": "before"
+    },
+    {
+      "repetition": 2,
+      "label": "before"
+    },
+    {
+      "repetition": 2,
+      "label": "after"
+    }
+  ],
+  "java_version": "openjdk version \"25.0.4.1\" 2026-08-18 LTS\r\nOpenJDK Runtime Environment Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS)\r\nOpenJDK 64-Bit Server VM Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS, mixed mode, sharing)\r\n",
+  "binaries_sha256": {
+    "before": "a5ada67524097dabf2d9e806254d3374115cd5ee9f967b42321be0fb682a1fcb",
+    "after": "09965a391806a00aa167d5b96c572b0d11c612776bab5648e2b27d80ad33d85b"
+  },
+  "probe_sha256": "289b506804a3b11c1b945bfcb574c99b344d2a3366a731bc2271694b5d442005",
+  "probe_source_sha256": "870146fbf5492c1a7c041d5a6c1f7e5a602f13c0d8b5e646f92c3a32d8dd4ad0",
+  "fixture_source_sha256": "e4d4a2c3b6bd204b610c7199d21562584a851e2d19af594c6e73cdf357ce9735",
+  "cipher": "aes256-ctr",
+  "mac": "hmac-sha2-512",
+  "flow_metrics_enabled": false,
+  "scope": "Loopback JVM, synthetic receive-credit dependency, 4 MiB window/1 MiB pipe; not VPN/mobile/Speedtest"
+}

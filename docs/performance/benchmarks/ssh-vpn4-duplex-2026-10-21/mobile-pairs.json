@@ -1,0 +1,38 @@
+[
+  {
+    "seed": 1100,
+    "before_mbps": 2.747826,
+    "after_mbps": 2.416513,
+    "percent": -12.057277280293576
+  },
+  {
+    "seed": 1101,
+    "before_mbps": 2.758291,
+    "after_mbps": 2.754974,
+    "percent": -0.12025562205003615
+  },
+  {
+    "seed": 1102,
+    "before_mbps": 2.667099,
+    "after_mbps": 2.62989,
+    "percent": -1.3951113175776353
+  },
+  {
+    "seed": 1140,
+    "before_mbps": 2.728748,
+    "after_mbps": 2.775896,
+    "percent": 1.7278253616676897
+  },
+  {
+    "seed": 1141,
+    "before_mbps": 2.753462,
+    "after_mbps": 2.728972,
+    "percent": -0.8894257483851087
+  },
+  {
+    "seed": 1142,
+    "before_mbps": 2.749313,
+    "after_mbps": 2.707246,
+    "percent": -1.5300913355445478
+  }
+]

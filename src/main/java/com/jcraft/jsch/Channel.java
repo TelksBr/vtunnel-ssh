@@ -407,7 +407,11 @@ public abstract class Channel {
             out = tmp.length - (buffer.length - out);
           }
         } else if (in == out) {
-          System.arraycopy(buffer, 0, tmp, 0, buffer.length);
+          // A full ring can start anywhere. Linearize both segments before growing;
+          // keeping out unchanged would discard the unread prefix before out.
+          System.arraycopy(buffer, out, tmp, 0, buffer.length - out);
+          System.arraycopy(buffer, 0, tmp, buffer.length - out, out);
+          out = 0;
           in = buffer.length;
         }
         buffer = tmp;
