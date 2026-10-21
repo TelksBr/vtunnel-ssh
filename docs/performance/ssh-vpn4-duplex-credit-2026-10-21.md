@@ -1,5 +1,10 @@
 # VPN.4: credito bidirecional e integridade com consumidor lento
 
+Publicacao: o codigo validado nesta rodada foi promovido a release
+[`2.28.7-vpn.4`](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.4).
+O relato e os metadados abaixo preservam o estado da coleta anterior a promocao,
+incluindo a identificacao SNAPSHOT e a dependencia do app naquela etapa.
+
 Desenvolvimento sobre a release **2.28.7-vpn.3**, commit 3ea9b49, na branch
 `codex/ssh-vpn4-control-credit`. Esta rodada implementa duas correcoes internas,
 sem alterar a janela de **4 MiB**, o limite do pipe de **1 MiB**, os algoritmos

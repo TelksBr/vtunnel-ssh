@@ -10,8 +10,8 @@ Fork de [mwiede/jsch](https://github.com/mwiede/jsch) para desenvolver uma varia
 - Senha, chave publica, keyboard-interactive, verificacao de host keys, certificados, proxies, compressao e algoritmos criptograficos foram preservados. A janela de 4 MiB configurada pelo app permanece inalterada.
 - Primeira release: [`2.28.7-vpn.1`](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.1). O JAR de build local caiu de 609.520 para 509.527 bytes (16,4% menor).
 - Esta variante nao e substituta da API JSch completa: aplicativos que usam recursos removidos precisam continuar na biblioteca upstream.
-- Release atual: [`2.28.7-vpn.3`](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.3).
-- Desenvolvimento: `2.28.7-vpn.4-SNAPSHOT`, na branch `codex/ssh-vpn4-control-credit`, corrige o ciclo de credito bidirecional e a perda de bytes ao crescer um pipe cheio com indices deslocados. [Testes e resultados](docs/performance/ssh-vpn4-duplex-credit-2026-10-21.md). A dependencia publicada acima continua vpn.3.
+- Release atual: [`2.28.7-vpn.4`](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.4).
+- A vpn.4 corrige o ciclo de credito bidirecional e a perda de bytes ao crescer um pipe cheio com indices deslocados, preservando a janela de 4 MiB e o limite do pipe. [Testes e resultados](docs/performance/ssh-vpn4-duplex-credit-2026-10-21.md): 528 unitarios e seis integracoes SSH aprovados, com dados brutos e limites das medidas.
 - A biblioteca notifica o produtor depois de consumir bytes no pipe do canal, eliminando a espera pelo polling de aproximadamente 1 s quando o pipe estava cheio. O adaptador do app ja contorna esse caso; a correcao agora existe tambem na biblioteca, sem depender dele.
 - O envio usa imediatamente o credito remoto parcial, sem a espera de polling de 100 ms, e o cancelamento das esperas de credito/rekey preserva a interrupcao. Essas correcoes nao representam ganho geral comprovado de jitter ou vazao.
 - O monitor de envio do canal e separado do credito remoto: um upload bloqueado no socket nao impede o leitor de processar WINDOW_ADJUST desse canal. O controle direto com rede movel simulada passou de 3/3 para 0/3 timeouts, mantendo a janela de 4 MiB. Veja [resultados, graficos e limites](docs/performance/ssh-send-isolation-2026-10-21.md); o download Wi-Fi segue inconclusivo e a rodada nao equivale a Speedtest da VPN completa.
@@ -51,10 +51,10 @@ dependencyResolutionManagement {
 E a dependencia no modulo Android:
 
 ```kotlin
-implementation("com.github.TelksBr:vtunnel-ssh:2.28.7-vpn.3")
+implementation("com.github.TelksBr:vtunnel-ssh:2.28.7-vpn.4")
 ```
 
-O artefato e compilado a partir da tag de release. Consulte tambem as notas e os arquivos da [release no GitHub](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.3).
+O artefato e compilado a partir da tag de release. Consulte tambem as notas e os arquivos da [release no GitHub](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.4).
 
 O projeto preserva o Maven Wrapper e o build upstream. O `pom.xml` desta base exige uma toolchain JDK 25 ou superior. Com ela instalada:
 
