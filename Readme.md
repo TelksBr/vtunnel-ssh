@@ -10,9 +10,10 @@ Fork de [mwiede/jsch](https://github.com/mwiede/jsch) para desenvolver uma varia
 - Senha, chave publica, keyboard-interactive, verificacao de host keys, certificados, proxies, compressao e algoritmos criptograficos foram preservados. A janela de 4 MiB configurada pelo app permanece inalterada.
 - Primeira release: [`2.28.7-vpn.1`](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.1). O JAR de build local caiu de 609.520 para 509.527 bytes (16,4% menor).
 - Esta variante nao e substituta da API JSch completa: aplicativos que usam recursos removidos precisam continuar na biblioteca upstream.
-- Release atual: [`2.28.7-vpn.2`](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.2), usada pela dependencia Gradle do VTunnel.
+- Release atual: [`2.28.7-vpn.3`](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.3).
 - A biblioteca notifica o produtor depois de consumir bytes no pipe do canal, eliminando a espera pelo polling de aproximadamente 1 s quando o pipe estava cheio. O adaptador do app ja contorna esse caso; a correcao agora existe tambem na biblioteca, sem depender dele.
 - O envio usa imediatamente o credito remoto parcial, sem a espera de polling de 100 ms, e o cancelamento das esperas de credito/rekey preserva a interrupcao. Essas correcoes nao representam ganho geral comprovado de jitter ou vazao.
+- O monitor de envio do canal e separado do credito remoto: um upload bloqueado no socket nao impede o leitor de processar WINDOW_ADJUST desse canal. O controle direto com rede movel simulada passou de 3/3 para 0/3 timeouts, mantendo a janela de 4 MiB. Veja [resultados, graficos e limites](docs/performance/ssh-send-isolation-2026-10-21.md); o download Wi-Fi segue inconclusivo e a rodada nao equivale a Speedtest da VPN completa.
 - Historico, creditos e licencas upstream foram preservados. Consulte [a documentacao original](README.upstream.md).
 
 ## Escopo de desenvolvimento
@@ -49,10 +50,10 @@ dependencyResolutionManagement {
 E a dependencia no modulo Android:
 
 ```kotlin
-implementation("com.github.TelksBr:vtunnel-ssh:2.28.7-vpn.2")
+implementation("com.github.TelksBr:vtunnel-ssh:2.28.7-vpn.3")
 ```
 
-O artefato e compilado a partir da tag de release. Consulte tambem as notas e os arquivos da [release no GitHub](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.2).
+O artefato e compilado a partir da tag de release. Consulte tambem as notas e os arquivos da [release no GitHub](https://github.com/TelksBr/vtunnel-ssh/releases/tag/2.28.7-vpn.3).
 
 O projeto preserva o Maven Wrapper e o build upstream. O `pom.xml` desta base exige uma toolchain JDK 25 ou superior. Com ela instalada:
 
@@ -74,6 +75,11 @@ passaram com `--small-window` (janela remota de 32 KiB e consumo irregular). Vej
 da espera interna nao implica reducao geral de jitter ou aumento geral de vazao.
 
 A matriz Docker de algoritmos/autenticacao foi migrada de SFTP/SCP para eco TCP atraves de `direct-tcpip`, com verificacao de tamanho e SHA-256 dos mesmos dados. Ela exige Docker e BusyBox `nc` com suporte a `-e` dentro das imagens de teste.
+
+A release vpn.3 acrescenta o isolamento de envio/credito e diagnosticos opcionais
+de fluxo, desligados por padrao. Sua validacao inclui 514 testes unitarios e cinco
+integracoes SSH locais, incluindo keep-alive e rekey entre transferencias parciais
+de quatro canais. Evidencias e hashes das comparacoes estao no relatorio acima.
 
 Para uma validacao real local sem Docker, instale a dependencia de teste com `python -m pip install -r tools/requirements-test.txt` e inicie `python tools/loopback_ssh.py --ready-file local-validation/loopback.json --stop-file local-validation/stop-loopback`. O fixture escuta somente em 127.0.0.1, usa host key em memoria e senha temporaria aleatoria.
 
