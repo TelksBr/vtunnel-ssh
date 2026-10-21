@@ -2041,7 +2041,7 @@ public class Session {
               buf.putByte((byte) SSH_MSG_CHANNEL_WINDOW_ADJUST);
               buf.putInt(channel.getRecipient());
               buf.putInt(channel.lwsize_max - channel.lwsize);
-              synchronized (channel) {
+              synchronized (channel.sendLock) {
                 if (!channel.close)
                   write(packet);
               }
@@ -2074,7 +2074,7 @@ public class Session {
               buf.putByte((byte) SSH_MSG_CHANNEL_WINDOW_ADJUST);
               buf.putInt(channel.getRecipient());
               buf.putInt(channel.lwsize_max - channel.lwsize);
-              synchronized (channel) {
+              synchronized (channel.sendLock) {
                 if (!channel.close)
                   write(packet);
               }

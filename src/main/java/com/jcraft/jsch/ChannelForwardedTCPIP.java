@@ -102,7 +102,7 @@ public class ChannelForwardedTCPIP extends Channel {
         buf.putInt(recipient);
         buf.putInt(i);
         buf.skip(i);
-        synchronized (this) {
+        synchronized (sendLock) {
           if (close)
             break;
           _session.write(packet, this, i);

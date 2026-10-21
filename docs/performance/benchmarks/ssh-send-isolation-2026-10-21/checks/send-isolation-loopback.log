@@ -1,0 +1,28 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.github.TelksBr:vtunnel-ssh >-------------------
+[INFO] Building VTunnel SSH 2.28.7-vpn.3-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- failsafe:3.5.6:integration-test (default-cli) @ vtunnel-ssh ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.jcraft.jsch.TunnelLoopbackIT
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.568 s -- in com.jcraft.jsch.TunnelLoopbackIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:3.5.6:verify (default-cli) @ vtunnel-ssh ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.171 s
+[INFO] Finished at: 2026-10-21T09:17:24-03:00
+[INFO] ------------------------------------------------------------------------

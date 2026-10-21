@@ -1,0 +1,29 @@
+FFF
+======================================================================
+FAIL: test_missing_kernel_values_stay_unknown (test_stream_relay.RelayStreamTest.test_missing_kernel_values_stay_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_relay.py", line 61, in test_missing_kernel_values_stay_unknown
+    self.assertIsNone(state["acked_lower"])
+AssertionError: 0 is not None
+
+======================================================================
+FAIL: test_partial_sends_preserve_bytes_and_count_only_completed_acceptance (test_stream_relay.RelayStreamTest.test_partial_sends_preserve_bytes_and_count_only_completed_acceptance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_relay.py", line 24, in test_partial_sends_preserve_bytes_and_count_only_completed_acceptance
+    self.assertEqual(b"abcdefghijkl", destination.received)
+AssertionError: b'abcdefghijkl' != bytearray(b'')
+
+======================================================================
+FAIL: test_snapshot_does_not_wait_for_blocked_send_or_claim_zero_acceptance (test_stream_relay.RelayStreamTest.test_snapshot_does_not_wait_for_blocked_send_or_claim_zero_acceptance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_relay.py", line 44, in test_snapshot_does_not_wait_for_blocked_send_or_claim_zero_acceptance
+    self.assertTrue(entered.wait(1))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.005s
+
+FAILED (failures=3)

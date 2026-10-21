@@ -3,6 +3,7 @@
 import json, mmap, os, pathlib, signal, socket, struct, subprocess, sys, threading, time
 from echo_observer import EchoJournal, serve_echo, snapshot as echo_snapshot
 from relay_buffers import configure_send_buffer
+from stream_relay import RelayStream, RelayRegistry, serve_snapshots, query_snapshot
 
 BASE = pathlib.Path('/tmp/vtunnel-ssh-network')
 NS = 'vtsshbench'
@@ -90,6 +91,7 @@ LogLevel ERROR
     spawn(['ip','netns','exec',NS,'/usr/sbin/sshd','-D','-e','-f',str(config)], 'sshd-process')
     spawn(['ip','netns','exec',NS,sys.executable,__file__,'services'], 'services')
     (BASE / 'relay-send-buffer').write_text('0')
+    (BASE / 'relay-track-stream').write_text('0')
     spawn([sys.executable,__file__,'relay'], 'relay')
     shape('deep')
     time.sleep(.5)
@@ -108,6 +110,8 @@ def copy(source, destination):
         except OSError: pass
 
 def relay():
+    registry = RelayRegistry()
+    threading.Thread(target=serve_snapshots, args=(BASE / "relay-metrics.sock", registry), daemon=True).start()
     with socket.create_server(('127.0.0.1',19080)) as listener:
         while True:
             client,_ = listener.accept()
@@ -120,7 +124,11 @@ def relay():
                     temporary = BASE / "relay-socket.tmp"
                     temporary.write_text(json.dumps(details))
                     temporary.replace(BASE / "relay-socket.json")
-                    other=threading.Thread(target=copy,args=(client,server),daemon=True);other.start()
+                    tracked = (BASE / "relay-track-stream").read_text().strip() == "1"
+                    stream = RelayStream(server) if tracked else None
+                    registry.attach(stream)
+                    sender = stream.copy if tracked else lambda source: copy(source, server)
+                    other=threading.Thread(target=sender,args=(client,),daemon=True);other.start()
                     copy(server,client);other.join(timeout=2)
             threading.Thread(target=connection,args=(client,),daemon=True).start()
 
@@ -182,7 +190,10 @@ def direct_relay():
     for index in [1,2,3]: threading.Thread(target=listen,args=(19080+index,17100+index),daemon=True).start()
     threading.Event().wait()
 
-def reset_phase(profile, seed=None, relay_buffer=0):
+def reset_phase(profile, seed=None, relay_buffer=0, track_stream=0):
+    if track_stream not in (0, 1):
+        raise ValueError("Invalid stream observation flag")
+    (BASE / "relay-track-stream").write_text(str(track_stream))
     if not isinstance(relay_buffer, int) or not 0 <= relay_buffer <= 1048576:
         raise ValueError("Invalid private relay buffer size")
     (BASE / "relay-send-buffer").write_text(str(relay_buffer))
@@ -219,7 +230,9 @@ def control():
             with client:
                 command=client.makefile('rb').readline(128).decode().strip()
                 if command == 'ECHO':
+                    transport = query_snapshot(BASE / "relay-metrics.sock")
                     observation = echo_snapshot(BASE / "echo-0.json")
+                    observation["relay_transport"] = transport
                     try:
                         observation["relay"] = json.loads((BASE / "relay-socket.json").read_text())
                     except FileNotFoundError:
@@ -233,14 +246,16 @@ def control():
                         stats[str(offset)] = {'upload_received': uploaded, 'download_sent': downloaded}
                     client.sendall((json.dumps(stats)+'\n').encode());continue
                 parts = command.split()
-                if (len(parts) not in (2,3,4) or parts[0] != 'RESET' or
+                if (len(parts) not in (2,3,4,5) or parts[0] != 'RESET' or
                     parts[1] not in [*PROFILES, 'unshaped'] or
                     (len(parts) >= 3 and (not parts[2].isdigit() or not 0 <= int(parts[2]) < 2147483647)) or
-                    (len(parts) == 4 and (not parts[3].isdigit() or not 0 <= int(parts[3]) <= 1048576))):
+                    (len(parts) >= 4 and (not parts[3].isdigit() or not 0 <= int(parts[3]) <= 1048576)) or
+                    (len(parts) == 5 and parts[4] not in ("0", "1"))):
                     client.sendall(b'ERROR\n');continue
                 try:
                     reset_phase(parts[1], int(parts[2]) if len(parts) >= 3 else None,
-                                int(parts[3]) if len(parts) == 4 else 0);client.sendall(b'OK\n')
+                                int(parts[3]) if len(parts) >= 4 else 0,
+                                int(parts[4]) if len(parts) == 5 else 0);client.sendall(b'OK\n')
                 except Exception as error:
                     client.sendall(('ERROR '+type(error).__name__+'\n').encode())
 

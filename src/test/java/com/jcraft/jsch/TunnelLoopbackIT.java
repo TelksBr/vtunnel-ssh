@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -42,6 +43,11 @@ class TunnelLoopbackIT {
   }
 
   private void echo(Session session, int seed) throws Exception {
+    echo(session, seed, null, null);
+  }
+
+  private void echo(Session session, int seed, CountDownLatch partial, CountDownLatch resume)
+      throws Exception {
     ChannelDirectTCPIP channel = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
     channel.setHost("echo.vtunnel.test");
     channel.setPort(7);
@@ -52,7 +58,15 @@ class TunnelLoopbackIT {
     try (InputStream input = channel.getInputStream();
         OutputStream output = channel.getOutputStream()) {
       channel.connect(5000);
-      output.write(expected);
+      if (partial != null) {
+        output.write(expected, 0, 32768);
+        output.flush();
+        partial.countDown();
+        assertTrue(resume.await(5, TimeUnit.SECONDS));
+        output.write(expected, 32768, expected.length - 32768);
+      } else {
+        output.write(expected);
+      }
       output.flush();
       byte[] actual = new byte[expected.length];
       int offset = 0;
@@ -117,6 +131,38 @@ class TunnelLoopbackIT {
     } finally {
       session.disconnect();
       workers.shutdownNow();
+    }
+  }
+
+  @Test
+  void keepaliveAndRekeyPreserveFourPartiallyTransferredChannels() throws Exception {
+    Session session = connect(false);
+    ExecutorService workers = Executors.newFixedThreadPool(4);
+    CountDownLatch partial = new CountDownLatch(4);
+    CountDownLatch resume = new CountDownLatch(1);
+    try {
+      List<Future<?>> results = new ArrayList<>();
+      for (int i = 0; i < 4; i++) {
+        final int seed = 700 + i;
+        results.add(workers.submit(() -> {
+          echo(session, seed, partial, resume);
+          return null;
+        }));
+      }
+      assertTrue(partial.await(5, TimeUnit.SECONDS),
+          "Every channel must have transferred its prefix");
+      session.sendKeepAliveMsg();
+      session.rekey();
+      resume.countDown();
+      for (Future<?> result : results)
+        result.get(15, TimeUnit.SECONDS);
+      session.sendKeepAliveMsg();
+      echo(session, 710);
+    } finally {
+      resume.countDown();
+      session.disconnect();
+      workers.shutdownNow();
+      assertTrue(workers.awaitTermination(2, TimeUnit.SECONDS));
     }
   }
 

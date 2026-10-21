@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "b6dc2df33d68bb03ac7a3dcac83cfb3df6d3e267",
+  "baseline": {
+    "version": "2.28.7-vpn.2",
+    "commit": "1212caad8a018b16431d870d567986ca5def2215"
+  },
+  "candidate": {
+    "version": "2.28.7-vpn.3-SNAPSHOT",
+    "stable_release_published": false,
+    "binary": "send-candidate.jar",
+    "production_sources_unchanged_after_binary_capture": true
+  },
+  "binaries_not_committed": {
+    "baseline-vpn2.jar": {
+      "sha256": "7c9832e67bc5c1b43533fde0ac1edd76ac92a7dd6588971588720664bda5850d",
+      "bytes": 509614
+    },
+    "send-candidate.jar": {
+      "sha256": "105e1c15e91cf9d1838a94a6a1d8b93abcfbca1e2f9892ab37d7792b1592aec5",
+      "bytes": 515716
+    },
+    "stream-probe.jar": {
+      "sha256": "1d8b6166b406f478d3fdb2eea29287fb478219150c87086a3e0ad4564b5fd89c",
+      "bytes": 27208
+    },
+    "stream-probe.zip": {
+      "sha256": "6c600ff8b19c2c8737353bbc26a6987b4ce052a9fd4aa1214b72873841628342",
+      "bytes": 229408
+    },
+    "stream-linux-probe.jar": {
+      "sha256": "c3b1ab214d33d93eece2c7b7dd467854e29e4ae735df258f3cfd340ff0568b81",
+      "bytes": 27249
+    },
+    "send-probe.jar": {
+      "sha256": "7faa2a5cdb23dd09692df83125710cf312cfba0d385d1ea48a33834e079bdd09",
+      "bytes": 27716
+    },
+    "send-baseline.zip": {
+      "sha256": "846f2a02ff58b97a6f187e3652770a411aecf0cc1dfe82eb4339e29c7d34a332",
+      "bytes": 229793
+    },
+    "send-candidate.zip": {
+      "sha256": "e636c65cb67eecd9f2e42b044e756cb335bcd2a14cd84ce60098936f8ec1acb0",
+      "bytes": 232623
+    }
+  },
+  "probe_stages": {
+    "stream-network": "stream-probe.jar / stream-probe.zip; exact historical source snapshot included",
+    "stream-linux-control": "stream-linux-probe.jar; intermediate build adds controlHost override; binary hash retained",
+    "final_library_ab": "send-probe.jar; baseline and candidate use identical probe; final source in tools/network"
+  },
+  "phase_counts": {
+    "stream-network": 15,
+    "stream-linux-control": 6,
+    "send-linux-ab": 6,
+    "send-android": 6,
+    "send-android-download": 6,
+    "send-download-adb": 6
+  },
+  "network_phases_total": 45,
+  "device": {
+    "model": "SM-G781B",
+    "android": "15"
+  },
+  "window_bytes": 4194304,
+  "pipe_max_bytes": 1048576,
+  "flow_metrics_enabled": false,
+  "observer_offsets_enabled": "stream-network trace_on/mobile cases only; final library A/Bs disabled",
+  "results_limitations": [
+    "direct-tcpip only, not VPN/TUN/Speedtest",
+    "Wi-Fi download inconclusive with timeouts in both versions",
+    "three pairs per library comparison",
+    "relay receive kernel queue not measured; TCP ACK is not OpenSSH delivery"
+  ],
+  "checks": {
+    "library_unit": {
+      "tests": 514,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "final_loopback_it": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0
+    },
+    "python_linux": 29
+  },
+  "app": {
+    "unit_tests": {
+      "tests": 373,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 4
+    },
+    "application_id": "app.vtunnel",
+    "apk_sha256": "7ea9e8090152af320b90f0943224d1959b7da03b8e68b1e0ffee5d3df2865be2",
+    "library_jar_sha256": "105e1c15e91cf9d1838a94a6a1d8b93abcfbca1e2f9892ab37d7792b1592aec5",
+    "dex_verified": [
+      "com.jcraft.jsch.Channel.sendLock",
+      "SessionFlowMetrics"
+    ],
+    "version_evidence": "Local JAR override and SHA-256; not inferred from a version literal in DEX",
+    "installed": true,
+    "launched": true,
+    "full_vpn_speedtest_measured": false,
+    "default_dependency": "2.28.7-vpn.2",
+    "override": "vtunnelSshJar",
+    "app_working_tree": "Existing local development changes included; not a clean baseline app"
+  },
+  "sources_sha256": {
+    "tools/network/compare_linux_library.py": "fcd4e96b9985caa50b894ec114e82adab3ba7bd3ef6b579e43d576539f1e8122",
+    "tools/network/compare_linux_path.py": "440eb5a2faf02124c306cf4b72dbdd92f225e7c9e0c39f82cc269c15eeec46c0",
+    "tools/network/echo_observer.py": "17f7c9acd244ebeef20d30376d1e88b245951f05e99b06415e8d599eca61f170",
+    "tools/network/lab.py": "1899082e03c5e370a5cb24972d63dccafeaaafc53f859a7a1741bf7694d6bd49",
+    "tools/network/plot_flow_diagnostics.py": "2ccc52162ac51e34d14398a031d2d43528e89dc8dbe0d759137ba7a7124833e1",
+    "tools/network/plot_queue_analysis.py": "43390bf18dc02004ca1fd82b3e824b0c31e3e2f0553f2734c3f8f5395767316e",
+    "tools/network/plot_send_isolation.py": "4d01aaf912c374b33362b10dd3895126a6936422a87ffccc45346d0baee43cda",
+    "tools/network/queue_summary.py": "86624fe1f831bad61319a0fc9c883c097215f936ccc156f2547b13fa2568bd07",
+    "tools/network/relay_buffers.py": "43ad09152ca9267d2f4a78c47b5cc3dbb1f736811c5f9c1e8f1c6a4436b3bbe2",
+    "tools/network/stream_classify.py": "7baf2392b2df23ee31647f18cd12a1df4cf8c22e231a2e26443b6a72079e5b0a",
+    "tools/network/stream_relay.py": "d6363a1601dfa1c3551b9a8a3724cc4f349408ddc66b58519b083cd895c00ccb",
+    "tools/network/summarize.py": "1381a7168059abfffe8f48fde8697f5b3582dbb1e74cd19546c6701987910313",
+    "tools/network/test_counters.py": "40183f41991d9c2d7e7da6d59aad879bca3a6b647b2b66e70144b38c1c1a4723",
+    "tools/network/test_echo_observer.py": "600565456a842320150d521e26bc983659b59097f078923b656c73df521aa596",
+    "tools/network/test_lab.py": "e383c48a38ea643e712dbd203fef49733dcea2959b73a2768b36fec2656790a5",
+    "tools/network/test_queue_summary.py": "9dc0557dd143fdb0b9a1ac9e9d91346b8ba36460c9f35723b0b521d7a3b928e5",
+    "tools/network/test_relay_buffers.py": "8cafb1e38cf21f7f66fb14fd08ea235a058363bbac28304b7a691937d74c4ca5",
+    "tools/network/test_stream_classify.py": "eaf31738b3c3445deb6bfb3ce887657422e3896e65943cfe4f329fdc530eb895",
+    "tools/network/test_stream_relay.py": "466094201bc144bf0e73660176e214ad96f471a1bbee5fd2e84a6eb5fc723c3a",
+    "tools/network/test_summary.py": "edd4013427e4bd8db9165b5ca50462f0ea4d2159aaf45b94f9d3def309a7e727",
+    "tools/network/wifi_bridge.py": "525fbf5ff9a7af12fd09b00ed98ba3419c4f38eaf6308dd21d82d2c86428e8ef",
+    "tools/network/CipherStreamTrace.java": "fcc7a2fac1888918e503f1accee399e22f1df793812eac5761524b5236927257",
+    "tools/network/CipherStreamTraceTest.java": "c5cd40833e56398b74472435af37d31189132f53074d8f97eab866becb5fa381",
+    "tools/network/TunnelNetworkProbe.java": "b03331830a5e337a703416cf92c423e4226f053e830a0354778d382e7d4b24fd",
+    "tools/network/TunnelNetworkProbeTest.java": "da2d5163c96ab564fd16d24903d91c2aa13df82977046ac713573a0e2309bdd2",
+    "tools/network/WindowCreditProbe.java": "149578e54cd7c0dd1bee1163e5fb272e9da42b9f98d10e092e2cc0b9fbe5e94b",
+    "tools/network/stream-android.ps1": "df6b73038b27cdf006125e1519b6381f652794c416dae4e5a378312f70632843",
+    "tools/network/send-android.ps1": "cba8609b045006dbb8a7e65dcd469f2f6608bd5364edf12d6d417eb5415bba6e",
+    "tools/network/README.md": "7cc36df67567ea07ad3664c79adb8981bcc2593ffd53d2342088b032f960bbf4",
+    "src/main/java/com/jcraft/jsch/Channel.java": "9ab5beb6c32a0144edf31d4fda6e10eae7a5eade3ac57aa655a4aa7e92126447",
+    "src/main/java/com/jcraft/jsch/ChannelDirectTCPIP.java": "332266ba9f370362df91c7a3a75caf8dae0167f6b004b4de594e6e3a9e475205",
+    "src/main/java/com/jcraft/jsch/ChannelForwardedTCPIP.java": "a89e019445cd49569a8564f36100b3af3aa653ace50e98312977590585bc9859",
+    "src/main/java/com/jcraft/jsch/Session.java": "31f3fc285d0e6b11a1b07a54b21340eb0b4ed930ac2f578c67365962871b1f0c",
+    "src/test/java/com/jcraft/jsch/ChannelSendIsolationTest.java": "71a2bf7208c280ada5c931b580daa88029cec1e54f41172ae7eb71794e985de9",
+    "src/test/java/com/jcraft/jsch/TunnelLoopbackIT.java": "53f0b0e64cca14fd781114d978db1a0cb71f79d7e0f1b9242cc033a1aaefc3ee"
+  }
+}

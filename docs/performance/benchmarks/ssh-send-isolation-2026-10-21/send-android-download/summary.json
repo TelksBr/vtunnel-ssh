@@ -1,0 +1,180 @@
+[
+  {
+    "profile": "unshaped",
+    "label": "after",
+    "direction": "download",
+    "executions": 3,
+    "seeds": [
+      1180,
+      1181,
+      1182
+    ],
+    "timeouts_total": 3,
+    "timeout_stages": {
+      "READING": 3
+    },
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 55.129397,
+      "min": 38.011266,
+      "max": 97.958215
+    },
+    "cpu_ms_per_mib": {
+      "median": 16.65181728877233,
+      "min": 13.158403991391536,
+      "max": 19.48623503972679
+    },
+    "samples": {
+      "median": 4,
+      "min": 3,
+      "max": 14
+    },
+    "seconds": {
+      "median": 13.194383,
+      "min": 13.159996,
+      "max": 17.521026
+    },
+    "cpu_ms": {
+      "median": 1162,
+      "min": 1141,
+      "max": 3407
+    },
+    "rtt_p50_ms": {
+      "median": 174.758125,
+      "min": 121.431928,
+      "max": 189.794114
+    },
+    "rtt_p95_ms": {
+      "median": 174.758125,
+      "min": 127.714375,
+      "max": 554.093542
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 80.46947899999999,
+      "min": 23.887152000000004,
+      "max": 198.96752815384613
+    },
+    "timeout_destination_stages": {
+      "SENT_AT_DESTINATION": 3
+    },
+    "destination_receive_after_marker_ms": {
+      "median": 28.237619000000002,
+      "min": 4.955363,
+      "max": 272.324263
+    },
+    "destination_service_ms": {
+      "median": 0.24124400000000001,
+      "min": 0.174985,
+      "max": 0.519775
+    },
+    "tail_observations": [
+      {
+        "seed": 1180,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 243.113481,
+        "service_ms": 0.228543,
+        "sent_age_ms": 11821.328239,
+        "observed_after_stop_ms": 13.564843
+      },
+      {
+        "seed": 1181,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 135.028172,
+        "service_ms": 0.312673,
+        "sent_age_ms": 11921.073534,
+        "observed_after_stop_ms": 11.037188
+      },
+      {
+        "seed": 1182,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 272.324263,
+        "service_ms": 0.225281,
+        "sent_age_ms": 12154.114063,
+        "observed_after_stop_ms": 11.148959
+      }
+    ]
+  },
+  {
+    "profile": "unshaped",
+    "label": "before",
+    "direction": "download",
+    "executions": 3,
+    "seeds": [
+      1180,
+      1181,
+      1182
+    ],
+    "timeouts_total": 3,
+    "timeout_stages": {
+      "READING": 3
+    },
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 1.945856,
+      "min": 1.81571,
+      "max": 3.141043
+    },
+    "cpu_ms_per_mib": {
+      "median": 78.59063399743312,
+      "min": 49.7765112415108,
+      "max": 84.31135942320336
+    },
+    "samples": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "seconds": {
+      "median": 12.067883,
+      "min": 12.055355,
+      "max": 12.071857
+    },
+    "cpu_ms": {
+      "median": 220,
+      "min": 220,
+      "max": 225
+    },
+    "rtt_p50_ms": null,
+    "rtt_p95_ms": null,
+    "adjacent_rtt_jitter_ms": null,
+    "timeout_destination_stages": {
+      "SENT_AT_DESTINATION": 3
+    },
+    "destination_receive_after_marker_ms": {
+      "median": 202.420402,
+      "min": 196.503105,
+      "max": 251.668949
+    },
+    "destination_service_ms": {
+      "median": 0.337843,
+      "min": 0.284296,
+      "max": 0.382954
+    },
+    "tail_observations": [
+      {
+        "seed": 1180,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 202.420402,
+        "service_ms": 0.337843,
+        "sent_age_ms": 11860.768087,
+        "observed_after_stop_ms": 10.9225
+      },
+      {
+        "seed": 1181,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 251.668949,
+        "service_ms": 0.284296,
+        "sent_age_ms": 11472.336133,
+        "observed_after_stop_ms": 10.889896
+      },
+      {
+        "seed": 1182,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 196.503105,
+        "service_ms": 0.382954,
+        "sent_age_ms": 11996.496945,
+        "observed_after_stop_ms": 11.711771
+      }
+    ]
+  }
+]

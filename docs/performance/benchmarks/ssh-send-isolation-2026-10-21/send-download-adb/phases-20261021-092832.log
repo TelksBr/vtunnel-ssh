@@ -1,0 +1,6 @@
+unshaped ADB direction=download seed=1220 library=before
+unshaped ADB direction=download seed=1220 library=after
+unshaped ADB direction=download seed=1221 library=after
+unshaped ADB direction=download seed=1221 library=before
+unshaped ADB direction=download seed=1222 library=before
+unshaped ADB direction=download seed=1222 library=after

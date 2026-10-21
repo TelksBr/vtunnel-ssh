@@ -1,0 +1,15 @@
+mobile-jitter seed=1000 case=one_adb
+mobile-jitter seed=1000 case=four_adb
+mobile-jitter seed=1000 case=four_wifi
+mobile-jitter seed=1001 case=four_wifi
+mobile-jitter seed=1001 case=four_adb
+mobile-jitter seed=1001 case=one_adb
+mobile-jitter seed=1002 case=one_adb
+mobile-jitter seed=1002 case=four_adb
+mobile-jitter seed=1002 case=four_wifi
+unshaped seed=1020 case=trace_off
+unshaped seed=1020 case=trace_on
+unshaped seed=1021 case=trace_on
+unshaped seed=1021 case=trace_off
+unshaped seed=1022 case=trace_off
+unshaped seed=1022 case=trace_on

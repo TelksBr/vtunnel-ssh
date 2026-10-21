@@ -1,0 +1,3 @@
+Exception in thread "main" java.lang.AssertionError: Wrong packet range: {}
+	at com.jcraft.jsch.CipherStreamTraceTest.exactRangeAndThreadOwnership(CipherStreamTraceTest.java:33)
+	at com.jcraft.jsch.CipherStreamTraceTest.main(CipherStreamTraceTest.java:9)

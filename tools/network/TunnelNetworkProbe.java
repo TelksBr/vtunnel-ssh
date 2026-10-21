@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 public final class TunnelNetworkProbe {
   private static final int WINDOW = 4 * 1024 * 1024;
   private static final int BUFFER = 1024 * 1024;
+  private static final boolean TRACK_OFFSETS = Boolean.getBoolean("vtunnel.probe.offsets");
   private static final int CONTROL_PORT = Integer.parseInt(System.getProperty("vtunnel.probe.controlPort", "19084"));
 
   public static void main(String[] args) throws Exception {
@@ -122,7 +123,7 @@ public final class TunnelNetworkProbe {
     @Override public void close() { channel.disconnect(); }
   }
 
-  private static Session connect(String host, int port, String key) throws Exception {
+  private static Session connect(String host, int port, String key, CipherStreamTrace trace) throws Exception {
     JSch jsch = new JSch();
     jsch.addIdentity(key);
     Session session = jsch.getSession("root", host, port);
@@ -144,7 +145,7 @@ public final class TunnelNetworkProbe {
         return socket.getInputStream();
       }
       @Override public OutputStream getOutputStream(Socket socket) throws IOException {
-        return socket.getOutputStream();
+        return trace == null ? socket.getOutputStream() : trace.wrap(socket.getOutputStream());
       }
     });
     session.setDaemonThread(true);
@@ -154,7 +155,7 @@ public final class TunnelNetworkProbe {
 
   private static String control(String host, String command) throws IOException {
     try (Socket socket = new Socket()) {
-      socket.connect(new InetSocketAddress(host, CONTROL_PORT), 3000);
+      socket.connect(new InetSocketAddress(System.getProperty("vtunnel.probe.controlHost", host), CONTROL_PORT), 3000);
       socket.setSoTimeout(10000);
       socket.getOutputStream().write((command + "\n").getBytes(StandardCharsets.US_ASCII));
       String reply = new BufferedReader(new InputStreamReader(socket.getInputStream(),
@@ -233,6 +234,12 @@ public final class TunnelNetworkProbe {
     long writing, flushing, reading, complete;
     String stage = "QUEUED";
     Thread worker;
+    volatile CipherStreamTrace.PacketRange packetRange;
+
+    String rangeJson() {
+      CipherStreamTrace.PacketRange range = packetRange;
+      return range == null ? "null" : range.snapshot().json();
+    }
 
     synchronized void advance(String next) {
       long now = System.nanoTime();
@@ -270,7 +277,7 @@ public final class TunnelNetworkProbe {
         }
       }
       return fields + ",\"worker_state\":\"" + state
-          + "\",\"timeout_stack\":" + stack.append(']') + "}";
+          + "\",\"timeout_stack\":" + stack.append(']') + ",\"cipher_range\":" + rangeJson() + "}";
     }
   }
 
@@ -305,6 +312,54 @@ public final class TunnelNetworkProbe {
     }
   }
 
+  private static String streamSample(CipherStreamTrace trace, EchoProgress progress,
+      long sequence, String kind, String host) throws IOException {
+    String local = trace.snapshot().json();
+    String range = progress.rangeJson();
+    String remote = control(host, "ECHO");
+    return "{\"sequence\":" + sequence + ",\"kind\":\"" + kind
+        + "\",\"local\":" + local + ",\"range\":" + range + ",\"remote\":" + remote + "}";
+  }
+
+  private static double awaitEcho(Future<Double> ping, CipherStreamTrace trace,
+      EchoProgress progress, long sequence, String host, List<String> samples) throws Exception {
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(12);
+    while (true) {
+      long remaining = deadline - System.nanoTime();
+      if (remaining <= 0) throw new TimeoutException("Echo deadline");
+      try {
+        return ping.get(trace == null ? remaining : Math.min(remaining, TimeUnit.SECONDS.toNanos(3)),
+            TimeUnit.NANOSECONDS);
+      } catch (TimeoutException waiting) {
+        if (trace != null && System.nanoTime() < deadline)
+          samples.add(streamSample(trace, progress, sequence, "waiting", host));
+        if (System.nanoTime() >= deadline) throw waiting;
+      }
+    }
+  }
+
+  private static String sshThreadStates() {
+    StringBuilder json = new StringBuilder("[");
+    boolean first = true;
+    for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+      boolean ssh = false;
+      for (StackTraceElement frame : entry.getValue())
+        if (frame.getClassName().equals("com.jcraft.jsch.Session")) ssh = true;
+      if (!ssh) continue;
+      if (!first) json.append(',');
+      first = false;
+      json.append("{\"state\":\"").append(entry.getKey().getState()).append("\",\"frames\":[");
+      StackTraceElement[] frames = entry.getValue();
+      for (int index=0; index<Math.min(24,frames.length); index++) {
+        if (index>0) json.append(',');
+        json.append('"').append(frames[index].getClassName()).append('.')
+            .append(frames[index].getMethodName()).append('"');
+      }
+      json.append("]}");
+    }
+    return json.append(']').toString();
+  }
+
   private static String measure(String label, String profile, int seed, String direction,
       int seconds, String host, int sshPort, String key, boolean diagnostics, int loadChannels, int uploadKbps, boolean observeRemote, int relayBuffer) throws Exception {
     if (loadChannels < 1 || loadChannels > 4) throw new IllegalArgumentException("Invalid channel count");
@@ -314,13 +369,16 @@ public final class TunnelNetworkProbe {
         || !Arrays.asList("idle", "download", "upload").contains(direction)) {
       throw new IllegalArgumentException("Unknown network profile or direction");
     }
-    if (!"OK".equals(control(host, "RESET " + profile + " " + seed + (observeRemote ? " " + relayBuffer : "")))) {
+    if (!"OK".equals(control(host, "RESET " + profile + " " + seed + (observeRemote ? " " + relayBuffer + " " + (TRACK_OFFSETS ? 1 : 0) : "")))) {
       throw new IOException("Unable to reset private network lab");
     }
-    Session session = connect(host, sshPort, key);
+    CipherStreamTrace trace = TRACK_OFFSETS ? new CipherStreamTrace() : null;
+    Session session = connect(host, sshPort, key, trace);
     Object metrics = attachMetrics(session, diagnostics);
     List<String> echoEvents = new ArrayList<>();
     List<String> remoteEvents = new ArrayList<>();
+    List<String> streamSamples = new ArrayList<>();
+    EchoProgress lastProgress = null;
     long sequence = 0;
     String flowAtTimeout = "null";
     ExecutorService workers = workers(5);
@@ -330,6 +388,7 @@ public final class TunnelNetworkProbe {
     List<Tunnel> tunnels = new ArrayList<>();
     List<Double> rtts = new ArrayList<>();
     int timeouts = 0;
+    String timeoutThreads = "[]";
     try (Tunnel echo = new Tunnel(session, 17001)) {
       if (!"idle".equals(direction)) {
         for (int i = 0; i < loadChannels; i++) {
@@ -375,13 +434,19 @@ public final class TunnelNetworkProbe {
         String remoteBeforeEcho = observeRemote ? control(host, "ECHO") : "null";
         double markerRoundtripMs = (System.nanoTime() - markerStart) / 1e6;
         EchoProgress progress = new EchoProgress();
+        lastProgress = progress;
         Future<Double> ping = workers.submit(() -> {
           byte[] reply = new byte[payload.length];
           long sent = System.nanoTime();
           progress.advance("WRITING");
-          echo.output.write(payload);
-          progress.advance("FLUSHING");
-          echo.output.flush();
+          if (trace != null) progress.packetRange = trace.mark();
+          try {
+            echo.output.write(payload);
+            progress.advance("FLUSHING");
+            echo.output.flush();
+          } finally {
+            if (trace != null) trace.unmark();
+          }
           progress.advance("READING");
           new DataInputStream(echo.input).readFully(reply);
           if (!Arrays.equals(payload, reply)) throw new IOException("Echo data mismatch");
@@ -389,15 +454,18 @@ public final class TunnelNetworkProbe {
           return (System.nanoTime() - sent) / 1e6;
         });
         try {
-          rtts.add(ping.get(12, TimeUnit.SECONDS));
+          rtts.add(awaitEcho(ping, trace, progress, currentSequence, host, streamSamples));
           echoEvents.add(progress.snapshot(false));
+          if (trace != null) streamSamples.add(streamSample(trace, progress, currentSequence, "complete", host));
           if (observeRemote) remoteEvents.add("{\"sequence\":" + currentSequence
               + ",\"marker_roundtrip_ms\":" + markerRoundtripMs + ",\"before\":" + remoteBeforeEcho
               + ",\"after\":" + control(host, "ECHO") + "}");
         } catch (TimeoutException timeout) {
           timeouts++;
+          timeoutThreads = sshThreadStates();
           echoEvents.add(progress.snapshot(true));
           flowAtTimeout = flowSnapshot(metrics);
+          if (trace != null) streamSamples.add(streamSample(trace, progress, currentSequence, "timeout", host));
           if (observeRemote) remoteEvents.add("{\"sequence\":" + currentSequence
               + ",\"marker_roundtrip_ms\":" + markerRoundtripMs + ",\"before\":" + remoteBeforeEcho
               + ",\"after\":" + control(host, "ECHO") + "}");
@@ -419,9 +487,10 @@ public final class TunnelNetworkProbe {
         long stopped = System.nanoTime();
         String tail;
         do {
+          if (trace != null) streamSamples.add(streamSample(trace, lastProgress, sequence, "tail", host));
           tail = control(host, "ECHO");
           if (remoteEchoSent(tail, sequence)) break;
-          Thread.sleep(500);
+          Thread.sleep(trace == null ? 500 : 1000);
         } while (System.nanoTime() - stopped < TimeUnit.SECONDS.toNanos(15));
         tailObservation = "{\"after_load_stop_ms\":" + (System.nanoTime() - stopped) / 1e6
             + ",\"remote\":" + tail + "}";
@@ -436,12 +505,12 @@ public final class TunnelNetworkProbe {
           + "\"remote_upload_mbps\":%.6f,\"upload_before\":%d,\"upload_after\":%d,"
           + "\"cpu_ms\":%d,\"samples\":%d,\"timeouts\":%d,"
           + "\"load_errors\":%d,\"rtt_p50_ms\":%s,\"rtt_p95_ms\":%s,"
-          + "\"adjacent_rtt_jitter_ms\":%s,\"rtts_ms\":%s,\"diagnostics\":%s,\"echo_events\":%s,\"flow_at_start\":%s,\"flow_at_timeout\":%s,\"flow_at_end\":%s,\"load_channels\":%d,\"offered_upload_kbps\":%d,\"echo_remote_events\":%s,\"tail_observation\":%s,\"relay_send_buffer_requested\":%d}",
+          + "\"adjacent_rtt_jitter_ms\":%s,\"rtts_ms\":%s,\"diagnostics\":%s,\"echo_events\":%s,\"flow_at_start\":%s,\"flow_at_timeout\":%s,\"flow_at_end\":%s,\"load_channels\":%d,\"offered_upload_kbps\":%d,\"echo_remote_events\":%s,\"tail_observation\":%s,\"relay_send_buffer_requested\":%d,\"cipher_tracking\":%s,\"stream_samples\":%s,\"cipher_at_end\":%s,\"ssh_port\":%d,\"control_port\":%d,\"timeout_ssh_threads\":%s}",
           label, profile, seed, direction, WINDOW, BUFFER, elapsed, rate, remoteRate,
           remoteBefore, remoteAfter, cpu, rtts.size(), timeouts, loadErrors.get(),
           percentile(sorted, .5), percentile(sorted, .95),
           rtts.size() < 2 ? "null" : Double.toString(variation / (rtts.size() - 1)), rtts,
-          diagnostics, echoEvents, flowAtStart, flowAtTimeout, flowSnapshot(metrics), loadChannels, uploadKbps, remoteEvents, tailObservation, relayBuffer);
+          diagnostics, echoEvents, flowAtStart, flowAtTimeout, flowSnapshot(metrics), loadChannels, uploadKbps, remoteEvents, tailObservation, relayBuffer, TRACK_OFFSETS, streamSamples, trace == null ? "null" : trace.snapshot().json(), sshPort, CONTROL_PORT, timeoutThreads);
     } finally {
       active.set(false);
       for (Tunnel tunnel : tunnels) tunnel.close();

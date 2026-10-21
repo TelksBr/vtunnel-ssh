@@ -30,7 +30,7 @@ Guarde o JAR da release de referencia em `local-validation/baseline-vpn1.jar`. C
 
 ```powershell
 New-Item -ItemType Directory -Force local-validation/probe-classes | Out-Null
-javac --release 8 -cp local-validation/baseline-vpn1.jar -d local-validation/probe-classes tools/network/TunnelNetworkProbe.java
+javac --release 8 -cp local-validation/baseline-vpn1.jar -d local-validation/probe-classes tools/network/CipherStreamTrace.java tools/network/TunnelNetworkProbe.java
 jar --create --file local-validation/network-probe.jar -C local-validation/probe-classes .
 ```
 
@@ -167,7 +167,7 @@ retorna relogio monotonic_ns WSL; nao subtrair esse valor do relogio Android.
 Depois de timeout, a carga e interrompida e a observacao pode continuar por 15 s.
 Esse tail e excluido da medida de vazao/CPU e altera a carga apos o deadline.
 
-Compile TunnelNetworkProbe.java e TunnelNetworkProbeTest.java, execute o harness
+Compile CipherStreamTrace.java, TunnelNetworkProbe.java e TunnelNetworkProbeTest.java, execute o harness
 Java, empacote o probe e a mesma biblioteca de referencia em DEX. Prepare o lab,
 as chaves e ADB reverse como acima; envie o DEX para `probe.zip` ou para os nomes
 usados em cada script. As comparacoes sao sequenciais porque RESET reinicia o lab.
@@ -190,3 +190,54 @@ O buffer de 32 KiB foi um experimento descartado: piorou a vazao movel e nao
 resolveu os timeouts. Nao o adote como configuracao de producao. A janela local
 continua em 4 MiB em todas as variantes. Nao publique uma release com alegacao de
 ganho usando apenas o efeito de limitar a carga oferecida.
+
+## Posicao do eco no fluxo e isolamento do envio
+
+[Correcao, testes e resultados de 21/10/2026](../../docs/performance/ssh-send-isolation-2026-10-21.md).
+O modo `queue` aceita `-Dvtunnel.probe.offsets=true` (padrao: false). O wrapper
+`CipherStreamTrace` conta bytes de todo o fluxo cliente-servidor, inclusive a
+identificacao e autenticacao SSH. Um marcador por thread delimita as escritas
+do eco; nao salva conteudo. Falhas e escritas parciais mantem limites incertos,
+sem tratar bytes aceitos localmente como bytes entregues ao servidor.
+O harness `CipherStreamTraceTest.java` verifica limites, excecoes e snapshots
+durante uma escrita bloqueada; compile-o junto de CipherStreamTrace.java e
+execute `com.jcraft.jsch.CipherStreamTraceTest` no classpath resultante.
+
+Com offsets ligados, RESET ativa o relay observado; a sintaxe do controle e
+`RESET PROFILE SEED [RELAY_BUFFER [TRACK_STREAM]]`, com TRACK_STREAM 0/1.
+Snapshots numericos passam por um socket UNIX privado, sem gravar por pacote.
+`received` e o prefixo copiado para userspace pelo relay: a fila de recepcao
+do socket do relay nao e medida. BEFORE_RELAY_COPY inclui essa fila e os
+segmentos anteriores do caminho; nao localiza sozinho a espera no Android.
+Os limites de bytes aceitos preservam uma escrita em andamento. OUTQ inclui
+bytes nao enviados e nao confirmados; OUTQNSD somente os nao enviados.
+As duas consultas do kernel sao sequenciais, com timestamps distintos.
+ACK TCP nao comprova encaminhamento pelo OpenSSH nem leitura pelo destino.
+Campos indisponiveis ficam null e geracoes distintas nao sao correlacionadas.
+
+`stream-android.ps1` compara rotas e overhead dos offsets; os DEXs dessa rodada
+usam a mesma candidata de diagnostico. `stream_classify.py RAW SUMMARY` resume
+as classes conservadoras. O custo do observador deve ser medido separadamente
+do ganho de uma correcao na biblioteca. O probe tambem registra, no timeout,
+ate 24 frames de threads SSH, somente classes/metodos e estado.
+
+`compare_linux_path.py` compara proxy TCP com acesso direto ao namespace na
+mesma JVM; `compare_linux_library.py` compara duas bibliotecas pelo acesso
+direto. Use Linux/JRE 21, o lab privado iniciado e caminhos Linux para JARs.
+Consulte `--help`; ambos exigem pasta de saida nova e registram a ordem AB/BA.
+O destino direto e 10.205.33.2:22022 e o controle e 127.0.0.1:19084; nao passa
+pelo relay TCP. O argumento `-Dvtunnel.probe.controlHost=127.0.0.1` seleciona
+o controle local. Em PowerShell, coloque argumentos -D com pontos entre aspas
+ao chamar Java diretamente; os scripts Python usam listas de argumentos.
+
+Para comparar a candidata com vpn.2 no Android, prepare baseline.zip e
+candidate.zip contendo o mesmo probe e respectivas bibliotecas, mais a chave
+temporaria. `send-android.ps1 -AdbRoute -Direction download` usa ADB reverse;
+`send-android.ps1 -WifiHost HOST_LAN_IP -Direction upload` usa a ponte Wi-Fi.
+Nao rode as duas rotas simultaneamente. O script recebe DeviceDirectory,
+OutputDirectory e SeedStart; cada par usa 8 s solicitados e 2 s de intervalo.
+Resuma com queue_summary.py e preserve tambem as fases inconclusivas.
+
+O fix separa o monitor de envio/lifecycle do monitor do credito remoto; a
+janela continua 4 MiB e a criptografia continua serializada pela sessao.
+Nao elimina as filas TCP nem garante RTT baixo quando o enlace esta saturado.

@@ -1,0 +1,71 @@
+FFFFFF
+======================================================================
+FAIL: test_ack_is_not_reported_as_destination_receipt (test_stream_classify.StreamClassificationTest.test_ack_is_not_reported_as_destination_receipt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_classify.py", line 29, in test_ack_is_not_reported_as_destination_receipt
+    self.assertEqual("TCP_ACKED_DESTINATION_PENDING",classify(sample(),1,4))
+AssertionError: 'TCP_ACKED_DESTINATION_PENDING' != 'UNKNOWN'
+- TCP_ACKED_DESTINATION_PENDING
++ UNKNOWN
+
+
+======================================================================
+FAIL: test_echo_not_fully_consumed_by_relay_is_distinct_from_tcp_queue (test_stream_classify.StreamClassificationTest.test_echo_not_fully_consumed_by_relay_is_distinct_from_tcp_queue)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_classify.py", line 17, in test_echo_not_fully_consumed_by_relay_is_distinct_from_tcp_queue
+    self.assertEqual("BEFORE_RELAY_COPY",result)
+AssertionError: 'BEFORE_RELAY_COPY' != 'UNKNOWN'
+- BEFORE_RELAY_COPY
++ UNKNOWN
+
+
+======================================================================
+FAIL: test_failed_or_pending_client_packet_does_not_claim_a_sent_packet (test_stream_classify.StreamClassificationTest.test_failed_or_pending_client_packet_does_not_claim_a_sent_packet)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_classify.py", line 41, in test_failed_or_pending_client_packet_does_not_claim_a_sent_packet
+    self.assertEqual("INVALID_CLIENT_TRACE",classify(value,1,4))
+AssertionError: 'INVALID_CLIENT_TRACE' != 'UNKNOWN'
+- INVALID_CLIENT_TRACE
++ UNKNOWN
+
+
+======================================================================
+FAIL: test_missing_kernel_values_or_new_connection_are_unknown (test_stream_classify.StreamClassificationTest.test_missing_kernel_values_or_new_connection_are_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_classify.py", line 35, in test_missing_kernel_values_or_new_connection_are_unknown
+    self.assertEqual("BOUNDARY_UNCERTAIN",classify(sample(sent_lower=None,sent_upper=None,acked_lower=None,acked_upper=None),1,4))
+AssertionError: 'BOUNDARY_UNCERTAIN' != 'UNKNOWN'
+- BOUNDARY_UNCERTAIN
++ UNKNOWN
+
+
+======================================================================
+FAIL: test_pending_send_is_not_assumed_accepted (test_stream_classify.StreamClassificationTest.test_pending_send_is_not_assumed_accepted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_classify.py", line 20, in test_pending_send_is_not_assumed_accepted
+    self.assertEqual("RELAY_USERSPACE",classify(sample(accepted_lower=80,accepted_upper=90),1,4))
+AssertionError: 'RELAY_USERSPACE' != 'UNKNOWN'
+- RELAY_USERSPACE
++ UNKNOWN
+
+
+======================================================================
+FAIL: test_unsent_and_sent_unacked_are_separate (test_stream_classify.StreamClassificationTest.test_unsent_and_sent_unacked_are_separate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_stream_classify.py", line 25, in test_unsent_and_sent_unacked_are_separate
+    self.assertEqual("RELAY_TCP_UNSENT",classify(sample(sent_lower=70,sent_upper=80,acked_lower=60,acked_upper=60),1,4))
+AssertionError: 'RELAY_TCP_UNSENT' != 'UNKNOWN'
+- RELAY_TCP_UNSENT
++ UNKNOWN
+
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.002s
+
+FAILED (failures=6)

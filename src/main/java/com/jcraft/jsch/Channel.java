@@ -74,6 +74,9 @@ public abstract class Channel {
 
   protected Session session;
 
+  // Keep potentially blocking data/lifecycle writes separate from incoming credit updates.
+  final Object sendLock = new Object();
+
   int notifyme = 0;
 
   Channel() {
@@ -273,7 +276,7 @@ public abstract class Channel {
         try {
           int foo = dataLen;
           dataLen = 0;
-          synchronized (channel) {
+          synchronized (channel.sendLock) {
             if (!channel.close)
               getSession().write(packet, channel, foo);
           }
@@ -487,7 +490,7 @@ public abstract class Channel {
       packet.reset();
       buf.putByte((byte) Session.SSH_MSG_CHANNEL_EOF);
       buf.putInt(i);
-      synchronized (this) {
+      synchronized (sendLock) {
         if (!close)
           getSession().write(packet);
       }
@@ -544,7 +547,7 @@ public abstract class Channel {
       packet.reset();
       buf.putByte((byte) Session.SSH_MSG_CHANNEL_CLOSE);
       buf.putInt(i);
-      synchronized (this) {
+      synchronized (sendLock) {
         getSession().write(packet);
       }
     } catch (Exception e) {

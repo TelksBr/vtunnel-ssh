@@ -1,0 +1,143 @@
+[
+  {
+    "profile": "mobile-jitter",
+    "label": "after",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      1100,
+      1101,
+      1102
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 2.682421,
+      "min": 1.717555,
+      "max": 2.835199
+    },
+    "cpu_ms_per_mib": null,
+    "samples": {
+      "median": 3,
+      "min": 2,
+      "max": 3
+    },
+    "seconds": {
+      "median": 9.535707,
+      "min": 8.745686,
+      "max": 9.725751
+    },
+    "cpu_ms": {
+      "median": -1,
+      "min": -1,
+      "max": -1
+    },
+    "rtt_p50_ms": {
+      "median": 3008.479335,
+      "min": 2866.588799,
+      "max": 3995.467294
+    },
+    "rtt_p95_ms": {
+      "median": 3008.479335,
+      "min": 2866.588799,
+      "max": 3995.467294
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 707.4546229999996,
+      "min": 536.2692900000002,
+      "max": 1561.5966925
+    },
+    "timeout_destination_stages": {},
+    "destination_receive_after_marker_ms": {
+      "median": 3248.9811425,
+      "min": 2452.831316,
+      "max": 4601.254281
+    },
+    "destination_service_ms": {
+      "median": 0.31321750000000004,
+      "min": 0.242816,
+      "max": 0.339503
+    },
+    "tail_observations": []
+  },
+  {
+    "profile": "mobile-jitter",
+    "label": "before",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      1100,
+      1101,
+      1102
+    ],
+    "timeouts_total": 3,
+    "timeout_stages": {
+      "READING": 3
+    },
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 2.695527,
+      "min": 1.717188,
+      "max": 2.717292
+    },
+    "cpu_ms_per_mib": null,
+    "samples": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "seconds": {
+      "median": 12.006923,
+      "min": 12.006805,
+      "max": 12.007788
+    },
+    "cpu_ms": {
+      "median": -1,
+      "min": -1,
+      "max": -1
+    },
+    "rtt_p50_ms": null,
+    "rtt_p95_ms": null,
+    "adjacent_rtt_jitter_ms": null,
+    "timeout_destination_stages": {
+      "SENT_AT_DESTINATION": 3
+    },
+    "destination_receive_after_marker_ms": {
+      "median": 2611.708109,
+      "min": 1958.912856,
+      "max": 2639.123958
+    },
+    "destination_service_ms": {
+      "median": 0.335933,
+      "min": 0.276326,
+      "max": 0.416617
+    },
+    "tail_observations": [
+      {
+        "seed": 1100,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 2611.708109,
+        "service_ms": 0.335933,
+        "sent_age_ms": 9395.541094,
+        "observed_after_stop_ms": 0.740298
+      },
+      {
+        "seed": 1101,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 2639.123958,
+        "service_ms": 0.416617,
+        "sent_age_ms": 9367.663031,
+        "observed_after_stop_ms": 0.831614
+      },
+      {
+        "seed": 1102,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 1958.912856,
+        "service_ms": 0.276326,
+        "sent_age_ms": 10048.040182,
+        "observed_after_stop_ms": 0.68408
+      }
+    ]
+  }
+]
