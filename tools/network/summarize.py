@@ -2,7 +2,7 @@
 import argparse
 import json
 import statistics
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 
@@ -28,10 +28,18 @@ def summarize(rows):
             mib = row[delivered] * 1e6 * row["seconds"] / 8 / 1048576
             if mib > 0 and row["cpu_ms"] >= 0:
                 normalized_cpu.append(row["cpu_ms"] / mib)
+        stages = Counter()
+        for row in runs:
+            events = [event for event in row.get("echo_events", []) if event["timeout"]]
+            if len(events) > row["timeouts"]:
+                raise ValueError("Timeout events exceed the recorded timeout count")
+            stages.update(event["stage"] for event in events)
+            stages["UNCLASSIFIED"] += row["timeouts"] - len(events)
         summary = {
             "profile": profile, "label": label, "direction": direction,
             "executions": len(runs), "seeds": [row["seed"] for row in runs],
             "timeouts_total": sum(row["timeouts"] for row in runs),
+            "timeout_stages": {stage: count for stage, count in sorted(stages.items()) if count},
             "load_errors_total": sum(row["load_errors"] for row in runs),
             "goodput_mbps": distribution(row[delivered] for row in runs),
             "cpu_ms_per_mib": distribution(normalized_cpu),

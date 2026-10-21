@@ -1,0 +1,12 @@
+mobile-jitter seed=860 case=one_free
+mobile-jitter seed=860 case=four_free
+mobile-jitter seed=860 case=one_capped
+mobile-jitter seed=860 case=four_capped
+mobile-jitter seed=861 case=four_capped
+mobile-jitter seed=861 case=one_capped
+mobile-jitter seed=861 case=four_free
+mobile-jitter seed=861 case=one_free
+mobile-jitter seed=862 case=one_free
+mobile-jitter seed=862 case=four_free
+mobile-jitter seed=862 case=one_capped
+mobile-jitter seed=862 case=four_capped

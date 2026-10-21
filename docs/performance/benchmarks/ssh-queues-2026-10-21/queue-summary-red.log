@@ -1,0 +1,20 @@
+E
+======================================================================
+ERROR: test_queue_summary (unittest.loader._FailedTest.test_queue_summary)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_queue_summary
+Traceback (most recent call last):
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\unittest\loader.py", line 419, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\unittest\loader.py", line 362, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_queue_summary.py", line 2, in <module>
+    from queue_summary import classify_echo
+ModuleNotFoundError: No module named 'queue_summary'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

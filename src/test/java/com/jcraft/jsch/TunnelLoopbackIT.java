@@ -3,6 +3,7 @@ package com.jcraft.jsch;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -73,8 +74,15 @@ class TunnelLoopbackIT {
   @Test
   void passwordTunnelAndEof() throws Exception {
     Session session = connect(false);
+    SessionFlowMetrics metrics = new SessionFlowMetrics();
+    session.setFlowMetrics(metrics);
     try {
       echo(session, 526);
+      assertTrue(
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.ENCODE).getCount() > 0);
+      assertTrue(metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CHANNEL_DELIVERY)
+          .getCount() > 0);
+      assertTrue(metrics.snapshot().getRequestedDataBytes() >= 256 * 1024);
     } finally {
       session.disconnect();
     }

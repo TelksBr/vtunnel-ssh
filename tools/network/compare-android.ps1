@@ -9,7 +9,9 @@ param(
     [string[]]$Directions = @('idle', 'download', 'upload'),
     [ValidatePattern('^/data/local/tmp/[a-zA-Z0-9_-]+$')]
     [string]$DeviceDirectory = '/data/local/tmp/vtunnel-lib-vpn2',
-    [string]$OutputDirectory = 'local-validation/network'
+    [string]$OutputDirectory = 'local-validation/network',
+    [ValidateSet('network', 'network-diag')][string]$BaselineMode = 'network',
+    [ValidateSet('network', 'network-diag')][string]$CandidateMode = 'network'
 )
 
 # Prerequisites: lab.py up + start-control, ADB reverse 19080/19084, and
@@ -27,10 +29,11 @@ try {
             $order = if ($repetition % 2 -eq 0) { @('vpn1', 'vpn2') } else { @('vpn2', 'vpn1') }
             foreach ($label in $order) {
                 $dex = if ($label -eq 'vpn1') { 'baseline.zip' } else { 'candidate.zip' }
+                $mode = if ($label -eq 'vpn1') { $BaselineMode } else { $CandidateMode }
                 foreach ($direction in $Directions) {
                     $duration = if ($direction -eq 'idle') { 2 } else { $Seconds }
                     "${profile}: seed=$seed library=$label direction=$direction" | Tee-Object -FilePath $transcript -Append
-                    $command = "CLASSPATH=$DeviceDirectory/$dex app_process /system/bin com.jcraft.jsch.TunnelNetworkProbe network $label $profile $seed $direction $duration 127.0.0.1 19080 $DeviceDirectory/client_key $remoteOutput"
+                    $command = "CLASSPATH=$DeviceDirectory/$dex app_process /system/bin com.jcraft.jsch.TunnelNetworkProbe $mode $label $profile $seed $direction $duration 127.0.0.1 19080 $DeviceDirectory/client_key $remoteOutput"
                     & adb shell $command 2>&1 | Tee-Object -FilePath $transcript -Append
                     if ($LASTEXITCODE -ne 0) { throw "Probe failed: $label $profile $direction seed=$seed" }
                     if ($CooldownSeconds -gt 0) { Start-Sleep -Seconds $CooldownSeconds }

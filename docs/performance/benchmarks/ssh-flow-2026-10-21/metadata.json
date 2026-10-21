@@ -1,0 +1,73 @@
+{
+  "base_commit": "1212caad8a018b16431d870d567986ca5def2215",
+  "branch": "codex/ssh-flow-diagnostics",
+  "diff_sha256": "9fdc6a2eed177b2eae40c1f52a3cc2370f449d729fc89e8b47950699ee83454d",
+  "files": {
+    "target/vtunnel-ssh-2.28.7-vpn.3-SNAPSHOT.jar": "ae1f915582fbf97c0c135d6d9729f8d5ae097e7a83d4e6cc4774edaa974845d8",
+    "local-validation/flow-diag-probe.jar": "3076894773cecb6c6efce8ea390e87f135310d2e781030114314fd8b21b7dd95",
+    "local-validation/flow-diag.zip": "86824a778093f52289f4017d31728b97c438d9ec8728eb2be25c323ed8107612",
+    "tools/network/TunnelNetworkProbe.java": "c5c8fcf2d97742d98ae06a63cefea312d6168c17c08df654422500b0c61ab927"
+  },
+  "series": {
+    "flow-disabled": {
+      "vpn1": "published 2.28.7-vpn.2, diagnostics off",
+      "vpn2": "local 2.28.7-vpn.3-SNAPSHOT, diagnostics off",
+      "seeds": [
+        800,
+        801
+      ],
+      "seconds": 8
+    },
+    "flow-on-off": {
+      "vpn1": "same local snapshot DEX, diagnostics off",
+      "vpn2": "same local snapshot DEX, diagnostics on",
+      "seeds": [
+        820,
+        821,
+        822
+      ],
+      "seconds": 8
+    }
+  },
+  "device": "SM-G781B Android 15, app_process, ADB reverse to private WSL netem/OpenSSH lab",
+  "scope": "direct-tcpip; no TUN, app adapter, radio or Speedtest; 4 MiB local window, 1 MiB pipe, AES256-CTR/HMAC-SHA2-512; four load channels and one echo; AB/BA, cooldown 2 s; no host builds during collection",
+  "baseline_probe_revision": "initial echo phases without start snapshot/timeout stack; both A/B sides identical",
+  "candidate_probe_revision": "includes flow_at_start and bounded timeout worker stack; both on/off sides identical",
+  "source_hashes": {
+    "pom.xml": "56457473d10bb369c4063850a9021221b5f7ab0560c29aca4446b977fe8a57b5",
+    "src\\main\\java\\com\\jcraft\\jsch\\Session.java": "6c447645169fbc6c218efae4ea737deddfe167e1189e01db111ef2a19a6ff869",
+    "src\\main\\java\\com\\jcraft\\jsch\\SessionFlowMetrics.java": "cf54d7df877a37d1878934b1f3179e12db31cf24d94a7ee3b079052394818f4c",
+    "src\\test\\java\\com\\jcraft\\jsch\\SessionFlowContentionTest.java": "b304fa72d6672c871c9f361a4a34377a5e79ee0ee6ccf2a22309f5eabdaa569d",
+    "src\\test\\java\\com\\jcraft\\jsch\\SessionFlowMetricsTest.java": "07ddf87bbf711dd6f7090b6cf319421e1ff3b48a0bbaea5a1be37bf90364a26a",
+    "src\\test\\java\\com\\jcraft\\jsch\\SessionWindowCreditTest.java": "e7abb965075a7ebeb1eceb862e2d767fefdb13acb1a44bc1adc808462e97173f",
+    "src\\test\\java\\com\\jcraft\\jsch\\TunnelLoopbackIT.java": "a967824d8ff69128f6c42959f1b11fde31270f1febf2fd7f48b210525f52d9c7",
+    "tools\\network\\lab.py": "dc7f1820adb6e2d4fbe23a6e19c04099f823fdcc63c67e56838cad4139ed8609",
+    "tools\\network\\plot_flow_diagnostics.py": "2ccc52162ac51e34d14398a031d2d43528e89dc8dbe0d759137ba7a7124833e1",
+    "tools\\network\\summarize.py": "1381a7168059abfffe8f48fde8697f5b3582dbb1e74cd19546c6701987910313",
+    "tools\\network\\test_counters.py": "40183f41991d9c2d7e7da6d59aad879bca3a6b647b2b66e70144b38c1c1a4723",
+    "tools\\network\\test_lab.py": "e383c48a38ea643e712dbd203fef49733dcea2959b73a2768b36fec2656790a5",
+    "tools\\network\\test_summary.py": "edd4013427e4bd8db9165b5ca50462f0ea4d2159aaf45b94f9d3def309a7e727",
+    "tools\\network\\TunnelNetworkProbe.java": "c5c8fcf2d97742d98ae06a63cefea312d6168c17c08df654422500b0c61ab927",
+    "tools\\network\\compare-android.ps1": "c0f2486a66e75f4a602f471c7ab0fcd5d1fe5c368ab708e8ce402c7c755720b2"
+  },
+  "test_result": "508 full unit tests; final focused check 11 tests including additional disable test; 4 encrypted integration tests; 8 Python tests in WSL",
+  "cleanup": "Private WSL lab stopped, ADB reverse ports and test directory removed, temporary private key removed",
+  "artifacts_sha256": {
+    "diagnostics.png": "c28055e250f5f49ae0339a45d81797110c31528d742e7332156442cb71d24507",
+    "diagnostics.svg": "0321b8507a8c11a7f0f9ad51aef9c932c71adce602f732f3ac021b2daae22932",
+    "disabled-vs-enabled-phases.log": "c566e05ea0dba3656d707adf4243e76d9101846c362d538a6774b86590bca235",
+    "disabled-vs-enabled-summary.json": "cdadbb51fc958186d1459de3bf6e7b425d7154182b4cc5cc7c88dbbcec17219a",
+    "disabled-vs-enabled.jsonl": "530d2b7fe81eea7c4cbae98fe82dc0b91729c1aca17b49e3a8e85b7fb949fb8d",
+    "flow-contention-green.log": "1d029242350a9dda9ecec941890e8db681573280c757c1c80f068ca50b8b80fb",
+    "flow-contention-red.log": "ea30c436595ccdcdcf801dd01ad0fe6b50ac1bf7d926535b0f6383120955a048",
+    "flow-final-check.log": "cb0fa0e296fa8a2c0372e10b28abdee3ed191ca725541d7a8437c5d22560e055",
+    "flow-loopback.log": "b1f7e5f8bb479375e62f0f177744dd953eb799b5e7772567648eed9778297117",
+    "flow-unit.log": "4a197b17d4bfaff886fd332b5bfdbb9a2092b2c0128e20368b85a9436c232b0b",
+    "flow-verify.log": "d0575ef05473b786fdd500b0df59820f4297cc807f2a179eacd86dd4ccc99ad7",
+    "python-wsl-tests.log": "8f3231f6986b9dd923720958f12289c8e3516f8457dac4fc649f75e7a3bb4b18",
+    "release-vs-disabled-hashes.json": "afe0244555f9a73c1b2ceb812a10920d70eabb304b5c4a30be1f614561b2d9b5",
+    "release-vs-disabled-phases.log": "4bf68b6b9256e379d3dda24f3204940a60a3740d81227e29e6920f75775ea792",
+    "release-vs-disabled-summary.json": "11ab0dab091a37552d9210343fe267c5a81a79f18b2f1d309aa20bba3e8073b3",
+    "release-vs-disabled.jsonl": "065bf1a9c533123f2593cf9a0dfa46281afbe72c4c7e140d93dfa882bd7eeb01"
+  }
+}

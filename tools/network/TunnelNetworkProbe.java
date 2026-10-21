@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 public final class TunnelNetworkProbe {
   private static final int WINDOW = 4 * 1024 * 1024;
   private static final int BUFFER = 1024 * 1024;
+  private static final int CONTROL_PORT = Integer.parseInt(System.getProperty("vtunnel.probe.controlPort", "19084"));
 
   public static void main(String[] args) throws Exception {
     String row;
@@ -38,7 +40,11 @@ public final class TunnelNetworkProbe {
     } else {
       // network LABEL PROFILE SEED DIRECTION SECONDS HOST SSH_PORT KEY OUTPUT
       row = measure(args[1], args[2], Integer.parseInt(args[3]), args[4],
-          Integer.parseInt(args[5]), args[6], Integer.parseInt(args[7]), args[8]);
+          Integer.parseInt(args[5]), args[6], Integer.parseInt(args[7]), args[8],
+          "network-diag".equals(args[0]),
+          "queue".equals(args[0]) ? Integer.parseInt(args[9]) : 4,
+          "queue".equals(args[0]) ? Integer.parseInt(args[10]) : 0, "queue".equals(args[0]),
+          "queue".equals(args[0]) && args.length == 13 ? Integer.parseInt(args[11]) : 0);
     }
     try (OutputStream file = new FileOutputStream(args[args.length - 1], true)) {
       file.write((row + "\n").getBytes(StandardCharsets.UTF_8));
@@ -148,7 +154,7 @@ public final class TunnelNetworkProbe {
 
   private static String control(String host, String command) throws IOException {
     try (Socket socket = new Socket()) {
-      socket.connect(new InetSocketAddress(host, 19084), 3000);
+      socket.connect(new InetSocketAddress(host, CONTROL_PORT), 3000);
       socket.setSoTimeout(10000);
       socket.getOutputStream().write((command + "\n").getBytes(StandardCharsets.US_ASCII));
       String reply = new BufferedReader(new InputStreamReader(socket.getInputStream(),
@@ -165,6 +171,11 @@ public final class TunnelNetworkProbe {
     return Long.parseLong(count.group(1));
   }
 
+  private static boolean remoteEchoSent(String snapshot, long sequence) {
+    Matcher value = Pattern.compile("\"sent_sequence\"\\s*:\\s*(\\d+)").matcher(snapshot);
+    return value.find() && Long.parseLong(value.group(1)) == sequence;
+  }
+
   private static long cpuMs() {
     try {
       return ((Long) Class.forName("android.os.Process").getMethod("getElapsedCpuTime")
@@ -179,16 +190,139 @@ public final class TunnelNetworkProbe {
         : Double.toString(sorted.get((int) ((sorted.size() - 1) * fraction)));
   }
 
+  /** Reflection keeps the same probe usable against the published baseline JAR. */
+  private static Object attachMetrics(Session session, boolean enabled) throws Exception {
+    if (!enabled) return null;
+    Class<?> type = Class.forName("com.jcraft.jsch.SessionFlowMetrics");
+    Object metrics = type.getConstructor().newInstance();
+    Session.class.getMethod("setFlowMetrics", type).invoke(session, metrics);
+    return metrics;
+  }
+
+  private static String flowSnapshot(Object metrics) throws Exception {
+    if (metrics == null) return "null";
+    Object snapshot = metrics.getClass().getMethod("snapshot").invoke(metrics);
+    StringBuilder json = new StringBuilder("{");
+    for (String field : new String[] {"RequestedDataBytes", "Fragments"}) {
+      json.append('"').append(field).append("\":")
+          .append(snapshot.getClass().getMethod("get" + field).invoke(snapshot)).append(',');
+    }
+    json.append("\"timings\":{");
+    Map<?, ?> timings = (Map<?, ?>) snapshot.getClass().getMethod("getTimings").invoke(snapshot);
+    boolean first = true;
+    for (Map.Entry<?, ?> entry : timings.entrySet()) {
+      if (!first) json.append(',');
+      first = false;
+      json.append('"').append(entry.getKey()).append("\":{");
+      Object timing = entry.getValue();
+      boolean firstField = true;
+      for (String field : new String[] {"Count", "TotalNanos", "MaxNanos", "InFlight"}) {
+        if (!firstField) json.append(',');
+        firstField = false;
+        json.append('"').append(field).append("\":")
+            .append(timing.getClass().getMethod("get" + field).invoke(timing));
+      }
+      json.append('}');
+    }
+    return json.append("}}").toString();
+  }
+
+  /** Only tiny state transitions hold this monitor; never hold it across I/O. */
+  private static final class EchoProgress {
+    final long queued = System.nanoTime();
+    long writing, flushing, reading, complete;
+    String stage = "QUEUED";
+    Thread worker;
+
+    synchronized void advance(String next) {
+      long now = System.nanoTime();
+      stage = next;
+      if ("WRITING".equals(next)) { writing = now; worker = Thread.currentThread(); }
+      if ("FLUSHING".equals(next)) flushing = now;
+      if ("READING".equals(next)) reading = now;
+      if ("COMPLETE".equals(next)) complete = now;
+    }
+
+    private static String duration(long from, long to) {
+      return from == 0 || to == 0 ? "null" : Double.toString((to - from) / 1e6);
+    }
+
+    String snapshot(boolean timeout) {
+      Thread observed;
+      String fields;
+      synchronized (this) {
+        observed = worker;
+        fields = "{\"stage\":\"" + stage + "\",\"timeout\":" + timeout
+            + ",\"queue_ms\":" + duration(queued, writing)
+            + ",\"write_ms\":" + duration(writing, flushing)
+            + ",\"flush_ms\":" + duration(flushing, reading)
+            + ",\"read_ms\":" + duration(reading, complete)
+            + ",\"elapsed_ms\":" + (System.nanoTime() - queued) / 1e6;
+      }
+      String state = observed == null ? "UNSTARTED" : observed.getState().toString();
+      StringBuilder stack = new StringBuilder("[");
+      if (timeout && observed != null) {
+        StackTraceElement[] trace = observed.getStackTrace();
+        for (int index = 0; index < Math.min(trace.length, 16); index++) {
+          if (index > 0) stack.append(',');
+          stack.append('"').append(trace[index].getClassName()).append('.')
+              .append(trace[index].getMethodName()).append('"');
+        }
+      }
+      return fields + ",\"worker_state\":\"" + state
+          + "\",\"timeout_stack\":" + stack.append(']') + "}";
+    }
+  }
+
+  /** Aggregate offered load for experiments only; never changes the SSH receive window. */
+  static final class UploadPacer {
+    private final int kbps;
+    private final AtomicLong next = new AtomicLong(Long.MIN_VALUE);
+
+    UploadPacer(int kbps) {
+      if (kbps < 0 || kbps > 1000000) throw new IllegalArgumentException("Invalid rate");
+      this.kbps = kbps;
+    }
+
+    long reserveDelayNanos(int bytes, long now) {
+      if (kbps == 0) return 0;
+      long previous, slot;
+      do {
+        previous = next.get();
+        slot = Math.max(now, previous);
+      } while (!next.compareAndSet(previous, slot + bytes * 8000000L / kbps));
+      return slot - now;
+    }
+
+    void await(int bytes) throws IOException {
+      long delay = reserveDelayNanos(bytes, System.nanoTime());
+      try {
+        TimeUnit.NANOSECONDS.sleep(delay);
+      } catch (InterruptedException cancelled) {
+        Thread.currentThread().interrupt();
+        throw new java.io.InterruptedIOException("Offered-load pacing interrupted");
+      }
+    }
+  }
+
   private static String measure(String label, String profile, int seed, String direction,
-      int seconds, String host, int sshPort, String key) throws Exception {
+      int seconds, String host, int sshPort, String key, boolean diagnostics, int loadChannels, int uploadKbps, boolean observeRemote, int relayBuffer) throws Exception {
+    if (loadChannels < 1 || loadChannels > 4) throw new IllegalArgumentException("Invalid channel count");
+    if (relayBuffer < 0 || relayBuffer > 1048576) throw new IllegalArgumentException("Invalid relay buffer");
+    UploadPacer pacer = new UploadPacer(uploadKbps);
     if (!Arrays.asList("unshaped", "mobile-jitter", "shallow", "deep").contains(profile)
         || !Arrays.asList("idle", "download", "upload").contains(direction)) {
       throw new IllegalArgumentException("Unknown network profile or direction");
     }
-    if (!"OK".equals(control(host, "RESET " + profile + " " + seed))) {
+    if (!"OK".equals(control(host, "RESET " + profile + " " + seed + (observeRemote ? " " + relayBuffer : "")))) {
       throw new IOException("Unable to reset private network lab");
     }
     Session session = connect(host, sshPort, key);
+    Object metrics = attachMetrics(session, diagnostics);
+    List<String> echoEvents = new ArrayList<>();
+    List<String> remoteEvents = new ArrayList<>();
+    long sequence = 0;
+    String flowAtTimeout = "null";
     ExecutorService workers = workers(5);
     AtomicBoolean active = new AtomicBoolean(true);
     AtomicLong bytes = new AtomicLong();
@@ -198,7 +332,7 @@ public final class TunnelNetworkProbe {
     int timeouts = 0;
     try (Tunnel echo = new Tunnel(session, 17001)) {
       if (!"idle".equals(direction)) {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < loadChannels; i++) {
           tunnels.add(new Tunnel(session, "download".equals(direction) ? 17002 : 17003));
         }
         for (Tunnel tunnel : tunnels) workers.submit(() -> {
@@ -214,6 +348,8 @@ public final class TunnelNetworkProbe {
               }
             } else {
               while (active.get()) {
+                pacer.await(block.length);
+                if (!active.get()) break;
                 tunnel.output.write(block);
                 bytes.addAndGet(block.length);
               }
@@ -227,24 +363,44 @@ public final class TunnelNetworkProbe {
       long remoteBefore = uploaded(host);
       long before = bytes.get();
       long cpuBefore = cpuMs();
+      String flowAtStart = flowSnapshot(metrics);
       long start = System.nanoTime();
       long end = start + TimeUnit.SECONDS.toNanos(seconds);
       byte[] payload = new byte[32];
       Arrays.fill(payload, (byte) 17);
       while (System.nanoTime() < end) {
+        long currentSequence = ++sequence;
+        if (observeRemote) java.nio.ByteBuffer.wrap(payload).putLong(currentSequence);
+        long markerStart = System.nanoTime();
+        String remoteBeforeEcho = observeRemote ? control(host, "ECHO") : "null";
+        double markerRoundtripMs = (System.nanoTime() - markerStart) / 1e6;
+        EchoProgress progress = new EchoProgress();
         Future<Double> ping = workers.submit(() -> {
           byte[] reply = new byte[payload.length];
           long sent = System.nanoTime();
+          progress.advance("WRITING");
           echo.output.write(payload);
+          progress.advance("FLUSHING");
           echo.output.flush();
+          progress.advance("READING");
           new DataInputStream(echo.input).readFully(reply);
           if (!Arrays.equals(payload, reply)) throw new IOException("Echo data mismatch");
+          progress.advance("COMPLETE");
           return (System.nanoTime() - sent) / 1e6;
         });
         try {
           rtts.add(ping.get(12, TimeUnit.SECONDS));
+          echoEvents.add(progress.snapshot(false));
+          if (observeRemote) remoteEvents.add("{\"sequence\":" + currentSequence
+              + ",\"marker_roundtrip_ms\":" + markerRoundtripMs + ",\"before\":" + remoteBeforeEcho
+              + ",\"after\":" + control(host, "ECHO") + "}");
         } catch (TimeoutException timeout) {
           timeouts++;
+          echoEvents.add(progress.snapshot(true));
+          flowAtTimeout = flowSnapshot(metrics);
+          if (observeRemote) remoteEvents.add("{\"sequence\":" + currentSequence
+              + ",\"marker_roundtrip_ms\":" + markerRoundtripMs + ",\"before\":" + remoteBeforeEcho
+              + ",\"after\":" + control(host, "ECHO") + "}");
           ping.cancel(true);
           break;
         }
@@ -257,6 +413,19 @@ public final class TunnelNetworkProbe {
       long remoteAfter = uploaded(host);
       if (remoteAfter < remoteBefore) throw new IOException("Remote counter regressed; invalid run");
       double remoteRate = (remoteAfter - remoteBefore) * 8 / elapsed / 1e6;
+      String tailObservation = "null";
+      if (observeRemote && timeouts > 0) {
+        active.set(false);
+        long stopped = System.nanoTime();
+        String tail;
+        do {
+          tail = control(host, "ECHO");
+          if (remoteEchoSent(tail, sequence)) break;
+          Thread.sleep(500);
+        } while (System.nanoTime() - stopped < TimeUnit.SECONDS.toNanos(15));
+        tailObservation = "{\"after_load_stop_ms\":" + (System.nanoTime() - stopped) / 1e6
+            + ",\"remote\":" + tail + "}";
+      }
       double variation = 0;
       for (int i = 1; i < rtts.size(); i++) variation += Math.abs(rtts.get(i) - rtts.get(i - 1));
       List<Double> sorted = new ArrayList<>(rtts);
@@ -267,11 +436,12 @@ public final class TunnelNetworkProbe {
           + "\"remote_upload_mbps\":%.6f,\"upload_before\":%d,\"upload_after\":%d,"
           + "\"cpu_ms\":%d,\"samples\":%d,\"timeouts\":%d,"
           + "\"load_errors\":%d,\"rtt_p50_ms\":%s,\"rtt_p95_ms\":%s,"
-          + "\"adjacent_rtt_jitter_ms\":%s,\"rtts_ms\":%s}",
+          + "\"adjacent_rtt_jitter_ms\":%s,\"rtts_ms\":%s,\"diagnostics\":%s,\"echo_events\":%s,\"flow_at_start\":%s,\"flow_at_timeout\":%s,\"flow_at_end\":%s,\"load_channels\":%d,\"offered_upload_kbps\":%d,\"echo_remote_events\":%s,\"tail_observation\":%s,\"relay_send_buffer_requested\":%d}",
           label, profile, seed, direction, WINDOW, BUFFER, elapsed, rate, remoteRate,
           remoteBefore, remoteAfter, cpu, rtts.size(), timeouts, loadErrors.get(),
           percentile(sorted, .5), percentile(sorted, .95),
-          rtts.size() < 2 ? "null" : Double.toString(variation / (rtts.size() - 1)), rtts);
+          rtts.size() < 2 ? "null" : Double.toString(variation / (rtts.size() - 1)), rtts,
+          diagnostics, echoEvents, flowAtStart, flowAtTimeout, flowSnapshot(metrics), loadChannels, uploadKbps, remoteEvents, tailObservation, relayBuffer);
     } finally {
       active.set(false);
       for (Tunnel tunnel : tunnels) tunnel.close();

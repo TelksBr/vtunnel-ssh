@@ -1,0 +1,152 @@
+[
+  {
+    "profile": "mobile-jitter",
+    "label": "adb",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      940,
+      941,
+      942
+    ],
+    "timeouts_total": 3,
+    "timeout_stages": {
+      "READING": 3
+    },
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 2.671736,
+      "min": 2.518483,
+      "max": 2.736021
+    },
+    "cpu_ms_per_mib": {
+      "median": 60.19737804689394,
+      "min": 55.65582905433829,
+      "max": 62.33911677097353
+    },
+    "samples": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "seconds": {
+      "median": 12.020012,
+      "min": 12.016149,
+      "max": 12.02189
+    },
+    "cpu_ms": {
+      "median": 225,
+      "min": 213,
+      "max": 236
+    },
+    "rtt_p50_ms": null,
+    "rtt_p95_ms": null,
+    "adjacent_rtt_jitter_ms": null,
+    "timeout_destination_stages": {
+      "NOT_RECEIVED_AT_DESTINATION": 3
+    },
+    "destination_receive_after_marker_ms": null,
+    "destination_service_ms": null,
+    "tail_observations": [
+      {
+        "seed": 940,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 24563.477024,
+        "service_ms": 0.333359,
+        "sent_age_ms": 366.388332,
+        "observed_after_stop_ms": 13288.743328
+      },
+      {
+        "seed": 941,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 23834.483629,
+        "service_ms": 0.43937,
+        "sent_age_ms": 88.010926,
+        "observed_after_stop_ms": 11761.730828
+      },
+      {
+        "seed": 942,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 23491.13046,
+        "service_ms": 0.372958,
+        "sent_age_ms": 221.646784,
+        "observed_after_stop_ms": 11760.675933
+      }
+    ]
+  },
+  {
+    "profile": "mobile-jitter",
+    "label": "wifi",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      940,
+      941,
+      942
+    ],
+    "timeouts_total": 3,
+    "timeout_stages": {
+      "READING": 3
+    },
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 2.208479,
+      "min": 1.561949,
+      "max": 2.711727
+    },
+    "cpu_ms_per_mib": {
+      "median": 69.95017393198437,
+      "min": 58.36492959623328,
+      "max": 79.00904831020205
+    },
+    "samples": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "seconds": {
+      "median": 12.031492,
+      "min": 12.031446,
+      "max": 12.054822
+    },
+    "cpu_ms": {
+      "median": 222,
+      "min": 177,
+      "max": 227
+    },
+    "rtt_p50_ms": null,
+    "rtt_p95_ms": null,
+    "adjacent_rtt_jitter_ms": null,
+    "timeout_destination_stages": {
+      "NOT_RECEIVED_AT_DESTINATION": 3
+    },
+    "destination_receive_after_marker_ms": null,
+    "destination_service_ms": null,
+    "tail_observations": [
+      {
+        "seed": 940,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 26267.340877,
+        "service_ms": 0.419648,
+        "sent_age_ms": 510.431131,
+        "observed_after_stop_ms": 14286.285203
+      },
+      {
+        "seed": 941,
+        "stage": "SENT_AT_DESTINATION",
+        "receive_after_marker_ms": 23314.037868,
+        "service_ms": 0.298782,
+        "sent_age_ms": 398.216638,
+        "observed_after_stop_ms": 12015.778746
+      },
+      {
+        "seed": 942,
+        "stage": "NOT_RECEIVED_AT_DESTINATION",
+        "receive_after_marker_ms": null,
+        "service_ms": null,
+        "sent_age_ms": null,
+        "observed_after_stop_ms": 15410.659005
+      }
+    ]
+  }
+]

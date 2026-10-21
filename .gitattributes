@@ -1,0 +1,2 @@
+# Preserve collected benchmark bytes and hashes; generated artifacts are not source whitespace.
+docs/performance/benchmarks/** -text -whitespace

@@ -1,0 +1,6 @@
+mobile-jitter seed=940 route=adb
+mobile-jitter seed=940 route=wifi
+mobile-jitter seed=941 route=wifi
+mobile-jitter seed=941 route=adb
+mobile-jitter seed=942 route=adb
+mobile-jitter seed=942 route=wifi

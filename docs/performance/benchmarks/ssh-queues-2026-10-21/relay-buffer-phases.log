@@ -1,0 +1,12 @@
+mobile-jitter seed=900 case=relay_default
+mobile-jitter seed=900 case=relay_32k
+mobile-jitter seed=901 case=relay_32k
+mobile-jitter seed=901 case=relay_default
+mobile-jitter seed=902 case=relay_default
+mobile-jitter seed=902 case=relay_32k
+unshaped seed=900 case=relay_default
+unshaped seed=900 case=relay_32k
+unshaped seed=901 case=relay_32k
+unshaped seed=901 case=relay_default
+unshaped seed=902 case=relay_default
+unshaped seed=902 case=relay_32k

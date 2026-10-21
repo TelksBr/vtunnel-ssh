@@ -19,6 +19,8 @@ class SessionWindowCreditTest {
   @Test
   void partialCreditSendsBeforeWaitingForTheRemainder() throws Exception {
     Capture session = new Capture();
+    SessionFlowMetrics metrics = new SessionFlowMetrics();
+    session.setFlowMetrics(metrics);
     Channel channel = channel(session, 1024);
     byte[] payload = new byte[32768];
     new Random(526).nextBytes(payload);
@@ -46,6 +48,8 @@ class SessionWindowCreditTest {
       assertArrayEquals(payload, session.bytes.toByteArray());
       assertEquals(0, channel.rwsize);
       assertEquals(4 * 1024 * 1024, channel.lwsize_max);
+      assertEquals(payload.length, metrics.snapshot().getRequestedDataBytes());
+      assertTrue(metrics.snapshot().getFragments() > 0);
     } finally {
       finish(channel, sender);
     }
@@ -54,16 +58,24 @@ class SessionWindowCreditTest {
   @Test
   void zeroCreditDoesNotSendUntilWindowAdjust() throws Exception {
     Capture session = new Capture();
+    SessionFlowMetrics metrics = new SessionFlowMetrics();
+    session.setFlowMetrics(metrics);
     Channel channel = channel(session, 0);
     AtomicReference<Throwable> failure = new AtomicReference<>();
     Thread sender = sender(session, channel, new byte[] {0, 7, -1}, failure);
     try {
       awaitWaiting(sender);
+      assertEquals(1,
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT).getInFlight());
       assertEquals(0, session.bytes.size());
       channel.addRemoteWindowSize(3);
       sender.join(1000);
       assertFalse(sender.isAlive());
       assertNull(failure.get());
+      assertEquals(0,
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT).getInFlight());
+      assertTrue(
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT).getCount() > 0);
       assertArrayEquals(new byte[] {0, 7, -1}, session.bytes.toByteArray());
     } finally {
       finish(channel, sender);
@@ -73,13 +85,21 @@ class SessionWindowCreditTest {
   @Test
   void interruptedCreditWaitTerminatesAndPreservesInterrupt() throws Exception {
     Capture session = new Capture();
+    SessionFlowMetrics metrics = new SessionFlowMetrics();
+    session.setFlowMetrics(metrics);
     Channel channel = channel(session, 0);
     AtomicReference<Throwable> failure = new AtomicReference<>();
     Thread sender = sender(session, channel, new byte[32], failure);
     try {
       awaitWaiting(sender);
+      assertEquals(1,
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT).getInFlight());
       sender.interrupt();
       sender.join(300);
+      assertEquals(0,
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT).getInFlight());
+      assertTrue(
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.CREDIT_WAIT).getCount() > 0);
       assertFalse(sender.isAlive(), "Cancellation must not be swallowed by the credit wait");
       assertInstanceOf(InterruptedIOException.class, failure.get());
       assertTrue(sender.isInterrupted());
@@ -94,6 +114,8 @@ class SessionWindowCreditTest {
   @SuppressForbiddenApi("jdk-reflection")
   void interruptedRekeyWaitTerminatesWithoutSending() throws Exception {
     Capture session = new Capture();
+    SessionFlowMetrics metrics = new SessionFlowMetrics();
+    session.setFlowMetrics(metrics);
     Field rekey = Session.class.getDeclaredField("in_kex");
     rekey.setAccessible(true);
     rekey.setBoolean(session, true);
@@ -102,8 +124,14 @@ class SessionWindowCreditTest {
     Thread sender = sender(session, channel, new byte[32], failure);
     try {
       awaitWaiting(sender);
+      assertEquals(1,
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.REKEY_WAIT).getInFlight());
       sender.interrupt();
       sender.join(300);
+      assertEquals(0,
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.REKEY_WAIT).getInFlight());
+      assertTrue(
+          metrics.snapshot().getTimings().get(SessionFlowMetrics.Phase.REKEY_WAIT).getCount() > 0);
       assertFalse(sender.isAlive(), "Cancellation must not wait for rekey completion");
       assertInstanceOf(InterruptedIOException.class, failure.get());
       assertTrue(sender.isInterrupted());

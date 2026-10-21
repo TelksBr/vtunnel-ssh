@@ -1,0 +1,198 @@
+[
+  {
+    "profile": "mobile-jitter",
+    "label": "vpn1",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      820,
+      821,
+      822
+    ],
+    "timeouts_total": 3,
+    "timeout_stages": {
+      "READING": 3
+    },
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 2.804746,
+      "min": 2.674509,
+      "max": 2.826305
+    },
+    "cpu_ms_per_mib": {
+      "median": 60.32295643253919,
+      "min": 59.2957101588268,
+      "max": 60.35912520858458
+    },
+    "samples": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "seconds": {
+      "median": 12.004665,
+      "min": 12.003693,
+      "max": 12.00544
+    },
+    "cpu_ms": {
+      "median": 238,
+      "min": 231,
+      "max": 244
+    },
+    "rtt_p50_ms": null,
+    "rtt_p95_ms": null,
+    "adjacent_rtt_jitter_ms": null
+  },
+  {
+    "profile": "mobile-jitter",
+    "label": "vpn2",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      820,
+      821,
+      822
+    ],
+    "timeouts_total": 3,
+    "timeout_stages": {
+      "READING": 3
+    },
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 2.739442,
+      "min": 2.609021,
+      "max": 2.739522
+    },
+    "cpu_ms_per_mib": {
+      "median": 88.38299116543435,
+      "min": 87.74532687936532,
+      "max": 88.51054353472512
+    },
+    "samples": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "seconds": {
+      "median": 12.004873,
+      "min": 12.004652,
+      "max": 12.005002
+    },
+    "cpu_ms": {
+      "median": 344,
+      "min": 330,
+      "max": 347
+    },
+    "rtt_p50_ms": null,
+    "rtt_p95_ms": null,
+    "adjacent_rtt_jitter_ms": null
+  },
+  {
+    "profile": "unshaped",
+    "label": "vpn1",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      820,
+      821,
+      822
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 256.697472,
+      "min": 255.266139,
+      "max": 257.330626
+    },
+    "cpu_ms_per_mib": {
+      "median": 32.49800947823904,
+      "min": 32.20036916651832,
+      "max": 32.75316890563057
+    },
+    "samples": {
+      "median": 153,
+      "min": 123,
+      "max": 156
+    },
+    "seconds": {
+      "median": 8.01639,
+      "min": 8.003766,
+      "max": 8.029642
+    },
+    "cpu_ms": {
+      "median": 7972,
+      "min": 7906,
+      "max": 8003
+    },
+    "rtt_p50_ms": {
+      "median": 27.991197,
+      "min": 27.70802,
+      "max": 34.16474
+    },
+    "rtt_p95_ms": {
+      "median": 64.344844,
+      "min": 58.66974,
+      "max": 92.412292
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 12.253972309210534,
+      "min": 11.344466380645157,
+      "max": 13.217593811475416
+    }
+  },
+  {
+    "profile": "unshaped",
+    "label": "vpn2",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      820,
+      821,
+      822
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 222.075914,
+      "min": 219.395449,
+      "max": 228.500784
+    },
+    "cpu_ms_per_mib": {
+      "median": 37.5548395038617,
+      "min": 36.76861385437064,
+      "max": 37.91359322120749
+    },
+    "samples": {
+      "median": 160,
+      "min": 149,
+      "max": 171
+    },
+    "seconds": {
+      "median": 8.001553,
+      "min": 8.000334,
+      "max": 8.038595
+    },
+    "cpu_ms": {
+      "median": 7971,
+      "min": 7954,
+      "max": 8014
+    },
+    "rtt_p50_ms": {
+      "median": 24.615469,
+      "min": 22.469271,
+      "max": 25.286406
+    },
+    "rtt_p95_ms": {
+      "median": 55.528333,
+      "min": 52.684427,
+      "max": 80.599896
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 11.324164614864866,
+      "min": 9.460755817647064,
+      "max": 11.66253470440252
+    }
+  }
+]

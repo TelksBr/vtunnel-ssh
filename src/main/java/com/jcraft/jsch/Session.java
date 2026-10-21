@@ -116,6 +116,13 @@ public class Session {
   private Compression inflater;
 
   private IO io;
+  private volatile SessionFlowMetrics flowMetrics;
+
+  /** Attach bounded diagnostics, or null to disable. Disabled by default. */
+  public void setFlowMetrics(SessionFlowMetrics metrics) {
+    flowMetrics = metrics;
+  }
+
   private Socket socket;
   private int timeout = 0;
 
@@ -1753,17 +1760,24 @@ public class Session {
   }
 
   /* synchronized */ void write(Packet packet, Channel c, int length) throws Exception {
+    SessionFlowMetrics metrics = flowMetrics;
+    if (metrics != null)
+      metrics.requested(length);
     long t = getTimeout();
     while (true) {
       if (in_kex) {
         if (t > 0L && (System.currentTimeMillis() - kex_start_time) > t) {
           throw new JSchException("timeout in waiting for rekeying process.");
         }
+        long waiting = metrics != null ? metrics.begin(SessionFlowMetrics.Phase.REKEY_WAIT) : 0;
         try {
           Thread.sleep(10);
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
           throw new InterruptedIOException("interrupted while waiting for rekeying");
+        } finally {
+          if (metrics != null)
+            metrics.end(SessionFlowMetrics.Phase.REKEY_WAIT, waiting);
         }
         continue;
       }
@@ -1771,6 +1785,7 @@ public class Session {
         // Send available credit immediately, even if it only covers part of the packet.
         // Waiting here with a positive window adds polling latency on small WINDOW_ADJUSTs.
         if (c.rwsize == 0) {
+          long waiting = metrics != null ? metrics.begin(SessionFlowMetrics.Phase.CREDIT_WAIT) : 0;
           try {
             c.notifyme++;
             c.wait(100);
@@ -1779,6 +1794,8 @@ public class Session {
             throw new InterruptedIOException("interrupted while waiting for channel credit");
           } finally {
             c.notifyme--;
+            if (metrics != null)
+              metrics.end(SessionFlowMetrics.Phase.CREDIT_WAIT, waiting);
           }
         }
 
@@ -1808,6 +1825,8 @@ public class Session {
           if (len != length) {
             s = packet.shift((int) len, (c2scipher != null ? c2scipher_size : 8),
                 (c2smac != null ? c2smac.getBlockSize() : 0));
+            if (metrics != null)
+              metrics.fragmented();
           }
           command = packet.buffer.getCommand();
           recipient = c.getRecipient();
@@ -1849,6 +1868,7 @@ public class Session {
   }
 
   void write(Packet packet) throws Exception {
+    SessionFlowMetrics metrics = flowMetrics;
     // System.err.println("in_kex="+in_kex+" "+(packet.buffer.getCommand()));
     long t = getTimeout();
     while (in_kex) {
@@ -1863,25 +1883,46 @@ public class Session {
           || command == SSH_MSG_KEX_DH_GEX_REQUEST || command == SSH_MSG_DISCONNECT) {
         break;
       }
+      long waiting = metrics != null ? metrics.begin(SessionFlowMetrics.Phase.REKEY_WAIT) : 0;
       try {
         Thread.sleep(10);
       } catch (InterruptedException e) {
-      } ;
+      } finally {
+        if (metrics != null)
+          metrics.end(SessionFlowMetrics.Phase.REKEY_WAIT, waiting);
+      }
     }
     _write(packet);
   }
 
   private void _write(Packet packet) throws Exception {
+    SessionFlowMetrics metrics = flowMetrics;
     boolean initialKex = this.initialKex;
     boolean doStrictKex = this.doStrictKex;
     boolean enable_strict_kex = this.enable_strict_kex;
     boolean require_strict_kex = this.require_strict_kex;
     boolean resetSeqo = packet.buffer.getCommand() == SSH_MSG_NEWKEYS && doStrictKex;
 
+    long waiting = metrics != null ? metrics.begin(SessionFlowMetrics.Phase.WRITE_LOCK_WAIT) : 0;
     synchronized (lock) {
-      encode(packet);
+      if (metrics != null)
+        metrics.end(SessionFlowMetrics.Phase.WRITE_LOCK_WAIT, waiting);
+      long encoding = metrics != null ? metrics.begin(SessionFlowMetrics.Phase.ENCODE) : 0;
+      try {
+        encode(packet);
+      } finally {
+        if (metrics != null)
+          metrics.end(SessionFlowMetrics.Phase.ENCODE, encoding);
+      }
       if (io != null) {
-        io.put(packet);
+        long writing =
+            metrics != null ? metrics.begin(SessionFlowMetrics.Phase.TRANSPORT_WRITE) : 0;
+        try {
+          io.put(packet);
+        } finally {
+          if (metrics != null)
+            metrics.end(SessionFlowMetrics.Phase.TRANSPORT_WRITE, writing);
+        }
         if (++seqo == 0 && (enable_strict_kex || require_strict_kex) && initialKex) {
           throw new JSchStrictKexException("outgoing sequence number wrapped during initial KEX");
         }
@@ -1894,6 +1935,21 @@ public class Session {
     if (resetSeqo && io != null && getLogger().isEnabled(Logger.INFO)) {
       getLogger().log(Logger.INFO,
           "Reset outgoing sequence number after sending SSH_MSG_NEWKEYS for strict KEX");
+    }
+  }
+
+  void deliverChannelData(Channel channel, byte[] bytes, int offset, int length, boolean extended)
+      throws IOException {
+    SessionFlowMetrics metrics = flowMetrics;
+    long started = metrics != null ? metrics.begin(SessionFlowMetrics.Phase.CHANNEL_DELIVERY) : 0;
+    try {
+      if (extended)
+        channel.write_ext(bytes, offset, length);
+      else
+        channel.write(bytes, offset, length);
+    } finally {
+      if (metrics != null)
+        metrics.end(SessionFlowMetrics.Phase.CHANNEL_DELIVERY, started);
     }
   }
 
@@ -1969,7 +2025,7 @@ public class Session {
             }
 
             try {
-              channel.write(foo, start[0], length[0]);
+              deliverChannelData(channel, foo, start[0], length[0], false);
             } catch (Exception e) {
               // System.err.println(e);
               try {
@@ -2009,7 +2065,7 @@ public class Session {
               break;
             }
 
-            channel.write_ext(foo, start[0], length[0]);
+            deliverChannelData(channel, foo, start[0], length[0], true);
 
             len = length[0];
             channel.setLocalWindowSize(channel.lwsize - len);

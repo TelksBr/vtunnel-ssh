@@ -1,0 +1,22 @@
+[
+  {
+    "file": "local-validation/baseline-vpn2.jar",
+    "sha256": "7C9832E67BC5C1B43533FDE0AC1EDD76AC92A7DD6588971588720664BDA5850D"
+  },
+  {
+    "file": "target/vtunnel-ssh-2.28.7-vpn.3-SNAPSHOT.jar",
+    "sha256": "AE1F915582FBF97C0C135D6D9729F8D5AE097E7A83D4E6CC4774EDAA974845D8"
+  },
+  {
+    "file": "local-validation/flow-probe.jar",
+    "sha256": "412283BAB9AD71A707476FB500B8E25F0ED977720C725111C2752FE79FCFB4F8"
+  },
+  {
+    "file": "local-validation/flow-baseline.zip",
+    "sha256": "E3C7A94B79AC03F0E8DFA5CC9EEE1EE0F75629BA6FF7373FDDA4BA75273D296D"
+  },
+  {
+    "file": "local-validation/flow-candidate.zip",
+    "sha256": "A9F3EC8EBA14D8F3BE9C3EE5DE4982C45F1FD667129FA12A9D73D0DDD3979292"
+  }
+]

@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-21",
+  "library": "published 2.28.7-vpn.2 in every new phase",
+  "full_metrics": false,
+  "device": "SM-G781B / Android 15",
+  "window_bytes": 4194304,
+  "pipe_max_bytes": 1048576,
+  "cipher": "aes256-ctr",
+  "mac": "hmac-sha2-512",
+  "measurement_seconds": 8,
+  "echo_deadline_seconds": 12,
+  "tail_max_requested_seconds": 15,
+  "cooldown_seconds": 2,
+  "load_warmup_seconds": 1.5,
+  "load_block_bytes": 32768,
+  "echo_frame_bytes": 32,
+  "load_limit": "aggregate 1500 kbit/s when capped",
+  "profiles": {
+    "mobile-jitter": "60 +/- 25 ms each direction, 0.3% loss, 12/3 Mbit/s, 128 skbs",
+    "unshaped": "no artificial qdisc"
+  },
+  "series": {
+    "channels-load": {
+      "executions": 12,
+      "seeds": [
+        860,
+        861,
+        862
+      ],
+      "order": "forward / reverse / forward"
+    },
+    "relay-buffer": {
+      "executions": 12,
+      "seeds": [
+        900,
+        901,
+        902
+      ],
+      "order": "AB/BA/AB per profile"
+    },
+    "adb-wifi": {
+      "executions": 6,
+      "seeds": [
+        940,
+        941,
+        942
+      ],
+      "order": "AB/BA/AB"
+    }
+  },
+  "wifi": "Payload via wlan0 to an allowlisted Windows LAN bridge -> WSL localhost relay -> namespace; USB only invokes app_process",
+  "clocks": "All receive/service differences use only WSL monotonic_ns. Marker response transit adds uncertainty to receive_after_marker. No Android/WSL clock subtraction.",
+  "observation": "Journal keeps last receive/send sequence only, atomic replacement; complete fixed 32-byte request before observation; successful sendall is local acceptance.",
+  "tail": "Measure upload/CPU interval first; after timeout stop offered load and observe delayed echo up to 15 seconds; tail not included in goodput/CPU interval. This changes load after deadline.",
+  "kernel": "WSL 6.18.33.2-microsoft-standard-WSL2; tcp_wmem 4096 65536 8388608; tcp_rmem 4096 87380 8388608",
+  "cleanup": "ADB reverse removed; dev test directory and temporary key removed; WSL namespace stopped; temporary allowlisted Windows bridge stopped",
+  "limitations": "Direct-tcpip library probe; no TUN/app adapter/Speedtest; mobile network is netem simulation. WiFi still traverses Windows/WSL relays. Three repetitions per condition, not statistical proof of population-wide behavior.",
+  "binary_hashes": {
+    "local-validation/baseline-vpn2.jar": "7c9832e67bc5c1b43533fde0ac1edd76ac92a7dd6588971588720664bda5850d",
+    "local-validation/queue-baseline.zip": "d3e2b2a06eed6739b851610c1c1d66ec745b969a0785b6c3db57376db97c593a",
+    "local-validation/queue-buffer.zip": "bbc6c845dc123678cb979055b2af7729b95e6476b9c67ec20617b054c7075dd3",
+    "local-validation/queue-route.zip": "2cb35cc78899139e53f2130a83a88eb5ed3ff89b94d6e4a51931481ae9f15c22",
+    "local-validation/queue-probe.jar": "17533638463cfee4bb29874a97c42f5d30dc7fd716dc256c5e0d61c402597ca1",
+    "local-validation/queue-buffer-probe.jar": "a2001d888a2d707884acb8fd71b322ed65753ea80336b696a32d74d26aeee581",
+    "local-validation/queue-route-probe.jar": "29d831a2c66d78920c40d561c50a41a792ac3172c2f805fd6a9b7de075a1e3ac"
+  },
+  "final_source_hashes": {
+    "tools\\network\\compare-android.ps1": "c0f2486a66e75f4a602f471c7ab0fcd5d1fe5c368ab708e8ce402c7c755720b2",
+    "tools\\network\\echo_observer.py": "17f7c9acd244ebeef20d30376d1e88b245951f05e99b06415e8d599eca61f170",
+    "tools\\network\\lab.py": "2675bbff955b0a0275c2711a6c47e99cf7b7a027f7df4a3853c7e21452119722",
+    "tools\\network\\plot_flow_diagnostics.py": "2ccc52162ac51e34d14398a031d2d43528e89dc8dbe0d759137ba7a7124833e1",
+    "tools\\network\\plot_queue_analysis.py": "43390bf18dc02004ca1fd82b3e824b0c31e3e2f0553f2734c3f8f5395767316e",
+    "tools\\network\\queue-android.ps1": "b150045d7936eb4ed2e7430b697fb52e627a60de8d58ab2cd1711f4995ddb52d",
+    "tools\\network\\queue_summary.py": "86624fe1f831bad61319a0fc9c883c097215f936ccc156f2547b13fa2568bd07",
+    "tools\\network\\README.md": "16e9c738a43c68bdd18650916474f3426f4cdca6ef7b4f6f471628c30d996dae",
+    "tools\\network\\relay-buffer-android.ps1": "ae675c16e2a9641dca095d386b4b171374ae446b4f6811d2ae3292a4685e6d6c",
+    "tools\\network\\relay_buffers.py": "43ad09152ca9267d2f4a78c47b5cc3dbb1f736811c5f9c1e8f1c6a4436b3bbe2",
+    "tools\\network\\route-android.ps1": "addc7d176d05ff15b11e198cd953c71426e6d47de448ec2f9be552d58b427cf7",
+    "tools\\network\\summarize.py": "1381a7168059abfffe8f48fde8697f5b3582dbb1e74cd19546c6701987910313",
+    "tools\\network\\test_counters.py": "40183f41991d9c2d7e7da6d59aad879bca3a6b647b2b66e70144b38c1c1a4723",
+    "tools\\network\\test_echo_observer.py": "600565456a842320150d521e26bc983659b59097f078923b656c73df521aa596",
+    "tools\\network\\test_lab.py": "e383c48a38ea643e712dbd203fef49733dcea2959b73a2768b36fec2656790a5",
+    "tools\\network\\test_queue_summary.py": "9dc0557dd143fdb0b9a1ac9e9d91346b8ba36460c9f35723b0b521d7a3b928e5",
+    "tools\\network\\test_relay_buffers.py": "8cafb1e38cf21f7f66fb14fd08ea235a058363bbac28304b7a691937d74c4ca5",
+    "tools\\network\\test_summary.py": "edd4013427e4bd8db9165b5ca50462f0ea4d2159aaf45b94f9d3def309a7e727",
+    "tools\\network\\TunnelNetworkProbe.java": "ee73534ef85c6b92ba48feed438fe8425c12c8ba86701b39f120275b39bc0d5c",
+    "tools\\network\\TunnelNetworkProbeTest.java": "da2d5163c96ab564fd16d24903d91c2aa13df82977046ac713573a0e2309bdd2",
+    "tools\\network\\wifi_bridge.py": "525fbf5ff9a7af12fd09b00ed98ba3419c4f38eaf6308dd21d82d2c86428e8ef",
+    "tools\\network\\WindowCreditProbe.java": "149578e54cd7c0dd1bee1163e5fb272e9da42b9f98d10e092e2cc0b9fbe5e94b"
+  },
+  "artifacts_sha256": {
+    "adb-wifi-phases.log": "dd9629b65cd168f3815845fd9329a8299c393c2845be93046330a259926068d6",
+    "adb-wifi-summary.json": "0ed64975e42f60dd9e467557cdb4ba9b4aa34242f630ed50e5d47b428c67b5a0",
+    "adb-wifi.jsonl": "2837a16baa6baa96bd714dfb75cb23ae4639850e8dea866112ea5c3377eb3892",
+    "channels-load-phases.log": "83a927e1e316e968f3d15997445eac350c1c62e0f7bac75010e151b5bf9c423b",
+    "channels-load-summary.json": "b8f5d7b8e42a8ebb566eaf84d33cc70ea5f04f21c6115a9923e4a75fd4120565",
+    "channels-load.jsonl": "de0be45e74b7259744f33dbb880d0c11990b55b77733d2f08b100f2737d1978c",
+    "queue-all-python-tests.log": "55b6e25808e93e3dd3bc1a2d76561a1fd772d664269b09139c3992f47e89be3a",
+    "queue-arrival.png": "d07389b7deae6b245ba339482998fa198c64f7f1420658878b40e757dab3631d",
+    "queue-arrival.svg": "467326ac652c3b40d80957ee7cb4b9d1aea3ecbb001e296aa65a9d1398955524",
+    "queue-buffer-source-hashes.json": "5ac27aeff78c115d4c77bb853c68819cb2d5201894ddb2aa29680ce05d241dae",
+    "queue-observer-green.log": "d2d7844ed9b17f3249155629f918cb47f524f9e121ba4bae80c18b5a9cf6e1b5",
+    "queue-observer-red.log": "e959c773b97c70b384f2b6ddf6243156f0957f53173690120db7eedd35981bd1",
+    "queue-pacer-test.log": "7d2cfb51ba6e3d15064320c01272e01bc51bdf473b1b7e47f73f94b63ce23c34",
+    "queue-prebuffer-hashes.json": "5f93c77af399672c7e69c6ef3b3cc8a36fd30b6c00d527fdd8c8ca975f1688b9",
+    "queue-route-pacer-test.log": "7d2cfb51ba6e3d15064320c01272e01bc51bdf473b1b7e47f73f94b63ce23c34",
+    "queue-smoke.jsonl": "818942f395d03659c26b05aff4ddb46cab23b465aa133bdfda0951507bbe7d0c",
+    "queue-summary-green.log": "1b6f69157102cc03f5264c937d138171570f1a3f06ab9ba2d8345507e1df7261",
+    "queue-summary-red.log": "f4091bcc00954a357da26f89be53de01c75157abdafce33c7a49e10c32bd032a",
+    "queue-wifi-smoke.jsonl": "f385638506ad6ee9d9e5e73a9cae0c6a08e7117a6e03e3786ca1c8a3a7a3986a",
+    "relay-buffer-phases.log": "fa9164d0e406c0a871de32c868ed521368fc0b91c3833a2afcae1591bf2726dc",
+    "relay-buffer-summary.json": "933403cbbdde398919335271e73433692dfb2cc2b8c8b82f714b983e481a37c6",
+    "relay-buffer.jsonl": "8a936ebb1a5d22f8d76e0bdc4d02a4159153b5b2c678de9927a76d457e970c21",
+    "relay-buffer.png": "07915de5dc692413947b58def0dbc50c266480e1e9b8a71e9065c9fa6c456395",
+    "relay-buffer.svg": "8fb460383758897e5717a4aa0b80e3400801bacf938d5c283a9f95c78d53cdd2",
+    "queue-buffer-source\\echo_observer.py": "17f7c9acd244ebeef20d30376d1e88b245951f05e99b06415e8d599eca61f170",
+    "queue-buffer-source\\lab.py": "2675bbff955b0a0275c2711a6c47e99cf7b7a027f7df4a3853c7e21452119722",
+    "queue-buffer-source\\relay-buffer-android.ps1": "ae675c16e2a9641dca095d386b4b171374ae446b4f6811d2ae3292a4685e6d6c",
+    "queue-buffer-source\\relay_buffers.py": "43ad09152ca9267d2f4a78c47b5cc3dbb1f736811c5f9c1e8f1c6a4436b3bbe2",
+    "queue-buffer-source\\TunnelNetworkProbe.java": "0e912b1a143e809b508aa62b1d459fdfec30726520630bced9221b078dde9473",
+    "queue-prebuffer\\echo_observer.py": "17f7c9acd244ebeef20d30376d1e88b245951f05e99b06415e8d599eca61f170",
+    "queue-prebuffer\\lab.py": "3595e3112a4acf762cf332f2de0e0d3b2d63dcaec052c155acfd46868c37ddc2",
+    "queue-prebuffer\\queue-android.ps1": "b150045d7936eb4ed2e7430b697fb52e627a60de8d58ab2cd1711f4995ddb52d",
+    "queue-prebuffer\\TunnelNetworkProbe.java": "03264995db8a3145fc89bbb46cb9f567ff15cde3c8f6d7716098473e5a4fece5"
+  }
+}

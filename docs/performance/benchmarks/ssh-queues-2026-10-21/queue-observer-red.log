@@ -1,0 +1,20 @@
+E
+======================================================================
+ERROR: test_echo_observer (unittest.loader._FailedTest.test_echo_observer)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_echo_observer
+Traceback (most recent call last):
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\unittest\loader.py", line 419, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\unittest\loader.py", line 362, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\network\test_echo_observer.py", line 6, in <module>
+    import echo_observer
+ModuleNotFoundError: No module named 'echo_observer'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

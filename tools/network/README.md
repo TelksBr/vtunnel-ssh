@@ -116,3 +116,77 @@ Remove-Item -LiteralPath local-validation/network-client-key
 ```
 
 `down` encerra apenas os processos do namespace privado, remove suas interfaces e chaves. Nenhuma credencial ou APK do app e necessario para esse ensaio.
+
+## Diagnostico opcional de contencao (vpn.3-SNAPSHOT)
+
+`network-diag` ativa `Session.setFlowMetrics(new SessionFlowMetrics())` depois da
+conexao e antes da abertura dos canais. `network` mantem os contadores desligados.
+O probe usa reflexao somente para esta API, permitindo o mesmo bytecode na release
+vpn.2 e na candidata. Pedir `network-diag` a uma versao sem a API falha explicitamente.
+
+Cada eco salva `echo_events`: QUEUED, WRITING, FLUSHING, READING ou COMPLETE.
+Duracoes de etapas ainda pendentes sao `null`. Em timeout, salva o estado antes de
+cancelar o worker e os contadores cumulativos em `flow_at_timeout`; tambem salva
+`flow_at_start` (apos aquecimento) e `flow_at_end`. Em timeout guarda ate 16 frames
+do worker de eco, somente nomes de classes/metodos, sem argumentos ou payloads. Os snapshots sao nao bloqueantes e eventualmente consistentes:
+nao sao um trace atomico, nem associam uma espera da sessao a um canal especifico.
+Incluem abertura de canais/aquecimento, enquanto vazao e CPU usam o intervalo de medida.
+WRITE_LOCK_WAIT mede espera pelo monitor de envio; ENCODE inclui MAC/criptografia;
+TRANSPORT_WRITE inclui escrita/flush; CHANNEL_DELIVERY mede entrega ao consumidor;
+CREDIT_WAIT e REKEY_WAIT contam intervalos de espera, inclusive repeticoes de polling.
+RequestedDataBytes representa pedidos locais, nao entrega remota. Contadores usam
+memoria fixa e nao guardam payloads, destinos ou credenciais. Operacoes pendentes
+aparecem em InFlight, e nao no MaxNanos das operacoes ja encerradas.
+
+Para medir overhead, use o mesmo DEX candidato nos dois lados e alterne somente:
+
+```powershell
+./tools/network/compare-android.ps1 -BaselineMode network -CandidateMode network-diag -Directions upload -Repetitions 3
+```
+
+Para comparar o caminho desligado com a release publicada, use os DEXs respectivos,
+ambos em `network`. As etiquetas vpn1/vpn2 sao aliases dos lados do ensaio, nao tags
+Git. Sempre registre os hashes, modos e revisoes de cada lado. Uma espera em
+FLUSHING com escritores bloqueados indica onde investigar, mas por si so nao prova
+starvation do monitor nem justifica paralelizar o cifrador SSH.
+
+## Observacao no destino e controles de fila
+
+[Resultados e limites da rodada de 21/10/2026](../../docs/performance/ssh-queue-analysis-2026-10-21.md).
+O modo `queue` adiciona observacao do pedido completo no destino e limitador de
+carga **agregado** apenas para testes. Sintaxe:
+
+```text
+queue LABEL PROFILE SEED DIRECTION SECONDS HOST SSH_PORT KEY CHANNELS UPLOAD_KBPS [RELAY_SNDBUF] OUTPUT
+```
+
+UPLOAD_KBPS=0 e RELAY_SNDBUF=0 deixam carga e kernel sem limite imposto pelo probe.
+O eco usa frames de 32 bytes com sequencia nos primeiros 8 bytes. O journal salva
+somente o ultimo recebimento/envio e suas contagens, sem payload. Consulta ECHO
+retorna relogio monotonic_ns WSL; nao subtrair esse valor do relogio Android.
+Depois de timeout, a carga e interrompida e a observacao pode continuar por 15 s.
+Esse tail e excluido da medida de vazao/CPU e altera a carga apos o deadline.
+
+Compile TunnelNetworkProbe.java e TunnelNetworkProbeTest.java, execute o harness
+Java, empacote o probe e a mesma biblioteca de referencia em DEX. Prepare o lab,
+as chaves e ADB reverse como acima; envie o DEX para `probe.zip` ou para os nomes
+usados em cada script. As comparacoes sao sequenciais porque RESET reinicia o lab.
+
+```powershell
+./tools/network/queue-android.ps1
+./tools/network/relay-buffer-android.ps1
+python tools/network/queue_summary.py RAW.jsonl SUMMARY.json
+python tools/network/plot_queue_analysis.py CHANNELS.jsonl RELAY.jsonl OUTPUT_DIRECTORY
+```
+
+No controle Wi-Fi, `wifi_bridge.py --bind HOST_LAN_IP --device PHONE_IP` cria duas
+portas temporarias (20080/20084), aceitando apenas o IP do aparelho. Pare esse
+processo ao terminar. O controle e escolhido por `-Dvtunnel.probe.controlPort=20084`
+no app_process; o caminho ADB usa 19084. `route-android.ps1 -WifiHost HOST_LAN_IP`
+alterna os dois caminhos; usa `route-probe.zip`. O caminho Wi-Fi ainda inclui
+Windows/WSL e nao equivale a acesso direto a uma VPS publica.
+
+O buffer de 32 KiB foi um experimento descartado: piorou a vazao movel e nao
+resolveu os timeouts. Nao o adote como configuracao de producao. A janela local
+continua em 4 MiB em todas as variantes. Nao publique uma release com alegacao de
+ganho usando apenas o efeito de limitar a carga oferecida.

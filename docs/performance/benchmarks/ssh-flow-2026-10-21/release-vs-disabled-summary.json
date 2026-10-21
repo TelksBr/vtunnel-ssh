@@ -1,0 +1,214 @@
+[
+  {
+    "profile": "unshaped",
+    "label": "vpn1",
+    "direction": "download",
+    "executions": 2,
+    "seeds": [
+      800,
+      801
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 315.004947,
+      "min": 313.68837,
+      "max": 316.321524
+    },
+    "cpu_ms_per_mib": {
+      "median": 20.117760244791903,
+      "min": 20.05815120630773,
+      "max": 20.177369283276075
+    },
+    "samples": {
+      "median": 30.0,
+      "min": 30,
+      "max": 30
+    },
+    "seconds": {
+      "median": 8.0257675,
+      "min": 8.01468,
+      "max": 8.036855
+    },
+    "cpu_ms": {
+      "median": 6063.0,
+      "min": 6062,
+      "max": 6064
+    },
+    "rtt_p50_ms": {
+      "median": 245.79874999999998,
+      "min": 244.800521,
+      "max": 246.796979
+    },
+    "rtt_p95_ms": {
+      "median": 257.0488275,
+      "min": 254.137499,
+      "max": 259.960156
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 9.195570293103447,
+      "min": 5.561416999999996,
+      "max": 12.829723586206898
+    }
+  },
+  {
+    "profile": "unshaped",
+    "label": "vpn1",
+    "direction": "upload",
+    "executions": 2,
+    "seeds": [
+      800,
+      801
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 255.330329,
+      "min": 254.575255,
+      "max": 256.085403
+    },
+    "cpu_ms_per_mib": {
+      "median": 32.56146549695843,
+      "min": 32.49669639411128,
+      "max": 32.62623459980557
+    },
+    "samples": {
+      "median": 147.0,
+      "min": 146,
+      "max": 148
+    },
+    "seconds": {
+      "median": 8.058783,
+      "min": 8.052459,
+      "max": 8.065107
+    },
+    "cpu_ms": {
+      "median": 7987.0,
+      "min": 7973,
+      "max": 8001
+    },
+    "rtt_p50_ms": {
+      "median": 29.005365,
+      "min": 28.135521,
+      "max": 29.875209
+    },
+    "rtt_p95_ms": {
+      "median": 69.351068,
+      "min": 68.226928,
+      "max": 70.475208
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 11.751801037954486,
+      "min": 11.542367579310337,
+      "max": 11.961234496598637
+    }
+  },
+  {
+    "profile": "unshaped",
+    "label": "vpn2",
+    "direction": "download",
+    "executions": 2,
+    "seeds": [
+      800,
+      801
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 315.18519249999997,
+      "min": 313.546727,
+      "max": 316.823658
+    },
+    "cpu_ms_per_mib": {
+      "median": 20.310846364977337,
+      "min": 20.210289857997218,
+      "max": 20.411402871957453
+    },
+    "samples": {
+      "median": 29.5,
+      "min": 29,
+      "max": 30
+    },
+    "seconds": {
+      "median": 8.045758,
+      "min": 8.006208,
+      "max": 8.085308
+    },
+    "cpu_ms": {
+      "median": 6140.5,
+      "min": 6048,
+      "max": 6233
+    },
+    "rtt_p50_ms": {
+      "median": 247.221068,
+      "min": 246.894636,
+      "max": 247.5475
+    },
+    "rtt_p95_ms": {
+      "median": 277.26708299999996,
+      "min": 257.944062,
+      "max": 296.590104
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 8.297601759236455,
+      "min": 6.939070035714292,
+      "max": 9.656133482758618
+    }
+  },
+  {
+    "profile": "unshaped",
+    "label": "vpn2",
+    "direction": "upload",
+    "executions": 2,
+    "seeds": [
+      800,
+      801
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 254.7501995,
+      "min": 253.177433,
+      "max": 256.322966
+    },
+    "cpu_ms_per_mib": {
+      "median": 32.761102979185864,
+      "min": 32.547393645822865,
+      "max": 32.97481231254887
+    },
+    "samples": {
+      "median": 146.0,
+      "min": 142,
+      "max": 150
+    },
+    "seconds": {
+      "median": 8.014629,
+      "min": 8.01032,
+      "max": 8.018938
+    },
+    "cpu_ms": {
+      "median": 7973.5,
+      "min": 7972,
+      "max": 7975
+    },
+    "rtt_p50_ms": {
+      "median": 30.8245575,
+      "min": 29.87875,
+      "max": 31.770365
+    },
+    "rtt_p95_ms": {
+      "median": 73.80869849999999,
+      "min": 65.099115,
+      "max": 82.518282
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 12.320114794968825,
+      "min": 11.875542852348994,
+      "max": 12.764686737588656
+    }
+  }
+]
