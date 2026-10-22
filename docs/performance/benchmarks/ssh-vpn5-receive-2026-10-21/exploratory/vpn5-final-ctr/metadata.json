@@ -1,0 +1,38 @@
+{
+  "phases": [
+    {
+      "repetition": 0,
+      "label": "before"
+    },
+    {
+      "repetition": 0,
+      "label": "after"
+    },
+    {
+      "repetition": 1,
+      "label": "after"
+    },
+    {
+      "repetition": 1,
+      "label": "before"
+    },
+    {
+      "repetition": 2,
+      "label": "before"
+    },
+    {
+      "repetition": 2,
+      "label": "after"
+    }
+  ],
+  "java_version": "openjdk version \"25.0.4.1\" 2026-08-18 LTS\r\nOpenJDK Runtime Environment Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS)\r\nOpenJDK 64-Bit Server VM Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS, mixed mode, sharing)\r\n",
+  "library_sha256": {
+    "before": "980cfee35d369f2fd7f0266f0564b1505ffce70d18055824846084756c90c9e2",
+    "after": "777c6b4ffab213ea4db4db6cbfe29bc1d0ac3b11206b912cc2e46cf0bd9f0218"
+  },
+  "probe_sha256": "e7ea742f7b1456a05009b38b8492b91b56786bbfc85ee4f5149ef2020e9820bf",
+  "source_sha256": "3951ccffbf05c0d38da136a5dbd3d36231239c2df6432e00400707b9bc65c13f",
+  "fixture_sha256": "8262a4d2904e77acd10f583f6b523690dfd7c022323bc179bdd99676ec9ffa2d",
+  "cipher": "aes256-ctr",
+  "scope": "Loopback SSH, 1500 ms forced consumer stall; 8 MiB download + 2 MiB upload echo + 80 scheduled 32-byte echoes. No TUN/radio/Speedtest."
+}

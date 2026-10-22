@@ -1,0 +1,20 @@
+[
+  {
+    "label": "before",
+    "phases": 6,
+    "complete": 5,
+    "median_echo_before_resume": 0.0,
+    "median_phase_p50_ms": 873.3233,
+    "median_phase_p95_ms": 978.8006,
+    "median_scheduled_p95_ms": 5250.4054
+  },
+  {
+    "label": "after",
+    "phases": 6,
+    "complete": 6,
+    "median_echo_before_resume": 75.0,
+    "median_phase_p50_ms": 1.1497000000000002,
+    "median_phase_p95_ms": 132.3943,
+    "median_scheduled_p95_ms": 133.70065
+  }
+]

@@ -219,6 +219,7 @@ class ChannelReceiveLifecycleTest {
     channel.init();
     Session session = new JSch().getSession("fixture", "127.0.0.1", 22);
     session.setConfig("max_input_buffer_size", Integer.toString(capacity));
+    session.setConfig("channel_receive_isolation", "no");
     channel.setSession(session);
     return channel;
   }

@@ -1,0 +1,26 @@
+Local SSH echo fixture ready
+Exception in thread Thread-6 (burst):
+Traceback (most recent call last):
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\Telks\Desktop\vtunnel-ssh\tools\loopback_ssh.py", line 92, in burst
+    channel.sendall(block)
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\channel.py", line 844, in sendall
+    sent = self.send(s)
+           ^^^^^^^^^^^^
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\channel.py", line 799, in send
+    return self._send(s, m)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\channel.py", line 1206, in _send
+    self.transport._send_user_message(m)
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\transport.py", line 1830, in _send_user_message
+    self._send_message(data)
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\transport.py", line 1806, in _send_message
+    self.packetizer.send_message(data)
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\packet.py", line 468, in send_message
+    self.write_all(out)
+  File "C:\Users\Telks\AppData\Local\Programs\Python\Python311\Lib\site-packages\paramiko\packet.py", line 382, in write_all
+    raise EOFError()
+EOFError

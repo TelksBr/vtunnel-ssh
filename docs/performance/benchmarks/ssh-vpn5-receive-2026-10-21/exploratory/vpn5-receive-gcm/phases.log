@@ -1,0 +1,7 @@
+{"repetition": 0, "label": "before"}
+java.io.EOFException
+	at java.base/java.io.DataInputStream.readFully(DataInputStream.java:215)
+	at java.base/java.io.DataInputStream.readFully(DataInputStream.java:184)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:117)
+Exception in thread "main" java.io.IOException: Incomplete isolation phase; raw result preserved
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:153)

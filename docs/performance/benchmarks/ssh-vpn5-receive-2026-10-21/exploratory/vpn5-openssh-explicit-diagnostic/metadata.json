@@ -1,0 +1,47 @@
+{
+  "backend": "OpenSSH in the private Linux namespace",
+  "phases": [
+    {
+      "platform": "android",
+      "cipher": "aes256-ctr",
+      "repetition": 0,
+      "label": "before",
+      "exit": 0
+    },
+    {
+      "platform": "android",
+      "cipher": "aes256-ctr",
+      "repetition": 0,
+      "label": "after",
+      "exit": 0
+    },
+    {
+      "platform": "android",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 0,
+      "label": "before",
+      "exit": 0
+    },
+    {
+      "platform": "android",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 0,
+      "label": "after",
+      "exit": 0
+    }
+  ],
+  "diagnostics": true,
+  "library_sha256": {
+    "before": "a54e491f42ef5cc4990b49e7faed237b10d37ecc397d53ec2a49a88792ca88cf",
+    "after": "a54e491f42ef5cc4990b49e7faed237b10d37ecc397d53ec2a49a88792ca88cf"
+  },
+  "probe_sha256": "0ee266de6d6d5700e201bc8b26adaad27658aae6393ce36e4efce6d0874414af",
+  "source_sha256": {
+    "echo_observer.py": "17f7c9acd244ebeef20d30376d1e88b245951f05e99b06415e8d599eca61f170",
+    "lab.py": "d6c5fcabec47e411c91f3c85906380ea06b61a5044ee06596ec6253bafdb27c7",
+    "ReceiveIsolationProbe.java": "b14952d83b2d38e96613fa12e61e0fb43d04936e89f3bb303a50c2bb8b379f46"
+  },
+  "jvm_path": "Linux JVM -> direct TCP/veth -> OpenSSH -> local finite download/echo",
+  "android_path": "Android app_process -> ADB reverse -> owned Windows loopback bridge -> WSL eth0 relay restricted to Windows peer -> unshaped veth -> OpenSSH",
+  "scope": "8 MiB finite download, 2 MiB upload echo, 80 scheduled 32-byte echoes, 1500 ms consumer stall. No TUN, public VPS or real mobile radio."
+}

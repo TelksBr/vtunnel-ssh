@@ -1,0 +1,239 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.github.TelksBr:vtunnel-ssh >-------------------
+[INFO] Building VTunnel SSH 2.28.7-vpn.5-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ vtunnel-ssh ---
+[INFO] Deleting C:\Users\Telks\Desktop\vtunnel-ssh\target
+[INFO] 
+[INFO] --- flatten:1.8.0:clean (flatten.clean) @ vtunnel-ssh ---
+[INFO] Deleting C:\Users\Telks\Desktop\vtunnel-ssh\.flattened-pom.xml
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-java) @ vtunnel-ssh ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[INFO] Rule 3: org.apache.maven.enforcer.rules.BanDuplicatePomDependencyVersions passed
+[INFO] Rule 4: org.apache.maven.enforcer.rules.ReactorModuleConvergence passed
+[INFO] Rule 5: org.apache.maven.enforcer.rules.dependency.RequireUpperBoundDeps passed
+[INFO] 
+[INFO] --- toolchains:3.3.0:select-jdk-toolchain (default) @ vtunnel-ssh ---
+[INFO] Not using an external toolchain as the current JDK 'JDK[C:\Program Files\Eclipse Adoptium\jdk-25.0.4.101-hotspot]' matches the requirements.
+[INFO] 
+[INFO] --- build-helper:3.6.1:regex-property (default) @ vtunnel-ssh ---
+[INFO] 
+[INFO] --- templating:3.1.0:filter-sources (default) @ vtunnel-ssh ---
+[INFO] Copying files with filtering to temporary directory.
+[INFO] Copying 1 resource from src\main\java-templates to target\templates-tmp3984991292
+[INFO] Copied 1 files to output directory: C:\Users\Telks\Desktop\vtunnel-ssh\target\generated-sources\java-templates
+[INFO] Source directory: C:\Users\Telks\Desktop\vtunnel-ssh\target\generated-sources\java-templates added.
+[INFO] 
+[INFO] --- formatter:2.29.0:format (format) @ vtunnel-ssh ---
+[INFO] Processed 345 files in 3s815ms (Formatted: 0, Skipped: 0, Unchanged: 345, Failed: 0, Readonly: 0)
+[INFO] 
+[INFO] --- impsort:1.13.0:sort (sort-imports) @ vtunnel-ssh ---
+[INFO] Processed 345 files in 00:01.840 (Already Sorted: 344, Needed Sorting: 1)
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ vtunnel-ssh ---
+[INFO] skip non existing resourceDirectory C:\Users\Telks\Desktop\vtunnel-ssh\src\main\resources
+[INFO] 
+[INFO] --- flatten:1.8.0:flatten (flatten) @ vtunnel-ssh ---
+[INFO] Generating flattened POM of project com.github.TelksBr:vtunnel-ssh:jar:2.28.7-vpn.5-SNAPSHOT...
+[INFO] 
+[INFO] --- resources:3.5.0:copy-resources (copy-licenses) @ vtunnel-ssh ---
+[INFO] Copying 3 resources from . to target\classes\META-INF
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ vtunnel-ssh ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 260 source files with javac [debug deprecation release 8] to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-9) @ vtunnel-ssh ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug deprecation release 9 module-path] to target\classes\META-INF\versions\9
+[INFO] JDK-8318913 workaround: patched module-info.class requires version from [9] to [9] on 2 JDK modules [java.base, java.logging]
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-10) @ vtunnel-ssh ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug deprecation release 10] to target\classes\META-INF\versions\10
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-11) @ vtunnel-ssh ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug deprecation release 11] to target\classes\META-INF\versions\11
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-15) @ vtunnel-ssh ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 4 source files with javac [debug deprecation release 15] to target\classes\META-INF\versions\15
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-24) @ vtunnel-ssh ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [debug deprecation release 24] to target\classes\META-INF\versions\24
+[INFO] 
+[INFO] --- bnd:7.3.0:bnd-process (bnd-process) @ vtunnel-ssh ---
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ vtunnel-ssh ---
+[INFO] Copying 244 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ vtunnel-ssh ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 68 source files with javac [debug deprecation release 8] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ vtunnel-ssh ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.jcraft.jsch.ChannelReceiveIsolationTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.837 s -- in com.jcraft.jsch.ChannelReceiveIsolationTest
+[INFO] Running com.jcraft.jsch.ChannelReceiveLifecycleTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.220 s -- in com.jcraft.jsch.ChannelReceiveLifecycleTest
+[INFO] Running com.jcraft.jsch.ChannelReceiveWakeupTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in com.jcraft.jsch.ChannelReceiveWakeupTest
+[INFO] Running com.jcraft.jsch.ChannelSendIsolationTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.128 s -- in com.jcraft.jsch.ChannelSendIsolationTest
+[INFO] Running com.jcraft.jsch.ChannelWindowAdjustIsolationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.067 s -- in com.jcraft.jsch.ChannelWindowAdjustIsolationTest
+[INFO] Running com.jcraft.jsch.HostKeyTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in com.jcraft.jsch.HostKeyTest
+[INFO] Running com.jcraft.jsch.jbcrypt.BCryptTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.46 s -- in com.jcraft.jsch.jbcrypt.BCryptTest
+[INFO] Running com.jcraft.jsch.JSchAddIdentityTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in com.jcraft.jsch.JSchAddIdentityTest
+[INFO] Running com.jcraft.jsch.JSchTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.jcraft.jsch.JSchTest
+[INFO] Running com.jcraft.jsch.JulLoggerTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.jcraft.jsch.JulLoggerTest
+[INFO] Running com.jcraft.jsch.jzlib.Adler32Test
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.jcraft.jsch.jzlib.Adler32Test
+[INFO] Running com.jcraft.jsch.jzlib.CRC32Test
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.jcraft.jsch.jzlib.CRC32Test
+[INFO] Running com.jcraft.jsch.jzlib.DeflateInflateTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in com.jcraft.jsch.jzlib.DeflateInflateTest
+[INFO] Running com.jcraft.jsch.jzlib.DeflaterInflaterStreamTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in com.jcraft.jsch.jzlib.DeflaterInflaterStreamTest
+[INFO] Running com.jcraft.jsch.jzlib.WrapperTypeTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.jcraft.jsch.jzlib.WrapperTypeTest
+[INFO] Running com.jcraft.jsch.KeyExchangeTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 55.52 s -- in com.jcraft.jsch.KeyExchangeTest
+[INFO] Running com.jcraft.jsch.KeyPair2Test
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.477 s -- in com.jcraft.jsch.KeyPair2Test
+[INFO] Running com.jcraft.jsch.KeyPairTest
+[INFO] Tests run: 103, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.221 s -- in com.jcraft.jsch.KeyPairTest
+[INFO] Running com.jcraft.jsch.KnownHostsTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.223 s -- in com.jcraft.jsch.KnownHostsTest
+[INFO] Running com.jcraft.jsch.Log4j2LoggerTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.319 s -- in com.jcraft.jsch.Log4j2LoggerTest
+[INFO] Running com.jcraft.jsch.LoggerTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.jcraft.jsch.LoggerTest
+[INFO] Running com.jcraft.jsch.OpenSshCertificateAwareIdentityFileTest
+[INFO] Tests run: 47, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.208 s -- in com.jcraft.jsch.OpenSshCertificateAwareIdentityFileTest
+[INFO] Running com.jcraft.jsch.OpenSshCertificateBufferTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.jcraft.jsch.OpenSshCertificateBufferTest
+[INFO] Running com.jcraft.jsch.OpenSshCertificateHostKeyVerifierTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in com.jcraft.jsch.OpenSshCertificateHostKeyVerifierTest
+[INFO] Running com.jcraft.jsch.OpenSshCertificateKeyTypesTest
+[INFO] Tests run: 79, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in com.jcraft.jsch.OpenSshCertificateKeyTypesTest
+[INFO] Running com.jcraft.jsch.OpenSshCertificateUtilTest
+[INFO] Tests run: 64, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in com.jcraft.jsch.OpenSshCertificateUtilTest
+[INFO] Running com.jcraft.jsch.OpenSSHConfigTest
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in com.jcraft.jsch.OpenSSHConfigTest
+[INFO] Running com.jcraft.jsch.SessionExtInfoTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.jcraft.jsch.SessionExtInfoTest
+[INFO] Running com.jcraft.jsch.SessionFlowContentionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in com.jcraft.jsch.SessionFlowContentionTest
+[INFO] Running com.jcraft.jsch.SessionFlowMetricsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.jcraft.jsch.SessionFlowMetricsTest
+[INFO] Running com.jcraft.jsch.SessionNegotiatedAlgorithmsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.jcraft.jsch.SessionNegotiatedAlgorithmsTest
+[INFO] Running com.jcraft.jsch.SessionStrictKexTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.jcraft.jsch.SessionStrictKexTest
+[INFO] Running com.jcraft.jsch.SessionTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in com.jcraft.jsch.SessionTest
+[INFO] Running com.jcraft.jsch.SessionWindowCreditTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.245 s -- in com.jcraft.jsch.SessionWindowCreditTest
+[INFO] Running com.jcraft.jsch.Slf4jLoggerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.jcraft.jsch.Slf4jLoggerTest
+[INFO] Running com.jcraft.jsch.TunnelScopeTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.jcraft.jsch.TunnelScopeTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 550, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ vtunnel-ssh ---
+[INFO] Building jar: C:\Users\Telks\Desktop\vtunnel-ssh\target\vtunnel-ssh-2.28.7-vpn.5-SNAPSHOT.jar
+[INFO] 
+[INFO] --- assembly:3.8.0:single (attach-sources) @ vtunnel-ssh ---
+[INFO] Reading assembly descriptor: C:\Users\Telks\Desktop\vtunnel-ssh/src/assembly/sources.xml
+[INFO] Building jar: C:\Users\Telks\Desktop\vtunnel-ssh\target\vtunnel-ssh-2.28.7-vpn.5-SNAPSHOT-sources.jar
+[INFO] 
+[INFO] --- javadoc:3.12.0:jar (attach-javadocs) @ vtunnel-ssh ---
+[INFO] Building jar: C:\Users\Telks\Desktop\vtunnel-ssh\target\vtunnel-ssh-2.28.7-vpn.5-SNAPSHOT-javadoc.jar
+[INFO] 
+[INFO] --- cyclonedx:2.9.3:makeBom (default) @ vtunnel-ssh ---
+[INFO] CycloneDX: Resolving Dependencies
+[INFO] CycloneDX: Creating BOM version 1.6 with 1 component(s)
+[INFO] CycloneDX: Writing and validating BOM (XML): C:\Users\Telks\Desktop\vtunnel-ssh\target\bom.xml
+[INFO]            attaching as vtunnel-ssh-2.28.7-vpn.5-SNAPSHOT-cyclonedx.xml
+[INFO] CycloneDX: Writing and validating BOM (JSON): C:\Users\Telks\Desktop\vtunnel-ssh\target\bom.json
+[WARNING] Unknown keyword meta:enum - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword or if it should generate annotations AnnotationKeyword
+[WARNING] Unknown keyword deprecated - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword or if it should generate annotations AnnotationKeyword
+[INFO]            attaching as vtunnel-ssh-2.28.7-vpn.5-SNAPSHOT-cyclonedx.json
+[INFO] 
+[INFO] --- spdx:1.0.4:createSPDX (default) @ vtunnel-ssh ---
+[INFO] spdx file type = .json
+[INFO] Creating SPDX File C:\Users\Telks\Desktop\vtunnel-ssh\target\site\com.github.TelksBr_vtunnel-ssh-2.28.7-vpn.5-SNAPSHOT.spdx.json
+[WARNING] Unable to map maven licenses to a declared license.  Using NOASSERTION
+[INFO] 
+[INFO] --- failsafe:3.5.6:integration-test (default) @ vtunnel-ssh ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.jcraft.jsch.TunnelLoopbackIT
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.322 s -- in com.jcraft.jsch.TunnelLoopbackIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:3.5.6:verify (default) @ vtunnel-ssh ---
+[INFO] 
+[INFO] --- formatter:2.29.0:validate (default) @ vtunnel-ssh ---
+[INFO] Processed 345 files in 1s71ms (Formatted: 0, Skipped: 344, Unchanged: 1, Failed: 0, Readonly: 0)
+[INFO] 
+[INFO] --- impsort:1.13.0:check (default) @ vtunnel-ssh ---
+[INFO] Processed 345 files in 00:00.355 (Already Sorted: 345, Needed Sorting: 0)
+[INFO] 
+[INFO] --- forbiddenapis:3.10:check (check) @ vtunnel-ssh ---
+[INFO] Scanning for classes to check...
+[INFO] Reading bundled API signatures: jdk-unsafe-25
+[INFO] Reading bundled API signatures: jdk-deprecated-25
+[INFO] Reading bundled API signatures: jdk-non-portable
+[INFO] Reading bundled API signatures: jdk-reflection
+[INFO] Reading bundled API signatures: jdk-system-out
+[INFO] Loading classes to check...
+[INFO] Scanning classes for violations...
+[INFO] Scanned 291 class file(s) for forbidden API invocations (in 0.72s), 0 error(s).
+[INFO] 
+[INFO] --- forbiddenapis:3.10:testCheck (testCheck) @ vtunnel-ssh ---
+[INFO] Scanning for classes to check...
+[INFO] Reading bundled API signatures: jdk-unsafe-25
+[INFO] Reading bundled API signatures: jdk-deprecated-25
+[INFO] Reading bundled API signatures: jdk-non-portable
+[INFO] Reading bundled API signatures: jdk-reflection
+[INFO] Reading bundled API signatures: commons-io-unsafe-2.20.0
+[INFO] Loading classes to check...
+[INFO] Scanning classes for violations...
+[INFO] Scanned 106 class file(s) for forbidden API invocations (in 0.45s), 0 error(s).
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:48 min
+[INFO] Finished at: 2026-10-21T20:54:02-03:00
+[INFO] ------------------------------------------------------------------------

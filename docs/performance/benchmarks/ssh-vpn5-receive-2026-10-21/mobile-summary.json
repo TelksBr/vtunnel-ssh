@@ -1,0 +1,202 @@
+[
+  {
+    "profile": "mobile-jitter",
+    "label": "after",
+    "direction": "download",
+    "executions": 3,
+    "seeds": [
+      1600,
+      1601,
+      1602
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 9.675823,
+      "min": 4.021178,
+      "max": 9.917089
+    },
+    "cpu_ms_per_mib": null,
+    "samples": {
+      "median": 5,
+      "min": 5,
+      "max": 5
+    },
+    "seconds": {
+      "median": 9.644995,
+      "min": 8.083665,
+      "max": 9.701118
+    },
+    "cpu_ms": {
+      "median": -1,
+      "min": -1,
+      "max": -1
+    },
+    "rtt_p50_ms": {
+      "median": 1990.296144,
+      "min": 1571.203061,
+      "max": 2065.442037
+    },
+    "rtt_p95_ms": {
+      "median": 2015.269007,
+      "min": 1635.133703,
+      "max": 2169.981445
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 287.23671175,
+      "min": 164.81573874999998,
+      "max": 383.1237817499999
+    }
+  },
+  {
+    "profile": "mobile-jitter",
+    "label": "after",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      1600,
+      1601,
+      1602
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 2.750663,
+      "min": 2.72769,
+      "max": 2.75301
+    },
+    "cpu_ms_per_mib": null,
+    "samples": {
+      "median": 3,
+      "min": 3,
+      "max": 3
+    },
+    "seconds": {
+      "median": 12.145807,
+      "min": 10.812776,
+      "max": 12.799111
+    },
+    "cpu_ms": {
+      "median": -1,
+      "min": -1,
+      "max": -1
+    },
+    "rtt_p50_ms": {
+      "median": 3938.20449,
+      "min": 3720.17608,
+      "max": 4171.96775
+    },
+    "rtt_p95_ms": {
+      "median": 3938.20449,
+      "min": 3720.17608,
+      "max": 4171.96775
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 1341.8977375,
+      "min": 1316.353489,
+      "max": 2111.683932
+    }
+  },
+  {
+    "profile": "mobile-jitter",
+    "label": "before",
+    "direction": "download",
+    "executions": 3,
+    "seeds": [
+      1600,
+      1601,
+      1602
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 5.606892,
+      "min": 5.291164,
+      "max": 10.026719
+    },
+    "cpu_ms_per_mib": null,
+    "samples": {
+      "median": 5,
+      "min": 5,
+      "max": 6
+    },
+    "seconds": {
+      "median": 9.568903,
+      "min": 8.447207,
+      "max": 9.888447
+    },
+    "cpu_ms": {
+      "median": -1,
+      "min": -1,
+      "max": -1
+    },
+    "rtt_p50_ms": {
+      "median": 1639.115207,
+      "min": 1579.801252,
+      "max": 2047.501195
+    },
+    "rtt_p95_ms": {
+      "median": 1744.93807,
+      "min": 1703.133273,
+      "max": 2098.901351
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 217.00848174999993,
+      "min": 182.02157359999995,
+      "max": 276.51754775000006
+    }
+  },
+  {
+    "profile": "mobile-jitter",
+    "label": "before",
+    "direction": "upload",
+    "executions": 3,
+    "seeds": [
+      1600,
+      1601,
+      1602
+    ],
+    "timeouts_total": 0,
+    "timeout_stages": {},
+    "load_errors_total": 0,
+    "goodput_mbps": {
+      "median": 2.731957,
+      "min": 2.144089,
+      "max": 2.74686
+    },
+    "cpu_ms_per_mib": null,
+    "samples": {
+      "median": 3,
+      "min": 2,
+      "max": 3
+    },
+    "seconds": {
+      "median": 10.604809,
+      "min": 8.886562,
+      "max": 10.642296
+    },
+    "cpu_ms": {
+      "median": -1,
+      "min": -1,
+      "max": -1
+    },
+    "rtt_p50_ms": {
+      "median": 3722.421789,
+      "min": 3297.237973,
+      "max": 4577.229125
+    },
+    "rtt_p95_ms": {
+      "median": 3722.421789,
+      "min": 3297.237973,
+      "max": 4577.229125
+    },
+    "adjacent_rtt_jitter_ms": {
+      "median": 1051.7797235,
+      "min": 762.5567485,
+      "max": 1402.3077320000002
+    }
+  }
+]

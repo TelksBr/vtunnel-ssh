@@ -73,15 +73,14 @@ public class ChannelDirectTCPIP extends Channel {
         sendChannelOpen();
       }
     } catch (Exception e) {
-      io.close();
+      disconnect();
+      if (io != null)
+        io.close();
       io = null;
-      Session _session = this.session;
-      if (_session != null) {
-        _session.delChannel(this);
-      }
       if (e instanceof JSchException) {
         throw (JSchException) e;
       }
+      throw new JSchException(e.toString(), e);
     }
   }
 
@@ -134,7 +133,7 @@ public class ChannelDirectTCPIP extends Channel {
 
   @Override
   public void setOutputStream(OutputStream out) {
-    io.setOutputStream(out);
+    super.setOutputStream(out);
   }
 
   public void setHost(String host) {

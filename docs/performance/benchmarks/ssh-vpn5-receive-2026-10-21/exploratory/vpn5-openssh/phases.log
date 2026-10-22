@@ -1,0 +1,257 @@
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 0, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 0, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 1, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 1, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 2, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 2, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 1, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 1, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 2, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 2, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 0, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:1986)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 0, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:2031)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 1, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 1, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:1986)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 2, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:1986)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 2, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:2031)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:1986)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:2031)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 1, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:2031)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 1, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:1986)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 2, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:1986)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 2, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:2031)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+java.io.EOFException
+	at java.io.DataInputStream.readFully(DataInputStream.java:205)
+	at java.io.DataInputStream.readFully(DataInputStream.java:173)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:150)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Killed 

@@ -1,0 +1,186 @@
+{
+  "backend": "OpenSSH in the private Linux namespace",
+  "phases": [
+    {
+      "platform": "jvm",
+      "cipher": "aes256-ctr",
+      "repetition": 0,
+      "label": "before",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes256-ctr",
+      "repetition": 0,
+      "label": "after",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes256-ctr",
+      "repetition": 1,
+      "label": "after",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes256-ctr",
+      "repetition": 1,
+      "label": "before",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes256-ctr",
+      "repetition": 2,
+      "label": "before",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes256-ctr",
+      "repetition": 2,
+      "label": "after",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 0,
+      "label": "before",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 0,
+      "label": "after",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 1,
+      "label": "after",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 1,
+      "label": "before",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 2,
+      "label": "before",
+      "exit": 0
+    },
+    {
+      "platform": "jvm",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 2,
+      "label": "after",
+      "exit": 0
+    },
+    {
+      "platform": "android",
+      "cipher": "aes256-ctr",
+      "repetition": 0,
+      "label": "before",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes256-ctr",
+      "repetition": 0,
+      "label": "after",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes256-ctr",
+      "repetition": 1,
+      "label": "after",
+      "exit": 0
+    },
+    {
+      "platform": "android",
+      "cipher": "aes256-ctr",
+      "repetition": 1,
+      "label": "before",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes256-ctr",
+      "repetition": 2,
+      "label": "before",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes256-ctr",
+      "repetition": 2,
+      "label": "after",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 0,
+      "label": "before",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 0,
+      "label": "after",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 1,
+      "label": "after",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 1,
+      "label": "before",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 2,
+      "label": "before",
+      "exit": 137
+    },
+    {
+      "platform": "android",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 2,
+      "label": "after",
+      "exit": 137
+    }
+  ],
+  "library_sha256": {
+    "before": "980cfee35d369f2fd7f0266f0564b1505ffce70d18055824846084756c90c9e2",
+    "after": "a54e491f42ef5cc4990b49e7faed237b10d37ecc397d53ec2a49a88792ca88cf"
+  },
+  "probe_sha256": "e24cfce2d27f2626e5cbd81843e68ca8fa349e886a56d966eaefe2f789032263",
+  "source_sha256": {
+    "echo_observer.py": "17f7c9acd244ebeef20d30376d1e88b245951f05e99b06415e8d599eca61f170",
+    "lab.py": "84e0df39ecc2d19750660f489d6934d13538eb9f007018aace4663820511383a",
+    "ReceiveIsolationProbe.java": "b14952d83b2d38e96613fa12e61e0fb43d04936e89f3bb303a50c2bb8b379f46"
+  },
+  "jvm_path": "Linux JVM -> direct TCP/veth -> OpenSSH -> local finite download/echo",
+  "android_path": "Android app_process -> ADB reverse -> TCP relay -> unshaped veth -> OpenSSH",
+  "scope": "8 MiB finite download, 2 MiB upload echo, 80 scheduled 32-byte echoes, 1500 ms consumer stall. No TUN, public VPS or real mobile radio."
+}

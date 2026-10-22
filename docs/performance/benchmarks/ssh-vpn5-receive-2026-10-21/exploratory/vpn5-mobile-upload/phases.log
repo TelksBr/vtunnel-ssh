@@ -1,0 +1,11 @@
+seed=1500 library=before profile=mobile-jitter
+Exception in thread "main" java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:694)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at com.jcraft.jsch.TunnelNetworkProbe.control(TunnelNetworkProbe.java:151)
+	at com.jcraft.jsch.TunnelNetworkProbe.measure(TunnelNetworkProbe.java:188)
+	at com.jcraft.jsch.TunnelNetworkProbe.main(TunnelNetworkProbe.java:40)

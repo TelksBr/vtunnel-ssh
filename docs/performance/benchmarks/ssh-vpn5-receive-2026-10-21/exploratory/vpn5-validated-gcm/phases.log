@@ -1,0 +1,12 @@
+{"repetition": 0, "label": "before"}
+{"repetition": 0, "label": "after"}
+{"repetition": 1, "label": "after"}
+java.io.EOFException
+	at java.base/java.io.DataInputStream.readFully(DataInputStream.java:215)
+	at java.base/java.io.DataInputStream.readFully(DataInputStream.java:184)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:119)
+Exception in thread "main" java.io.IOException: Incomplete isolation phase; raw result preserved
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:162)
+{"repetition": 1, "label": "before"}
+{"repetition": 2, "label": "before"}
+{"repetition": 2, "label": "after"}

@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: Idle channel reserved 4325376 bytes; expected zero for 128-channel compatibility
+	at com.jcraft.jsch.ReceivePolicyRedProbe.main(ReceivePolicyRedProbe.java:9)

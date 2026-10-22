@@ -4,7 +4,7 @@
     <groupId>com.github.TelksBr</groupId>
     <artifactId>vtunnel-ssh</artifactId>
     <packaging>jar</packaging>
-    <version>2.28.7-vpn.4</version>
+    <version>2.28.7-vpn.5</version>
     <name>VTunnel SSH</name>
     <url>https://github.com/TelksBr/vtunnel-ssh</url>
     <description>SSH transport and forwarding for VTunnel VPN</description>
@@ -12,7 +12,7 @@
         <connection>scm:git:https://github.com/TelksBr/vtunnel-ssh.git</connection>
         <developerConnection>scm:git:https://github.com/TelksBr/vtunnel-ssh.git</developerConnection>
         <url>https://github.com/TelksBr/vtunnel-ssh</url>
-        <tag>2.28.7-vpn.4</tag>
+        <tag>2.28.7-vpn.5</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>

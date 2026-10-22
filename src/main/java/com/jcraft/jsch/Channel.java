@@ -77,6 +77,14 @@ public abstract class Channel {
   // Keep potentially blocking data/lifecycle writes separate from incoming credit updates.
   final Object sendLock = new Object();
 
+  private final Object receiveLock = new Object();
+  private final Object receiveCreditLock = new Object();
+  private ChannelReceiveBuffer receiveInput, receiveExtInput;
+  private long receiveReservation;
+  private int receiveCapacity, receiveBuffered, receiveConsumed;
+  private boolean receiveEnded;
+  private boolean receiveAllocated;
+
   int notifyme = 0;
 
   Channel() {
@@ -141,22 +149,28 @@ public abstract class Channel {
   }
 
   public void setOutputStream(OutputStream out) {
+    requireCustomReceiveSink(false);
     io.setOutputStream(out, false);
   }
 
   public void setOutputStream(OutputStream out, boolean dontclose) {
+    requireCustomReceiveSink(false);
     io.setOutputStream(out, dontclose);
   }
 
   public void setExtOutputStream(OutputStream out) {
+    requireCustomReceiveSink(true);
     io.setExtOutputStream(out, false);
   }
 
   public void setExtOutputStream(OutputStream out, boolean dontclose) {
+    requireCustomReceiveSink(true);
     io.setExtOutputStream(out, dontclose);
   }
 
   public InputStream getInputStream() throws IOException {
+    if (!"no".equals(session.getConfig("channel_receive_isolation")))
+      return createReceiveStream(false);
     Session _session = this.session;
     if (_session != null && isConnected() && _session.getLogger().isEnabled(Logger.WARN)) {
       _session.getLogger().log(Logger.WARN, "getInputStream() should be called before connect()");
@@ -175,6 +189,8 @@ public abstract class Channel {
   }
 
   public InputStream getExtInputStream() throws IOException {
+    if (!"no".equals(session.getConfig("channel_receive_isolation")))
+      return createReceiveStream(true);
     Session _session = this.session;
     if (_session != null && isConnected() && _session.getLogger().isEnabled(Logger.WARN)) {
       _session.getLogger().log(Logger.WARN,
@@ -457,6 +473,162 @@ public abstract class Channel {
     write(foo, 0, foo.length);
   }
 
+  private InputStream createReceiveStream(boolean extended) throws IOException {
+    synchronized (receiveLock) {
+      if (connected || receiveCapacity != 0 || receiveEnded)
+        throw new IOException("Configure SSH receive streams before connecting");
+      if ((extended ? receiveExtInput : receiveInput) != null)
+        throw new IOException("SSH receive stream already configured");
+      final ChannelReceiveBuffer input = new ChannelReceiveBuffer(this);
+      OutputStream sink = new OutputStream() {
+        @Override
+        public void write(int value) throws IOException {
+          write(new byte[] {(byte) value}, 0, 1);
+        }
+
+        @Override
+        public void write(byte[] bytes, int offset, int length) throws IOException {
+          input.offer(bytes, offset, length);
+        }
+
+        @Override
+        public void close() {
+          input.end();
+        }
+      };
+      if (extended) {
+        receiveExtInput = input;
+        io.setExtOutputStream(sink, false);
+      } else {
+        receiveInput = input;
+        io.setOutputStream(sink, false);
+      }
+      return input;
+    }
+  }
+
+  private void requireCustomReceiveSink(boolean extended) {
+    synchronized (receiveLock) {
+      if ((extended ? receiveExtInput : receiveInput) != null)
+        throw new IllegalStateException(
+            "Choose either managed SSH input or a custom output stream");
+    }
+  }
+
+  void prepareReceive() throws IOException {
+    synchronized (receiveLock) {
+      if (receiveInput == null && receiveExtInput == null)
+        return;
+      if (receiveEnded)
+        throw new IOException("SSH receive channel is closed");
+      if (receiveCapacity == 0) {
+        if (lwsize_max <= 0 || lwsize != lwsize_max)
+          throw new IOException("Invalid SSH receive window");
+        // Two streams can each retain a partially consumed head and a partial tail.
+        long reservation = (long) lwsize_max + 4L * ChannelReceiveBuffer.SEGMENT;
+        String policy = session.getConfig("channel_receive_budget_policy");
+        if (policy != null && !"allocated".equals(policy) && !"reserve".equals(policy))
+          throw new IOException("Invalid SSH receive budget policy");
+        receiveAllocated = !"reserve".equals(policy);
+        session.reserveReceiveMemory(receiveAllocated ? 0 : reservation);
+        receiveCapacity = lwsize_max;
+        receiveReservation = receiveAllocated ? 0 : reservation;
+      }
+    }
+  }
+
+  boolean receiveData(byte[] bytes, int offset, int length, boolean extended) throws IOException {
+    if (receiveInput == null && receiveExtInput == null)
+      return false;
+    prepareReceive();
+    ChannelReceiveBuffer input = extended ? receiveExtInput : receiveInput;
+    synchronized (receiveLock) {
+      if (receiveEnded || length < 0 || length > lwsize
+          || length > receiveCapacity - receiveBuffered)
+        throw new IOException("SSH channel exceeded its receive window");
+      lwsize -= length;
+      receiveBuffered += length;
+      if (input != null) {
+        try {
+          session.deliverBufferedChannelData(input, bytes, offset, length);
+        } catch (IOException failure) {
+          receiveBuffered -= length;
+          receiveEnded = true;
+          if (receiveInput != null)
+            receiveBuffered -= receiveInput.fail(failure);
+          if (receiveExtInput != null)
+            receiveBuffered -= receiveExtInput.fail(failure);
+          releaseReceiveIfDrained();
+          throw failure;
+        }
+        return true;
+      }
+    }
+    // Custom OutputStreams retain synchronous delivery semantics.
+    session.deliverChannelData(this, bytes, offset, length, extended);
+    consumeReceiveBytes(length);
+    return true;
+  }
+
+  void reserveReceiveSegments(long bytes) throws IOException {
+    if (receiveAllocated && bytes > 0)
+      session.reserveReceiveMemory(bytes);
+  }
+
+  void releaseReceiveSegments(long bytes) {
+    if (receiveAllocated && bytes > 0)
+      session.releaseReceiveMemory(bytes);
+  }
+
+  void consumeReceiveBytes(int count) throws IOException {
+    synchronized (receiveCreditLock) {
+      int adjustment = 0;
+      synchronized (receiveLock) {
+        receiveBuffered -= count;
+        receiveConsumed += count;
+        if (!receiveEnded && !close && receiveConsumed >= Math.min(262144, receiveCapacity / 4)) {
+          adjustment = receiveConsumed;
+          receiveConsumed = 0;
+          lwsize += adjustment;
+        }
+        releaseReceiveIfDrained();
+      }
+      if (adjustment > 0) {
+        try {
+          session.sendChannelReceiveCredit(this, adjustment);
+        } catch (Exception failure) {
+          disconnect();
+          throw new IOException("Failed to restore SSH receive credit", failure);
+        }
+      }
+    }
+  }
+
+  void discardReceiveBytes(int count) {
+    synchronized (receiveLock) {
+      receiveBuffered -= count;
+      releaseReceiveIfDrained();
+    }
+  }
+
+  private void endReceive() {
+    synchronized (receiveLock) {
+      receiveEnded = true;
+      if (receiveInput != null)
+        receiveInput.end();
+      if (receiveExtInput != null)
+        receiveExtInput.end();
+      releaseReceiveIfDrained();
+    }
+  }
+
+  private void releaseReceiveIfDrained() {
+    if (receiveEnded && receiveBuffered == 0 && receiveReservation != 0) {
+      session.releaseReceiveMemory(receiveReservation);
+      receiveReservation = 0;
+    }
+  }
+
   void write(byte[] foo, int s, int l) throws IOException {
     try {
       io.put(foo, s, l);
@@ -473,6 +645,7 @@ public abstract class Channel {
 
   void eof_remote() {
     eof_remote = true;
+    endReceive();
     try {
       io.out_close();
     } catch (NullPointerException e) {
@@ -591,6 +764,7 @@ public abstract class Channel {
       }
       // io=null;
     } finally {
+      endReceive();
       Session _session = this.session;
       if (_session != null) {
         _session.delChannel(this);
@@ -747,6 +921,7 @@ public abstract class Channel {
       throw new JSchException("session is down");
     }
 
+    prepareReceive();
     Packet packet = genChannelOpenPacket();
     _session.write(packet);
 

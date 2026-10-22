@@ -1,0 +1,66 @@
+[
+  {
+    "platform_cipher": "JVM Linux CTR",
+    "label": "before",
+    "phases": 3,
+    "complete": 3,
+    "echo_before_resume_median": 0,
+    "completed_scheduled_p95_median_ms": 1535.347696
+  },
+  {
+    "platform_cipher": "JVM Linux CTR",
+    "label": "after",
+    "phases": 3,
+    "complete": 3,
+    "echo_before_resume_median": 75,
+    "completed_scheduled_p95_median_ms": 12.658293
+  },
+  {
+    "platform_cipher": "JVM Linux GCM",
+    "label": "before",
+    "phases": 3,
+    "complete": 3,
+    "echo_before_resume_median": 0,
+    "completed_scheduled_p95_median_ms": 1531.940071
+  },
+  {
+    "platform_cipher": "JVM Linux GCM",
+    "label": "after",
+    "phases": 3,
+    "complete": 3,
+    "echo_before_resume_median": 75,
+    "completed_scheduled_p95_median_ms": 11.552528
+  },
+  {
+    "platform_cipher": "Android CTR",
+    "label": "before",
+    "phases": 3,
+    "complete": 3,
+    "echo_before_resume_median": 0,
+    "completed_scheduled_p95_median_ms": 1970.456562
+  },
+  {
+    "platform_cipher": "Android CTR",
+    "label": "after",
+    "phases": 3,
+    "complete": 3,
+    "echo_before_resume_median": 75,
+    "completed_scheduled_p95_median_ms": 1033.428489
+  },
+  {
+    "platform_cipher": "Android GCM",
+    "label": "before",
+    "phases": 3,
+    "complete": 3,
+    "echo_before_resume_median": 0,
+    "completed_scheduled_p95_median_ms": 1987.715832
+  },
+  {
+    "platform_cipher": "Android GCM",
+    "label": "after",
+    "phases": 3,
+    "complete": 3,
+    "echo_before_resume_median": 75,
+    "completed_scheduled_p95_median_ms": 76.848593
+  }
+]

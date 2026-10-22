@@ -1,0 +1,46 @@
+{"repetition": 0, "label": "before"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 0, "label": "after"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 1, "label": "after"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 1, "label": "before"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 2, "label": "before"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Connection reset by peer
+java.net.SocketException: Connection reset by peer
+	at java.base/sun.nio.ch.SocketDispatcher.write0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:57)
+	at java.base/sun.nio.ch.NioSocketImpl.tryWrite(NioSocketImpl.java:402)
+	at java.base/sun.nio.ch.NioSocketImpl.implWrite(NioSocketImpl.java:418)
+	at java.base/sun.nio.ch.NioSocketImpl.write(NioSocketImpl.java:448)
+	at java.base/sun.nio.ch.NioSocketImpl$2.write(NioSocketImpl.java:821)
+	at java.base/java.net.Socket$SocketOutputStream.implWrite(Socket.java:1086)
+	at java.base/java.net.Socket$SocketOutputStream.write(Socket.java:1076)
+	at com.jcraft.jsch.IO.put(IO.java:71)
+	at com.jcraft.jsch.Session._write(Session.java:1933)
+	at com.jcraft.jsch.Session.write(Session.java:1901)
+	at com.jcraft.jsch.Session.run(Session.java:2056)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+
+java.io.EOFException
+	at java.base/java.io.DataInputStream.readFully(DataInputStream.java:215)
+	at java.base/java.io.DataInputStream.readFully(DataInputStream.java:184)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:126)
+Exception in thread "main" java.io.IOException: Incomplete isolation phase; raw result preserved
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:169)
+{"repetition": 2, "label": "after"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 3, "label": "after"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 3, "label": "before"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 4, "label": "before"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 4, "label": "after"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 5, "label": "after"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.
+{"repetition": 5, "label": "before"}
+Permanently added '[127.0.0.1]:41557' (RSA) to the list of known hosts.

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.DataInputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,16 +18,162 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /** Runs against tools/loopback_ssh.py, independently of Docker and external networks. */
 @EnabledIfEnvironmentVariable(named = "VTUNNEL_SSH_TEST_PORT", matches = "[0-9]+")
 @Timeout(30)
 class TunnelLoopbackIT {
+  @Test
+  void allocatedBudgetSupports128ConcurrentSmallTunnels() throws Exception {
+    Session session = connect(false);
+    List<ChannelDirectTCPIP> channels = new ArrayList<>();
+    List<InputStream> inputs = new ArrayList<>();
+    try {
+      for (int i = 0; i < 128; i++) {
+        ChannelDirectTCPIP channel = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+        channels.add(channel);
+        channel.setHost("echo.vtunnel.test");
+        channel.setPort(7);
+        channel.setLocalWindowSizeMax(4 * 1024 * 1024);
+        channel.setLocalWindowSize(4 * 1024 * 1024);
+        inputs.add(channel.getInputStream());
+        channel.connect(5000);
+      }
+      assertEquals(0, session.reservedReceiveMemory());
+      for (int i = 0; i < 128; i++) {
+        OutputStream output = channels.get(i).getOutputStream();
+        output.write(i);
+        output.flush();
+        assertEquals(i, inputs.get(i).read());
+      }
+      assertEquals(4L * 1024 * 1024, session.reservedReceiveMemory());
+      assertTrue(session.isConnected());
+    } finally {
+      for (InputStream input : inputs)
+        input.close();
+      for (ChannelDirectTCPIP channel : channels)
+        channel.disconnect();
+      session.disconnect();
+    }
+    assertEquals(0, session.reservedReceiveMemory());
+  }
+
+  @Test
+  @EnabledIfEnvironmentVariable(named = "VTUNNEL_SSH_TEST_RECEIVE_ISOLATION", matches = "true")
+  void memoryPressureFailsTheOffendingTunnelWithoutEndingTheSession() throws Exception {
+    Session session = connect(false);
+    session.setConfig("channel_receive_memory_limit", "65536");
+    ChannelDirectTCPIP slow = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+    slow.setHost("burst.vtunnel.test");
+    slow.setPort(7);
+    slow.setLocalWindowSizeMax(4 * 1024 * 1024);
+    slow.setLocalWindowSize(4 * 1024 * 1024);
+    try (InputStream input = slow.getInputStream()) {
+      slow.connect(5000);
+      long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+      while (!slow.isClosed() && System.nanoTime() < deadline)
+        Thread.sleep(1);
+      assertTrue(slow.isClosed());
+      assertThrows(IOException.class, input::read);
+      assertTrue(session.isConnected());
+      assertEquals(0, session.reservedReceiveMemory());
+      ChannelDirectTCPIP other = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+      other.setHost("echo.vtunnel.test");
+      other.setPort(7);
+      try (InputStream response = other.getInputStream()) {
+        other.connect(5000);
+        OutputStream output = other.getOutputStream();
+        output.write(42);
+        output.flush();
+        assertEquals(42, response.read());
+        other.eof();
+        assertEquals(-1, response.read());
+      } finally {
+        other.disconnect();
+      }
+    } finally {
+      slow.disconnect();
+      session.disconnect();
+    }
+    assertEquals(0, session.reservedReceiveMemory());
+  }
+
+  @Test
+  void receiveBudgetFailureDoesNotSilentlyOpenOrDamageTheSession() throws Exception {
+    Session session = connect(false);
+    session.setConfig("channel_receive_budget_policy", "reserve");
+    session.setConfig("channel_receive_memory_limit", Long.toString(4L * 1024 * 1024 + 131072));
+    ChannelDirectTCPIP first = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+    ChannelDirectTCPIP second = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+    for (ChannelDirectTCPIP channel : new ChannelDirectTCPIP[] {first, second}) {
+      channel.setHost("echo.vtunnel.test");
+      channel.setPort(7);
+      channel.setLocalWindowSizeMax(4 * 1024 * 1024);
+      channel.setLocalWindowSize(4 * 1024 * 1024);
+    }
+    try (InputStream a = first.getInputStream(); InputStream b = second.getInputStream()) {
+      assertEquals(0, a.available());
+      assertEquals(0, b.available());
+      first.connect(5000);
+      assertThrows(JSchException.class, () -> second.connect(5000));
+      assertTrue(session.isConnected());
+      assertTrue(first.isConnected());
+      assertTrue(!second.isConnected());
+      first.disconnect();
+      assertEquals(0, session.reservedReceiveMemory());
+      echo(session, 908);
+    } finally {
+      first.disconnect();
+      second.disconnect();
+      session.disconnect();
+    }
+    assertEquals(0, session.reservedReceiveMemory());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"aes256-ctr", "aes128-gcm@openssh.com"})
+  @EnabledIfEnvironmentVariable(named = "VTUNNEL_SSH_TEST_RECEIVE_ISOLATION", matches = "true")
+  void stalledDownloadDoesNotBlockEchoKeepaliveOrRekey(String cipher) throws Exception {
+    Session session = connect(false, cipher);
+    ChannelDirectTCPIP stalled = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+    stalled.setHost("burst.vtunnel.test");
+    stalled.setPort(7);
+    stalled.setLocalWindowSizeMax(4 * 1024 * 1024);
+    stalled.setLocalWindowSize(4 * 1024 * 1024);
+    try (InputStream input = stalled.getInputStream()) {
+      stalled.connect(5000);
+      long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+      while (input.available() < 4 * 1024 * 1024 && System.nanoTime() < deadline)
+        Thread.sleep(1);
+      assertEquals(4 * 1024 * 1024, input.available());
+      assertEquals(0, stalled.lwsize);
+      echo(session, 905);
+      session.sendKeepAliveMsg();
+      session.rekey();
+      echo(session, 906);
+      DataInputStream data = new DataInputStream(input);
+      byte[] block = new byte[16384];
+      for (int n = 0; n < 512; n++) {
+        data.readFully(block);
+        for (int i = 0; i < block.length; i++)
+          assertEquals((byte) (i * 31 + 7), block[i]);
+        if (n % 16 == 0)
+          Thread.sleep(2);
+      }
+      assertEquals(-1, input.read());
+      echo(session, 907);
+    } finally {
+      stalled.disconnect();
+      session.disconnect();
+    }
+    assertEquals(0, session.reservedReceiveMemory());
+  }
+
   @Test
   @EnabledIfEnvironmentVariable(named = "VTUNNEL_SSH_TEST_DUPLEX", matches = "true")
   void duplexDownloadReplenishesReceiveWindowWhileUploadWaitsForPeerCredit() throws Exception {
@@ -45,20 +190,6 @@ class TunnelLoopbackIT {
     new Random(804).nextBytes(upload);
     InputStream input = channel.getInputStream();
     OutputStream output = channel.getOutputStream();
-    AtomicLong delivered = new AtomicLong();
-    AtomicReference<IOException> deliveryFailure = new AtomicReference<>();
-    channel.setOutputStream(new FilterOutputStream(channel.io.out) {
-      @Override
-      public void write(byte[] bytes, int offset, int length) throws IOException {
-        try {
-          out.write(bytes, offset, length);
-          delivered.addAndGet(length);
-        } catch (IOException error) {
-          deliveryFailure.set(error);
-          throw error;
-        }
-      }
-    });
     try {
       channel.connect(5000);
       Future<?> sending = workers.submit(() -> {
@@ -85,11 +216,8 @@ class TunnelLoopbackIT {
           try {
             data.readFully(block);
           } catch (java.io.EOFException truncated) {
-            AssertionError failure = new AssertionError("Download truncated after " + n
-                + " complete 16 KiB blocks; delivered to pipe=" + delivered.get(), truncated);
-            if (deliveryFailure.get() != null)
-              failure.addSuppressed(deliveryFailure.get());
-            throw failure;
+            throw new AssertionError("Download truncated after " + n + " complete 16 KiB blocks",
+                truncated);
           }
           for (int i = 0; i < block.length; i++)
             assertEquals((byte) (i * 31 + 7), block[i]);
@@ -114,6 +242,10 @@ class TunnelLoopbackIT {
   }
 
   private Session connect(boolean publicKey) throws Exception {
+    return connect(publicKey, null);
+  }
+
+  private Session connect(boolean publicKey, String cipher) throws Exception {
     JSch jsch = new JSch();
     if (publicKey) {
       jsch.addIdentity(ResourceUtil.getResourceFile(getClass(), "docker/id_rsa"));
@@ -125,6 +257,10 @@ class TunnelLoopbackIT {
     // Match the VPN's receive-buffer budget. This fixture writes its entire 256 KiB
     // request before reading the echo, unlike the app's simultaneous stream pumps.
     session.setConfig("max_input_buffer_size", "1048576");
+    if (cipher != null) {
+      session.setConfig("cipher.c2s", cipher);
+      session.setConfig("cipher.s2c", cipher);
+    }
     session.setPassword(System.getenv("VTUNNEL_SSH_TEST_PASSWORD")
         .getBytes(java.nio.charset.StandardCharsets.UTF_8));
     session.setTimeout(5000);

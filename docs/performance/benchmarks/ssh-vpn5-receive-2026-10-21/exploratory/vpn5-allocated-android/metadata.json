@@ -1,0 +1,79 @@
+{
+  "phases": [
+    {
+      "label": "before",
+      "cipher": "aes256-ctr",
+      "repetition": 0
+    },
+    {
+      "label": "after",
+      "cipher": "aes256-ctr",
+      "repetition": 0
+    },
+    {
+      "label": "after",
+      "cipher": "aes256-ctr",
+      "repetition": 1
+    },
+    {
+      "label": "before",
+      "cipher": "aes256-ctr",
+      "repetition": 1
+    },
+    {
+      "label": "before",
+      "cipher": "aes256-ctr",
+      "repetition": 2
+    },
+    {
+      "label": "after",
+      "cipher": "aes256-ctr",
+      "repetition": 2
+    },
+    {
+      "label": "before",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 0
+    },
+    {
+      "label": "after",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 0
+    },
+    {
+      "label": "after",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 1
+    },
+    {
+      "label": "before",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 1
+    },
+    {
+      "label": "before",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 2
+    },
+    {
+      "label": "after",
+      "cipher": "aes128-gcm@openssh.com",
+      "repetition": 2
+    }
+  ],
+  "library_sha256": {
+    "before": "980cfee35d369f2fd7f0266f0564b1505ffce70d18055824846084756c90c9e2",
+    "after": "a54e491f42ef5cc4990b49e7faed237b10d37ecc397d53ec2a49a88792ca88cf"
+  },
+  "dex_sha256": {
+    "before": "f33f431d247a86001c2fcf641a4f518620e0905450a9370652f36322448e6efc",
+    "after": "ea741a83442af9edf80966a3999d598b1a923836db0050276f3e2177a8cb2db6"
+  },
+  "probe_sha256": "0abb415a22e3db2330f9511a70198518c15375de7ac8c2e4c03a611afeb42847",
+  "source_sha256": "4bcb58e484db8c4adf4cc21c50e3ac978cc0674bf86c3b6b8cb115f0145f58d2",
+  "fixture_sha256": "8262a4d2904e77acd10f583f6b523690dfd7c022323bc179bdd99676ec9ffa2d",
+  "model": "SM-G781B",
+  "android": "15",
+  "scope": "Android app_process -> ADB reverse -> local SSH fixture. No APK install, TUN, public VPS or mobile radio.",
+  "source_provenance_note": "Recovered the compiled source from the frozen JVM probe; verified exact equality of ReceiveIsolationProbe.class before correcting the source hash collected after a later source edit."
+}

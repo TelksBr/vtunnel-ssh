@@ -19,6 +19,8 @@ def main():
                         help="32 KiB peer window with irregular consumption for partial-credit tests")
     parser.add_argument("--duplex-window", action="store_true",
                         help="Enable duplex fixture: withhold upload consumption until receive credit arrives")
+    parser.add_argument("--receive-isolation", action="store_true",
+                        help="Enable an 8 MiB download for stalled-consumer isolation tests")
     args = parser.parse_args()
     password = secrets.token_hex(24)
     host_key = paramiko.RSAKey.generate(2048)
@@ -40,7 +42,9 @@ def main():
             return paramiko.AUTH_SUCCESSFUL if username == "vtunnel-test" and key.get_base64() == authorized else paramiko.AUTH_FAILED
 
         def check_channel_direct_tcpip_request(self, chanid, origin, destination):
-            if destination == ("echo.vtunnel.test", 7) or (args.duplex_window and destination == ("duplex.vtunnel.test", 7)):
+            if (destination == ("echo.vtunnel.test", 7)
+                    or (args.duplex_window and destination == ("duplex.vtunnel.test", 7))
+                    or (args.receive_isolation and destination == ("burst.vtunnel.test", 7))):
                 self.destinations[chanid] = destination[0]
                 return paramiko.OPEN_SUCCEEDED
             return paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
@@ -80,6 +84,16 @@ def main():
         finally:
             channel.close()
 
+    def burst(channel):
+        try:
+            channel.settimeout(20)
+            block = bytes((i * 31 + 7) & 255 for i in range(16384))
+            for _ in range(512):
+                channel.sendall(block)
+            channel.shutdown_write()
+        finally:
+            channel.close()
+
     def serve(client):
         transport = paramiko.Transport(client, default_window_size=32768) if args.small_window or args.duplex_window else paramiko.Transport(client)
         transports.append(transport)
@@ -90,7 +104,9 @@ def main():
             while transport.is_active() and not args.stop_file.exists():
                 channel = transport.accept(0.2)
                 if channel is not None:
-                    handler = duplex if server.destinations.get(channel.get_id()) == "duplex.vtunnel.test" else echo
+                    destination = server.destinations.get(channel.get_id())
+                    handler = (duplex if destination == "duplex.vtunnel.test" else
+                               burst if destination == "burst.vtunnel.test" else echo)
                     threading.Thread(target=handler, args=(channel,), daemon=True).start()
         finally:
             transport.close()

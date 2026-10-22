@@ -1,0 +1,8 @@
+{
+  "apk": "C:\\Users\\Telks\\Desktop\\Vtunnel\\app\\build\\outputs\\apk\\debug\\VTunnel-ssh-vpn5-dev-20261021.apk",
+  "sha256": "a5b06ac85c68366a12468c4c95d6ac5268cf4fd11ad70d247ecef93089fee166",
+  "contains_receive_buffer": true,
+  "default_dependency": "2.28.7-vpn.4",
+  "validation_override": "C:\\Users\\Telks\\Desktop\\vtunnel-ssh\\local-validation\\vpn5-allocated.jar",
+  "working_tree_has_prior_uncommitted_changes": true
+}

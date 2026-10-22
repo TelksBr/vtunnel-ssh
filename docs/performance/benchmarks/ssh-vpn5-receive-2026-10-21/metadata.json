@@ -1,0 +1,312 @@
+{
+  "date": "2026-10-21",
+  "version": "2.28.7-vpn.5-SNAPSHOT",
+  "base_git_commit": "a980295c0ea078bd6e9e0c8ea083195893ab2d94",
+  "branch": "codex/ssh-vpn5-receive-isolation",
+  "binary_artifacts": {
+    "vpn5-baseline.jar": {
+      "sha256": "980cfee35d369f2fd7f0266f0564b1505ffce70d18055824846084756c90c9e2",
+      "bytes": 515751
+    },
+    "vpn5-candidate.jar": {
+      "sha256": "777c6b4ffab213ea4db4db6cbfe29bc1d0ac3b11206b912cc2e46cf0bd9f0218",
+      "bytes": 521661
+    },
+    "vpn5-candidate-final.jar": {
+      "sha256": "81d66128e8b794cdb9cdcfcd9b0231ffa73cb990864b727ae12a9331ba41a37a",
+      "bytes": 521857
+    },
+    "vpn5-diagnostic.jar": {
+      "sha256": "64256a28a5b23906cab731a0573103b9b798afff81e0696640e5907e8b82b9ed",
+      "bytes": 521942
+    },
+    "vpn5-allocated.jar": {
+      "sha256": "a54e491f42ef5cc4990b49e7faed237b10d37ecc397d53ec2a49a88792ca88cf",
+      "bytes": 522931
+    },
+    "vpn5-network-probe.jar": {
+      "sha256": "5e7f14a34c1319ffdabc79af524b0b959f542b3fb48e5aad653607c81a6d42c9",
+      "bytes": 21635
+    }
+  },
+  "source_sha256": {
+    "pom.xml": "a9ecb63e498b955b1d076917e9716ee69a17e1e2c43238ce7a139332520bd833",
+    "src/main/java/com/jcraft/jsch/Channel.java": "4c7638b8340fef59ad24ae411c7fa89b73e8ed91420f4638f463225fb22e5bed",
+    "src/main/java/com/jcraft/jsch/ChannelReceiveBuffer.java": "4d6f95d3788d2ab0f5c51c86628c5e81e88ffd432796f2a1dcbc37bf93a504c6",
+    "src/main/java/com/jcraft/jsch/ChannelDirectTCPIP.java": "9d8ef55500d20e30143fbfa4b15c12d3317c9862962494c6856c4451762ce40e",
+    "src/main/java/com/jcraft/jsch/Session.java": "ac828564b11ce35d7bc64b237459a8c945405f8ab794140d4fe1f89235ff3958",
+    "tools/loopback_ssh.py": "8262a4d2904e77acd10f583f6b523690dfd7c022323bc179bdd99676ec9ffa2d",
+    "tools/network/ReceiveIsolationProbe.java": "b14952d83b2d38e96613fa12e61e0fb43d04936e89f3bb303a50c2bb8b379f46",
+    "tools/network/TunnelNetworkProbe.java": "b03331830a5e337a703416cf92c423e4226f053e830a0354778d382e7d4b24fd",
+    "tools/network/CipherStreamTrace.java": "fcc7a2fac1888918e503f1accee399e22f1df793812eac5761524b5236927257",
+    "tools/network/compare_receive_isolation.py": "28a43bbf3bf64952c62c261a3a130e4f44ee8bbb55f21acd9d441c08fb74d112",
+    "tools/network/compare_receive_android.py": "12e0825dfabaa533959ef9d6d7998807a4f13f666c0d2b4a96daf42999954a3f",
+    "tools/network/compare_linux_library.py": "79c3c159784ee7e901779b129ef7a574a8275de57000add9477b3920de170465",
+    "tools/network/plot_receive_isolation.py": "0af19bafd8e1b3a3c0d45a9928de61576d1bab461439b1aa7b2eb883461f0651",
+    "tools/network/compare_receive_openssh.py": "c5e9f9a8799a9c8a13ab9851fecd4d6a774551c3a2440baa3f11f5530af36a66",
+    "tools/network/lab.py": "d6c5fcabec47e411c91f3c85906380ea06b61a5044ee06596ec6253bafdb27c7"
+  },
+  "phases": [
+    {
+      "file": "android/receive.jsonl",
+      "phases": 12,
+      "complete": 12,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "file": "exploratory/vpn5-allocated-android/receive.jsonl",
+      "phases": 12,
+      "complete": 12,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "file": "exploratory/vpn5-allocated-ctr/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-allocated-gcm/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-android/receive.jsonl",
+      "phases": 12,
+      "complete": 12,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "file": "exploratory/vpn5-candidate-stress/receive.jsonl",
+      "phases": 12,
+      "complete": 12,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "file": "exploratory/vpn5-comparison-ctr/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-comparison-gcm/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-diagnostic-gcm/receive.jsonl",
+      "phases": 12,
+      "complete": 11,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "file": "exploratory/vpn5-final-ctr/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-final-gcm/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-network-download/library.jsonl",
+      "phases": 6,
+      "complete": null,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-network-upload/library.jsonl",
+      "phases": 6,
+      "complete": null,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-openssh/android.jsonl",
+      "phases": 12,
+      "complete": 1,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "file": "exploratory/vpn5-openssh/jvm.jsonl",
+      "phases": 12,
+      "complete": 12,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "file": "exploratory/vpn5-openssh-diagnostic/android.jsonl",
+      "phases": 4,
+      "complete": 0,
+      "labels": {
+        "before": 2,
+        "after": 2
+      }
+    },
+    {
+      "file": "exploratory/vpn5-openssh-explicit-diagnostic/android.jsonl",
+      "phases": 4,
+      "complete": 4,
+      "labels": {
+        "before": 2,
+        "after": 2
+      }
+    },
+    {
+      "file": "exploratory/vpn5-receive-ctr/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-receive-gcm/receive.jsonl",
+      "phases": 1,
+      "complete": 0,
+      "labels": {
+        "before": 1
+      }
+    },
+    {
+      "file": "exploratory/vpn5-traced-stress/receive.jsonl",
+      "phases": 12,
+      "complete": 12,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "file": "exploratory/vpn5-validated-ctr/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "exploratory/vpn5-validated-gcm/receive.jsonl",
+      "phases": 6,
+      "complete": 5,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "jvm-ctr/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "jvm-gcm/receive.jsonl",
+      "phases": 6,
+      "complete": 6,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "mobile-download/library.jsonl",
+      "phases": 6,
+      "complete": null,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "mobile-upload/library.jsonl",
+      "phases": 6,
+      "complete": null,
+      "labels": {
+        "before": 3,
+        "after": 3
+      }
+    },
+    {
+      "file": "stress-allocated/receive.jsonl",
+      "phases": 12,
+      "complete": 12,
+      "labels": {
+        "before": 6,
+        "after": 6
+      }
+    }
+  ],
+  "total_phases": 207,
+  "primary_policy": "allocated",
+  "earlier_candidates_policy": "reserve; later exploratory candidates use allocated as identified by JAR hash",
+  "source_provenance_note": "exploratory/vpn5-diagnostic-gcm was compiled before the watchdog was added; its source_sha256 was collected after that edit and is not trustworthy as compiled-source provenance. Its probe JAR hash and raw results remain valid and it is not used for final performance claims. New primary JVM runs freeze the compiled source under source/.",
+  "known_exploratory_failure": "One guarded/reserve candidate GCM phase ended early with EOF. It was not reproduced in subsequent stress runs. Cause is not established; do not claim it was fixed. An early probe also emitted an invalid negative total_ms on failure; that field is not used.",
+  "primary_backend": "OpenSSH, explicit owned Windows-to-WSL bridge for Android; automatic wslrelay route retained only as exploratory failures",
+  "scope": "Controlled SSH JVM/Android app_process and Linux netem. No TUN, public VPS, real mobile radio or Speedtest.",
+  "app": {
+    "apk": "C:\\Users\\Telks\\Desktop\\Vtunnel\\app\\build\\outputs\\apk\\debug\\VTunnel-ssh-vpn5-dev-20261021.apk",
+    "sha256": "a5b06ac85c68366a12468c4c95d6ac5268cf4fd11ad70d247ecef93089fee166",
+    "contains_receive_buffer": true,
+    "default_dependency": "2.28.7-vpn.4",
+    "validation_override": "C:\\Users\\Telks\\Desktop\\vtunnel-ssh\\local-validation\\vpn5-allocated.jar",
+    "working_tree_has_prior_uncommitted_changes": true
+  },
+  "device": {
+    "model": "SM-G781B",
+    "android": "15"
+  }
+}

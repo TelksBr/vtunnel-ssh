@@ -1,0 +1,64 @@
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 0, "label": "before"}
+com.jcraft.jsch.JSchException: Session.connect: java.net.SocketTimeoutException: Read timed out
+	at com.jcraft.jsch.Session.connect(Session.java:585)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:59)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Caused by: java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at java.net.SocketInputStream.read(SocketInputStream.java:205)
+	at com.jcraft.jsch.IO.getByte(IO.java:86)
+	at com.jcraft.jsch.Session.connect(Session.java:291)
+	... 3 more
+Killed 
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 0, "label": "after"}
+com.jcraft.jsch.JSchException: Session.connect: java.net.SocketTimeoutException: Read timed out
+	at com.jcraft.jsch.Session.connect(Session.java:585)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:59)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Caused by: java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at java.net.SocketInputStream.read(SocketInputStream.java:205)
+	at com.jcraft.jsch.IO.getByte(IO.java:86)
+	at com.jcraft.jsch.Session.connect(Session.java:291)
+	... 3 more
+Killed 
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "before"}
+com.jcraft.jsch.JSchException: Session.connect: java.net.SocketTimeoutException: Read timed out
+	at com.jcraft.jsch.Session.connect(Session.java:585)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:59)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Caused by: java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at java.net.SocketInputStream.read(SocketInputStream.java:205)
+	at com.jcraft.jsch.IO.getByte(IO.java:86)
+	at com.jcraft.jsch.Session.connect(Session.java:291)
+	... 3 more
+Killed 
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "after"}
+com.jcraft.jsch.JSchException: Session.connect: java.net.SocketTimeoutException: Read timed out
+	at com.jcraft.jsch.Session.connect(Session.java:585)
+	at com.jcraft.jsch.ReceiveIsolationProbe.main(ReceiveIsolationProbe.java:59)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+Caused by: java.net.SocketTimeoutException: Read timed out
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at java.net.SocketInputStream.read(SocketInputStream.java:205)
+	at com.jcraft.jsch.IO.getByte(IO.java:86)
+	at com.jcraft.jsch.Session.connect(Session.java:291)
+	... 3 more
+Killed 

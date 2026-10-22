@@ -1,0 +1,91 @@
+BEGIN Allocated candidate stress
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+Pair 1: before
+Pair 1: after
+Pair 2: after
+Pair 2: before
+Pair 3: before
+Pair 3: after
+Pair 4: after
+Pair 4: before
+Pair 5: before
+Pair 5: after
+Pair 6: after
+Pair 6: before
+[{"label": "before", "phases": 6, "complete": 6, "median_echo_before_resume": 75.0, "median_phase_p50_ms": 1.1491500000000001, "median_phase_p95_ms": 142.56585, "median_scheduled_p95_ms": 144.46259999999998}, {"label": "after", "phases": 6, "complete": 6, "median_echo_before_resume": 75.0, "median_phase_p50_ms": 1.20795, "median_phase_p95_ms": 256.79994999999997, "median_scheduled_p95_ms": 264.12065}]
+END Allocated candidate stress exit=0
+BEGIN Allocated ctr
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+Pair 1: before
+Pair 1: after
+Pair 2: after
+Pair 2: before
+Pair 3: before
+Pair 3: after
+[{"label": "before", "phases": 3, "complete": 3, "median_echo_before_resume": 0, "median_phase_p50_ms": 591.4729, "median_phase_p95_ms": 1702.9523, "median_scheduled_p95_ms": 5337.4536}, {"label": "after", "phases": 3, "complete": 3, "median_echo_before_resume": 2, "median_phase_p50_ms": 13.148, "median_phase_p95_ms": 326.1859, "median_scheduled_p95_ms": 2641.4058}]
+END Allocated ctr exit=0
+BEGIN Allocated gcm
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+Pair 1: before
+Pair 1: after
+Pair 2: after
+Pair 2: before
+Pair 3: before
+Pair 3: after
+[{"label": "before", "phases": 3, "complete": 3, "median_echo_before_resume": 0, "median_phase_p50_ms": 659.624, "median_phase_p95_ms": 1026.4869, "median_scheduled_p95_ms": 5053.013}, {"label": "after", "phases": 3, "complete": 3, "median_echo_before_resume": 75, "median_phase_p50_ms": 1.1583, "median_phase_p95_ms": 20.7032, "median_scheduled_p95_ms": 267.5984}]
+END Allocated gcm exit=0
+BEGIN Start netem
+{"ssh_port": 19080, "namespace": "vtsshbench", "down_mbit": 8, "up_mbit": 4, "one_way_delay_ms": 20, "fifo_packets": 1000}
+END Start netem exit=0
+BEGIN Start control
+END Start control exit=0
+BEGIN Allocated netem upload
+seed=1600 library=before profile=mobile-jitter
+seed=1600 library=after profile=mobile-jitter
+seed=1601 library=after profile=mobile-jitter
+seed=1601 library=before profile=mobile-jitter
+seed=1602 library=before profile=mobile-jitter
+seed=1602 library=after profile=mobile-jitter
+END Allocated netem upload exit=0
+BEGIN Allocated netem download
+seed=1600 library=before profile=mobile-jitter
+seed=1600 library=after profile=mobile-jitter
+seed=1601 library=after profile=mobile-jitter
+seed=1601 library=before profile=mobile-jitter
+seed=1602 library=before profile=mobile-jitter
+seed=1602 library=after profile=mobile-jitter
+END Allocated netem download exit=0
+BEGIN Allocated Android
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+C:\Users\Telks\Desktop\vtunnel-ssh\local-validation\vpn5-allocated-android\before.zip: 1 file pushed, 0 skipped. 15.8 MB/s (224563 bytes in 0.014s)
+C:\Users\Telks\Desktop\vtunnel-ssh\local-validation\vpn5-allocated-android\after.zip: 1 file pushed, 0 skipped. 17.5 MB/s (228198 bytes in 0.012s)
+8874
+{"label": "before", "cipher": "aes256-ctr", "repetition": 0}
+{"label": "after", "cipher": "aes256-ctr", "repetition": 0}
+{"label": "after", "cipher": "aes256-ctr", "repetition": 1}
+{"label": "before", "cipher": "aes256-ctr", "repetition": 1}
+{"label": "before", "cipher": "aes256-ctr", "repetition": 2}
+{"label": "after", "cipher": "aes256-ctr", "repetition": 2}
+{"label": "before", "cipher": "aes128-gcm@openssh.com", "repetition": 0}
+{"label": "after", "cipher": "aes128-gcm@openssh.com", "repetition": 0}
+{"label": "after", "cipher": "aes128-gcm@openssh.com", "repetition": 1}
+{"label": "before", "cipher": "aes128-gcm@openssh.com", "repetition": 1}
+{"label": "before", "cipher": "aes128-gcm@openssh.com", "repetition": 2}
+{"label": "after", "cipher": "aes128-gcm@openssh.com", "repetition": 2}
+/data/local/tmp/vtunnel-receive-vpn5/receive.jsonl: 1 file pulled, 0 skipped. 6.0 MB/s (26977 bytes in 0.004s)
+Android comparison complete: 12 phases
+END Allocated Android exit=0
+BEGIN app validation
+END app validation 0

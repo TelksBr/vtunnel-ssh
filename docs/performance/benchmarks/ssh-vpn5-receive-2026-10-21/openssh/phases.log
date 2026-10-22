@@ -1,0 +1,58 @@
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 0, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 0, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 1, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 1, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 2, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes256-ctr", "repetition": 2, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 1, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 1, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 2, "label": "before"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "jvm", "cipher": "aes128-gcm@openssh.com", "repetition": 2, "label": "after"}
+Permanently added '[10.205.33.2]:22022' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 0, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 0, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 1, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 1, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+Caught an exception, leaving main loop due to Socket closed
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.read(SocketInputStream.java:188)
+	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+	at com.jcraft.jsch.IO.getByte(IO.java:95)
+	at com.jcraft.jsch.Session.read(Session.java:1308)
+	at com.jcraft.jsch.Session.run(Session.java:1986)
+	at com.jcraft.jsch.Session$0.run(D8$$SyntheticClass:0)
+	at java.lang.Thread.run(Thread.java:1119)
+
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 2, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 2, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 1, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 1, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 2, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 2, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.

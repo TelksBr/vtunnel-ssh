@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Allocated candidate stress",
+    "exit": 0
+  },
+  {
+    "name": "Allocated ctr",
+    "exit": 0
+  },
+  {
+    "name": "Allocated gcm",
+    "exit": 0
+  },
+  {
+    "name": "Start netem",
+    "exit": 0
+  },
+  {
+    "name": "Start control",
+    "exit": 0
+  },
+  {
+    "name": "Allocated netem upload",
+    "exit": 0
+  },
+  {
+    "name": "Allocated netem download",
+    "exit": 0
+  },
+  {
+    "name": "Allocated Android",
+    "exit": 0
+  },
+  {
+    "name": "Allocated app build/tests",
+    "exit": 0
+  }
+]

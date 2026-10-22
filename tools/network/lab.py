@@ -83,7 +83,7 @@ PasswordAuthentication no
 KbdInteractiveAuthentication no
 UsePAM yes
 AllowTcpForwarding local
-PermitOpen 127.0.0.1:17001 127.0.0.1:17002 127.0.0.1:17003
+PermitOpen 127.0.0.1:17001 127.0.0.1:17002 127.0.0.1:17003 127.0.0.1:17004 127.0.0.1:17005
 X11Forwarding no
 PermitTTY no
 LogLevel ERROR
@@ -112,9 +112,15 @@ def copy(source, destination):
 def relay():
     registry = RelayRegistry()
     threading.Thread(target=serve_snapshots, args=(BASE / "relay-metrics.sock", registry), daemon=True).start()
-    with socket.create_server(('127.0.0.1',19080)) as listener:
+    bind = os.environ.get('VTUNNEL_LAB_RELAY_BIND', '127.0.0.1')
+    allowed = os.environ.get('VTUNNEL_LAB_RELAY_PEER')
+    if bind != '127.0.0.1' and not allowed:
+        raise ValueError('An explicit relay peer is required for non-loopback binding')
+    with socket.create_server((bind,19080)) as listener:
         while True:
-            client,_ = listener.accept()
+            client,peer = listener.accept()
+            if allowed and peer[0] != allowed:
+                client.close();continue
             def connection(client):
                 with client, socket.create_connection((ADDRESS,22022)) as server:
                     client.setsockopt(socket.IPPROTO_TCP,socket.TCP_NODELAY,1)
@@ -162,6 +168,13 @@ def services(address='127.0.0.1', offset=0):
                         while True:
                             client.sendall(data)
                             count(1, len(data))
+                    elif port == 17004 + offset:
+                        data=bytes((i*31+7)&255 for i in range(16384))
+                        for _ in range(512): client.sendall(data)
+                        client.shutdown(socket.SHUT_WR)
+                    elif port == 17005 + offset:
+                        while data := client.recv(16384): client.sendall(data)
+                        client.shutdown(socket.SHUT_WR)
                     else:
                         while True:
                             data=client.recv(65536)
@@ -172,7 +185,7 @@ def services(address='127.0.0.1', offset=0):
             while True:
                 client,_=listener.accept()
                 threading.Thread(target=serve,args=(client,),daemon=True).start()
-    for port in [17001+offset,17002+offset,17003+offset]: threading.Thread(target=listen,args=(port,),daemon=True).start()
+    for port in [17001+offset,17002+offset,17003+offset,17004+offset,17005+offset]: threading.Thread(target=listen,args=(port,),daemon=True).start()
     threading.Event().wait()
 
 def direct_relay():

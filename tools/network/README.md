@@ -1,5 +1,48 @@
 # Laboratorio de transporte SSH para VPN
 
+## Recepcao isolada (vpn.5 em desenvolvimento)
+
+A coleta principal usa `compare_receive_openssh.py --baseline JAR --candidate JAR
+--output NOVO`. Acrescente `--serial SERIAL --sdk SDK` para incluir Android. O
+harness cria o laboratorio privado, usa download finito/eco nas portas locais
+17004/17005, congela os fontes compilados e preserva a ordem AB/BA e os hashes.
+No Android, usa ADB reverse e uma ponte Windows propria para o IP explicito WSL,
+com relay restrito ao IP do Windows. Nao depende do encaminhamento automatico
+wslrelay. `--platform android --diagnostics --repetitions 1` serve para diagnostico;
+nao misture fases com rastreamento nas estatisticas de desempenho.
+
+As rotas antigas abaixo continuam uteis para diagnostico, mas ficaram instaveis
+durante a rodada de 21/10. As falhas foram preservadas no relatorio; nao atribua
+automaticamente EOF/timeouts da bancada a um defeito da biblioteca.
+
+`compare_receive_isolation.py` compara JARs em SSH cifrado local com um consumidor
+parado por 1500 ms: download de 8 MiB, upload com eco de 2 MiB e 80 mensagens de
+32 bytes programadas a cada 20 ms. Usa tres pares AB/BA por padrao. Mantem fases
+com erro na serie; uma falha da candidata faz o comando terminar com erro apos
+salvar os resultados. Informe `--baseline`, `--candidate`, `--output` novo e,
+opcionalmente, `--cipher aes128-gcm@openssh.com`. Requer Paramiko e JDK no PATH.
+
+O RTT e contado a partir da chamada de envio. A latencia `scheduled_*` parte do
+instante programado, incluindo atraso para conseguir enviar; portanto nao deve
+ser chamada de RTT nem jitter de rede. `echo_before_resume` conta quantas mensagens
+chegaram enquanto o consumidor do download permanecia parado.
+
+`compare_receive_android.py` executa o mesmo probe no Android com app_process e
+ADB reverse, sem instalar APK. Recebe os mesmos dois JARs, `--serial`, `--sdk` e
+`--output` novo; usa build-tools 37.0.0 e android-37.0. Guarda hashes dos DEXs,
+model/Android, ordem e amostras. Remove somente seus arquivos e mapeamento ADB.
+
+`compare_linux_library.py --direction download` complementa o upload padrao no
+netem. Rode comparacoes sequencialmente, sem builds ou outros benchmarks em
+paralelo. Nenhum desses ensaios substitui a validacao completa de TUN/radio.
+
+Veja [o contrato e os limites de memoria](../../docs/performance/ssh-vpn5-receive-isolation-2026-10-21.md)
+antes de adotar a candidata. A politica allocated permite muitos canais pequenos; a politica reserve limita
+a admissao pela soma das janelas. Esgotar o orcamento allocated encerra o canal
+afetado com erro explicito, preservando os demais canais.
+
+## Laboratorio de rede
+
 Compara bibliotecas no mesmo Android, com `direct-tcpip` cru: sem o adaptador de notificacao do app, SOCKS, TUN ou tun2socks. O laboratorio de rede foi trazido de `VTunnel/tools/ssh-jitter`; os nomes de namespace, interfaces e pasta temporaria sao exclusivos desta versao.
 
 O caminho e Android -> ADB reverse -> relay TCP WSL -> veth/netem -> OpenSSH -> destinos locais de eco, download e upload. ADB/relay acrescentam buffers. Nao equivale a uma rede celular real nem a Speedtest.

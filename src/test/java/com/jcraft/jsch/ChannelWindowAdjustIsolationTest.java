@@ -17,6 +17,88 @@ import org.junit.jupiter.params.provider.ValueSource;
 class ChannelWindowAdjustIsolationTest {
   private static final int WINDOW = 4 * 1024 * 1024;
 
+  @org.junit.jupiter.api.Test
+  void consumerWaitingToWriteCreditDoesNotHoldTheReaderOrReceiveStorage() throws Exception {
+    RecordingSink sink = new RecordingSink();
+    sink.blockedCommand = Session.SSH_MSG_CHANNEL_WINDOW_ADJUST;
+    Capture session = new Capture(sink);
+    ChannelDirectTCPIP download = channel(session), other = channel(session);
+    download.connected = false;
+    ExecutorService workers = Executors.newFixedThreadPool(2);
+    try (InputStream input = download.getInputStream()) {
+      download.connected = true;
+      byte[] block = new byte[16384];
+      for (int n = 0; n < 32; n++)
+        session.incoming.add(data(download, block, false));
+      workers.submit(session::run);
+      await(() -> {
+        try {
+          return input.available() == 524288;
+        } catch (IOException failure) {
+          throw new UncheckedIOException(failure);
+        }
+      }, "Receive data did not arrive");
+      Future<Integer> reading = workers.submit(() -> input.read(new byte[262144]));
+      assertTrue(sink.entered.await(1, TimeUnit.SECONDS));
+      session.incoming.add(data(download, block, false));
+      session.incoming.add(credit(other, 123));
+      await(() -> other.rwsize == 123,
+          "A consumer waiting on the transport must not stall incoming packets");
+      assertEquals(262144 + 16384, input.available());
+      sink.release.countDown();
+      assertEquals(262144, reading.get(1, TimeUnit.SECONDS));
+    } finally {
+      sink.release.countDown();
+      download.close = other.close = true;
+      session.thread = null;
+      workers.shutdownNow();
+      assertTrue(workers.awaitTermination(2, TimeUnit.SECONDS));
+      session.disconnect();
+    }
+  }
+
+  @org.junit.jupiter.api.Test
+  void stalledConsumerDoesNotBlockOtherChannelOrIncomingCredit() throws Exception {
+    Capture session = new Capture(new RecordingSink());
+    session.setConfig("max_input_buffer_size", "1048576");
+    ChannelDirectTCPIP stalled = channel(session);
+    stalled.connected = false;
+    ChannelDirectTCPIP echo = channel(session);
+    ExecutorService worker = Executors.newSingleThreadExecutor();
+    try (InputStream input = stalled.getInputStream()) {
+      stalled.connected = true;
+      CountDownLatch delivered = new CountDownLatch(1);
+      echo.setOutputStream(new ByteArrayOutputStream() {
+        @Override
+        public synchronized void write(byte[] bytes, int offset, int length) {
+          super.write(bytes, offset, length);
+          delivered.countDown();
+        }
+      });
+      byte[] block = new byte[16384];
+      for (int n = 0; n < WINDOW / block.length; n++)
+        session.incoming.add(data(stalled, block, false));
+      session.incoming.add(credit(echo, 8192));
+      session.incoming.add(data(echo, new byte[] {42}, false));
+      worker.submit(session::run);
+      assertTrue(delivered.await(2, TimeUnit.SECONDS),
+          "A consumer stalled beyond 1 MiB must not block the shared SSH reader");
+      assertEquals(8192, echo.rwsize);
+      assertEquals(WINDOW, input.available());
+      assertEquals(0, stalled.lwsize, "Unread bytes must not earn new credit");
+      byte[] received = new byte[WINDOW];
+      new DataInputStream(input).readFully(received);
+      assertArrayEquals(new byte[WINDOW], received);
+      assertTrue(stalled.lwsize > 0, "Consumption must restore credit");
+    } finally {
+      stalled.close = echo.close = true;
+      session.thread = null;
+      worker.shutdownNow();
+      assertTrue(worker.awaitTermination(2, TimeUnit.SECONDS));
+      session.disconnect();
+    }
+  }
+
   @ParameterizedTest
   @ValueSource(booleans = {false, true})
   void windowAdjustmentIsOrderedOrSuppressedWhenCloseRacesWithTransport(boolean alreadyWriting)
@@ -192,6 +274,7 @@ class ChannelWindowAdjustIsolationTest {
         extended ? Session.SSH_MSG_CHANNEL_EXTENDED_DATA : Session.SSH_MSG_CHANNEL_DATA);
     if (extended)
       buffer.putInt(1);
+    buffer.checkFreeSize(bytes.length + 4);
     buffer.putString(bytes);
     return buffer;
   }

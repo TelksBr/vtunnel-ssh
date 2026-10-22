@@ -27,6 +27,7 @@ class ChannelReceiveWakeupTest {
     channel.init();
     Session session = new JSch().getSession("fixture", "127.0.0.1", 22);
     session.setConfig("max_input_buffer_size", Integer.toString(CAPACITY));
+    session.setConfig("channel_receive_isolation", "no");
     channel.setSession(session);
     ChannelDirectTCPIP nextChannel = new ChannelDirectTCPIP();
     nextChannel.init();

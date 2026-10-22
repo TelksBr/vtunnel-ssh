@@ -1950,6 +1950,51 @@ public class Session {
     }
   }
 
+  private long reservedReceiveMemory;
+
+  void deliverBufferedChannelData(ChannelReceiveBuffer input, byte[] bytes, int offset, int length)
+      throws IOException {
+    SessionFlowMetrics metrics = flowMetrics;
+    long started = metrics != null ? metrics.begin(SessionFlowMetrics.Phase.CHANNEL_DELIVERY) : 0;
+    try {
+      input.offer(bytes, offset, length);
+    } finally {
+      if (metrics != null)
+        metrics.end(SessionFlowMetrics.Phase.CHANNEL_DELIVERY, started);
+    }
+  }
+
+  synchronized void reserveReceiveMemory(long bytes) throws IOException {
+    long limit;
+    try {
+      String configured = getConfig("channel_receive_memory_limit");
+      limit = configured == null ? 64L * 1024 * 1024 : Long.parseLong(configured);
+    } catch (NumberFormatException failure) {
+      throw new IOException("Invalid SSH receive memory limit", failure);
+    }
+    if (limit < ChannelReceiveBuffer.SEGMENT || bytes > limit - reservedReceiveMemory)
+      throw new IOException("SSH session receive memory budget exhausted");
+    reservedReceiveMemory += bytes;
+  }
+
+  synchronized void releaseReceiveMemory(long bytes) {
+    reservedReceiveMemory -= bytes;
+  }
+
+  synchronized long reservedReceiveMemory() {
+    return reservedReceiveMemory;
+  }
+
+  void sendChannelReceiveCredit(Channel channel, int bytes) throws Exception {
+    Buffer buffer = new Buffer(100 + getBufferMargin());
+    Packet packet = new Packet(buffer);
+    packet.reset();
+    buffer.putByte((byte) SSH_MSG_CHANNEL_WINDOW_ADJUST);
+    buffer.putInt(channel.getRecipient());
+    buffer.putInt(bytes);
+    write(packet, channel);
+  }
+
   void deliverChannelData(Channel channel, byte[] bytes, int offset, int length, boolean extended)
       throws IOException {
     SessionFlowMetrics metrics = flowMetrics;
@@ -2037,9 +2082,12 @@ public class Session {
             }
 
             try {
+              if (channel.receiveData(foo, start[0], length[0], false))
+                break;
               deliverChannelData(channel, foo, start[0], length[0], false);
             } catch (Exception e) {
-              // System.err.println(e);
+              if (getLogger().isEnabled(Logger.WARN))
+                getLogger().log(Logger.WARN, "Channel receive failed: " + i, e);
               try {
                 channel.disconnect();
               } catch (Exception ee) {
@@ -2074,7 +2122,16 @@ public class Session {
               break;
             }
 
-            deliverChannelData(channel, foo, start[0], length[0], true);
+            try {
+              if (channel.receiveData(foo, start[0], length[0], true))
+                break;
+              deliverChannelData(channel, foo, start[0], length[0], true);
+            } catch (Exception failure) {
+              if (getLogger().isEnabled(Logger.WARN))
+                getLogger().log(Logger.WARN, "Extended channel receive failed: " + i, failure);
+              channel.disconnect();
+              break;
+            }
 
             len = length[0];
             channel.setLocalWindowSize(channel.lwsize - len);

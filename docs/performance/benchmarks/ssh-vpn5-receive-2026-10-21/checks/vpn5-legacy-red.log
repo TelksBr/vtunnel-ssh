@@ -1,0 +1,107 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.github.TelksBr:vtunnel-ssh >-------------------
+[INFO] Building VTunnel SSH 2.28.7-vpn.4
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-java) @ vtunnel-ssh ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[INFO] Rule 3: org.apache.maven.enforcer.rules.BanDuplicatePomDependencyVersions passed
+[INFO] Rule 4: org.apache.maven.enforcer.rules.ReactorModuleConvergence passed
+[INFO] Rule 5: org.apache.maven.enforcer.rules.dependency.RequireUpperBoundDeps passed
+[INFO] 
+[INFO] --- toolchains:3.3.0:select-jdk-toolchain (default) @ vtunnel-ssh ---
+[INFO] Not using an external toolchain as the current JDK 'JDK[C:\Program Files\Eclipse Adoptium\jdk-25.0.4.101-hotspot]' matches the requirements.
+[INFO] 
+[INFO] --- build-helper:3.6.1:regex-property (default) @ vtunnel-ssh ---
+[INFO] 
+[INFO] --- templating:3.1.0:filter-sources (default) @ vtunnel-ssh ---
+[INFO] Copying files with filtering to temporary directory.
+[INFO] Copying 1 resource from src\main\java-templates to target\templates-tmp3984991292
+[INFO] No files need to be copied to output directory. Up to date: C:\Users\Telks\Desktop\vtunnel-ssh\target\generated-sources\java-templates
+[INFO] Source directory: C:\Users\Telks\Desktop\vtunnel-ssh\target\generated-sources\java-templates added.
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ vtunnel-ssh ---
+[INFO] skip non existing resourceDirectory C:\Users\Telks\Desktop\vtunnel-ssh\src\main\resources
+[INFO] 
+[INFO] --- flatten:1.8.0:flatten (flatten) @ vtunnel-ssh ---
+[INFO] Generating flattened POM of project com.github.TelksBr:vtunnel-ssh:jar:2.28.7-vpn.4...
+[INFO] 
+[INFO] --- resources:3.5.0:copy-resources (copy-licenses) @ vtunnel-ssh ---
+[INFO] Copying 3 resources from . to target\classes\META-INF
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ vtunnel-ssh ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-9) @ vtunnel-ssh ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-10) @ vtunnel-ssh ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-11) @ vtunnel-ssh ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-15) @ vtunnel-ssh ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile-24) @ vtunnel-ssh ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- bnd:7.3.0:bnd-process (bnd-process) @ vtunnel-ssh ---
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ vtunnel-ssh ---
+[INFO] Copying 244 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ vtunnel-ssh ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 67 source files with javac [debug deprecation release 8] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ vtunnel-ssh ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.jcraft.jsch.ChannelWindowAdjustIsolationTest
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.090 s <<< FAILURE! -- in com.jcraft.jsch.ChannelWindowAdjustIsolationTest
+[ERROR] com.jcraft.jsch.ChannelWindowAdjustIsolationTest.stalledConsumerDoesNotBlockOtherChannelOrIncomingCredit -- Time elapsed: 2.069 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: A consumer stalled beyond 1 MiB must not block the shared SSH reader ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
+	at com.jcraft.jsch.ChannelWindowAdjustIsolationTest.stalledConsumerDoesNotBlockOtherChannelOrIncomingCredit(ChannelWindowAdjustIsolationTest.java:45)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   ChannelWindowAdjustIsolationTest.stalledConsumerDoesNotBlockOtherChannelOrIncomingCredit:45 A consumer stalled beyond 1 MiB must not block the shared SSH reader ==> expected: <true> but was: <false>
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  10.624 s
+[INFO] Finished at: 2026-10-21T20:11:37-03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project vtunnel-ssh: There are test failures.
+[ERROR] 
+[ERROR] See C:\Users\Telks\Desktop\vtunnel-ssh\target\surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

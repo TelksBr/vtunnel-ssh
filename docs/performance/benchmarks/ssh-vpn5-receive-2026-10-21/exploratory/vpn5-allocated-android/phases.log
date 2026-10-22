@@ -1,0 +1,24 @@
+{"label": "before", "cipher": "aes256-ctr", "repetition": 0}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "after", "cipher": "aes256-ctr", "repetition": 0}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "after", "cipher": "aes256-ctr", "repetition": 1}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "before", "cipher": "aes256-ctr", "repetition": 1}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "before", "cipher": "aes256-ctr", "repetition": 2}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "after", "cipher": "aes256-ctr", "repetition": 2}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "before", "cipher": "aes128-gcm@openssh.com", "repetition": 0}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "after", "cipher": "aes128-gcm@openssh.com", "repetition": 0}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "after", "cipher": "aes128-gcm@openssh.com", "repetition": 1}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "before", "cipher": "aes128-gcm@openssh.com", "repetition": 1}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "before", "cipher": "aes128-gcm@openssh.com", "repetition": 2}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.
+{"label": "after", "cipher": "aes128-gcm@openssh.com", "repetition": 2}
+Permanently added '[127.0.0.1]:8874' (RSA) to the list of known hosts.

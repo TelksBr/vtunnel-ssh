@@ -13,6 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("--probe",required=True)
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--profile",choices=["mobile-jitter","unshaped"],default="mobile-jitter")
+    parser.add_argument("--direction",choices=["upload","download"],default="upload")
     parser.add_argument("--key",default="/tmp/vtunnel-ssh-network/client_key")
     parser.add_argument("--repetitions",type=int,default=3,choices=range(1,7))
     parser.add_argument("--seed-start",type=int,default=1100)
@@ -34,7 +35,7 @@ if __name__ == "__main__":
                 subprocess.run(["java","-Dvtunnel.probe.offsets=false",
                     "-Dvtunnel.probe.controlHost=127.0.0.1","-cp",library+":"+args.probe,
                     "com.jcraft.jsch.TunnelNetworkProbe","queue",label,args.profile,str(seed),
-                    "upload","8","10.205.33.2","22022",args.key,"4","0","0",str(raw)],
+                    args.direction,"8","10.205.33.2","22022",args.key,"4","0","0",str(raw)],
                     stdout=log,stderr=subprocess.STDOUT,check=True)
                 time.sleep(2)
     rows=[json.loads(line) for line in raw.read_text().splitlines() if line.strip()]

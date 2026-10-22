@@ -1,0 +1,8 @@
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 0, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes256-ctr", "repetition": 0, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "before"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
+{"platform": "android", "cipher": "aes128-gcm@openssh.com", "repetition": 0, "label": "after"}
+Permanently added '[127.0.0.1]:45080' (RSA) to the list of known hosts.
